@@ -15,7 +15,7 @@ Planning and architecture phase.
 
 ## Planned stack
 - Frontend: Next.js + Typscript
-- Backend: To be confirmed
+- Backend: Next.js Route Handlers + Server Actions (V1)
 - Database: Supabase
 - Payments: Stripe
 - AI: OpenAI API
