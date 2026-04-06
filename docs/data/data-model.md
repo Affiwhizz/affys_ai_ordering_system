@@ -12,7 +12,7 @@ It is the reference point for:
 - payment flow
 - future customer history and analytics
 
-This is a design document only. No database tables are being created yet.
+This is a design document only. No database tables are being created yet...
 
 
 ## Business context
