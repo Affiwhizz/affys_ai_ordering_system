@@ -14,7 +14,6 @@ It is the reference point for:
 
 This is a design document only. No database tables are being created yet.
 
----
 
 ## Business context
 
@@ -40,7 +39,6 @@ Because of that, the data model needs to support:
 Important note:
 The Portimao bowls are separate from this main menu and should not be mixed into the core website menu structure.
 
----
 
 ## Design principles
 
@@ -59,7 +57,6 @@ Customers should only be able to choose valid dates and times based on your open
 ### 5. MVP first
 The model should be strong enough for real implementation now without becoming too heavy.
 
----
 
 ## Entity overview
 
@@ -86,7 +83,6 @@ The MVP data model includes:
 - availability rules define allowed order slots
 - blackout periods override normal availability
 
----
 
 ## customers
 
@@ -113,7 +109,6 @@ Represents a person who places an order.
 - this number may later be used for order updates, delivery coordination, or courier contact
 - repeat customer matching can later use WhatsApp number and email
 
----
 
 ## menu_categories
 
@@ -143,7 +138,6 @@ Represents the top-level sections used in the menu.
 - `pastries-and-small-chops`
 - `other-catering-services`
 
----
 
 ## menu_items
 
@@ -167,25 +161,51 @@ Examples:
 - `description` (text, nullable)
 - `currency` (text, default `EUR`)
 - `image_url` (text, nullable)
-- `is_active` (boolean, default true)
-- `is_featured` (boolean, default false)
-- `sort_order` (integer, default 0)
+- `is_active` (boolean, default `true`)
+- `is_featured` (boolean, default `false`)
+- `sort_order` (integer, default `0`)
 - `ordering_mode` (text enum: `standard`, `inquiry_only`)
 - `minimum_notice_hours` (integer, nullable)
 - `tags` (text[], nullable)
 - `allergen_tags` (text[], nullable)
+- `search_aliases` (text[], nullable)
+- `localized_names` (jsonb, nullable)
 - `customization_schema` (jsonb, nullable)
+- `quantity_rule_type` (text enum: `preset_only`, `minimum_integer`, `inquiry_only`)
+- `minimum_quantity_value` (numeric(10,2), nullable)
+- `quantity_unit_type` (text enum: `litre`, `piece`, `bundle`, `service`, nullable)
+- `quantity_increment` (numeric(10,2), nullable)
+- `allow_decimal_quantities` (boolean, default `false`)
+- `non_preset_quantity_policy` (text enum: `manual_review`, `disallowed`, nullable)
 - `created_at` (timestamp with time zone)
 - `updated_at` (timestamp with time zone)
 
 ### Notes
 
 - `ordering_mode = standard` means the item can go through normal checkout
-- `ordering_mode = inquiry_only` means the item should be shown on the website but sent through an enquiry flow instead of standard checkout
+- `ordering_mode = inquiry_only` means the item should be shown on the website but routed into an enquiry flow instead of normal checkout
 - this is useful for categories like `Other Catering Services`
-- `minimum_notice_hours` allows item-specific lead time rules if needed later
+- `minimum_notice_hours` allows item-specific lead-time rules if needed later
+- `quantity_rule_type = preset_only` means only predefined menu variants are valid
+- `quantity_rule_type = minimum_integer` means the item has a minimum quantity, but larger valid whole-number quantities can also be accepted
+- `quantity_rule_type = inquiry_only` means the item should not go through standard checkout
+- for Affy's current rules, many litre-based and piece-based items will likely use `minimum_integer`
+- `quantity_increment` should usually be `1` for whole-number quantities
+- `allow_decimal_quantities` should remain `false` for the cases you described
+- `non_preset_quantity_policy = manual_review` means the quantity may be valid operationally, but pricing must be confirmed manually if it does not match a preset priced option
+- `search_aliases` helps the assistant match user phrasing such as shorthand, slang, spelling variants, or alternate item names
+- `localized_names` helps support multilingual menu matching
 
-### Example customization_schema
+### Example `localized_names`
+
+```json
+{
+  "en": "Jollof Rice",
+  "pt": "Arroz Jollof à Nigeriana"
+}
+```
+
+### Example `customization_schema`
 
 For rice dishes:
 
@@ -198,7 +218,7 @@ For rice dishes:
 }
 ```
 
-For Peppersoups:
+For peppersoups:
 
 ```json
 {
@@ -220,15 +240,42 @@ For other dishes:
 }
 ```
 
+### Quantity policy
+
+Not every item is limited to only the preset display quantities shown on the menu.
+
+For some items, the displayed quantities act as standard priced reference options, while larger whole-number quantities may still be accepted.
+
+Examples:
+- soups or rice dishes may start at `2 Litres`, but `5 Litres` can still be valid
+- pastries may start at `5 pcs`, but `7 pcs` can still be valid
+- decimal quantities such as `2.5 Litres` are not valid
+- quantities below the minimum are not valid
+
+This means the system must support both:
+- preset priced display quantities
+- validation rules for allowed custom quantities
+
+
 ## menu_item_variants
 
-Represents the exact purchasable version of a menu item.
+Represents preset priced menu options for a menu item.
 
-This is needed because the menu uses:
-- litres
-- piece counts
-- quantity bundles
-- service-style entries
+These variants are useful for:
+- showing standard purchase options on the website
+- storing known menu pricing points
+- giving customers quick choices
+- supporting direct checkout when the selected quantity matches a priced preset
+
+They are not always the only valid quantities for the item.
+
+If the parent item uses `quantity_rule_type = minimum_integer`, a customer may still request a larger valid whole-number quantity that is not one of the preset display options.
+
+Examples:
+- `5 Litres` for a dish that starts at `2 Litres`
+- `7 pcs` for pies that start at `5 pcs`
+
+In those cases, the quantity may still be valid, but pricing may require `manual_review` unless the system has a reliable pricing formula.
 
 ### Fields
 
@@ -244,6 +291,7 @@ This is needed because the menu uses:
 - `currency` (text, default `EUR`)
 - `sort_order` (integer, default `0`)
 - `is_active` (boolean, default `true`)
+- `is_display_default` (boolean, default `true`)
 - `created_at` (timestamp with time zone)
 - `updated_at` (timestamp with time zone)
 
@@ -280,9 +328,10 @@ For Eba:
 - `quantity_value` stores the number, such as `2`, `10`, or `50`
 - `quantity_unit_label` stores the readable unit, such as `litres` or `pcs`
 - `serves_min` and `serves_max` are mainly useful for litre-based dishes
+- `is_display_default` marks the standard preset quantities shown in the UI
 - for `inquiry_only` items, variants may be optional or unused
+- preset variants are priced menu anchors, not always the only operationally valid quantities
 
----
 
 ## availability_rules
 
@@ -312,7 +361,6 @@ This supports the calendar and time-slot selection logic for both pickup and del
 - `lead_time_hours` can help enforce advance ordering windows
 - `max_orders_per_slot` can help later if you want to cap slot capacity
 
----
 
 ## blackout_periods
 
@@ -343,7 +391,6 @@ Defines dates or time ranges when customers should not be allowed to book, even 
 - blackout periods should override availability rules
 - the booking calendar should remove any slots that overlap with blackout periods
 
----
 
 ## orders
 
@@ -357,6 +404,7 @@ Represents one customer order.
 - `customer_name_snapshot` (text)
 - `customer_whatsapp_snapshot` (text)
 - `source` (text enum: `ai`, `form`)
+- `customer_input_language` (text, nullable)
 - `fulfillment_type` (text enum: `pickup`, `delivery`)
 - `order_status` (text enum: `draft`, `awaiting_payment`, `payment_under_review`, `payment_verified`, `scheduled`, `preparing`, `ready_for_pickup`, `out_for_delivery`, `completed`, `cancelled`)
 - `payment_status` (text enum: `unpaid`, `pending`, `paid`, `failed`, `refunded`)
@@ -389,6 +437,7 @@ Represents one customer order.
 - `public_order_code` is the customer-facing reference
 - `source` shows whether the order came through the AI flow or the quick form
 - `customer_name_snapshot` and `customer_whatsapp_snapshot` preserve the exact contact details used for that order
+- `customer_input_language` stores the language the customer used during ordering, which helps later for communication and multilingual support
 - a customer-selected date and time must be validated against `availability_rules` and `blackout_periods` before the order is accepted
 - payment must be verified before the order moves to `preparing` or `out_for_delivery`
 - the `order_status` values and timestamps will later power the customer-facing progress bar or order tracker
@@ -403,7 +452,6 @@ These do not need separate tables yet, but they matter for validation logic:
 - delivery is available across Portugal
 - allergy notice should be shown clearly during ordering
 
----
 
 ## order_items
 
@@ -414,12 +462,15 @@ Represents each line item inside an order.
 - `id` (uuid, pk)
 - `order_id` (uuid, fk -> orders.id)
 - `menu_item_id` (uuid, fk -> menu_items.id)
-- `menu_item_variant_id` (uuid, fk -> menu_item_variants.id)
+- `menu_item_variant_id` (uuid, fk -> menu_item_variants.id, nullable)
 - `item_name_snapshot` (text)
-- `variant_label_snapshot` (text)
-- `unit_price_snapshot` (numeric(10,2))
-- `quantity` (integer)
-- `line_total_amount` (numeric(10,2))
+- `variant_label_snapshot` (text, nullable)
+- `requested_quantity_value` (numeric(10,2))
+- `requested_quantity_unit` (text)
+- `unit_price_snapshot` (numeric(10,2), nullable)
+- `quantity` (integer, default `1`)
+- `line_total_amount` (numeric(10,2), nullable)
+- `pricing_resolution_mode` (text enum: `preset_variant`, `manual_review`)
 - `selected_customizations` (jsonb, nullable)
 - `item_notes` (text, nullable)
 - `created_at` (timestamp with time zone)
@@ -427,10 +478,15 @@ Represents each line item inside an order.
 ### Notes
 
 - this table preserves what the customer actually bought at the time of ordering
+- `menu_item_variant_id` is nullable because a customer may request a valid non-preset quantity such as `7 pcs` or `5 Litres`
+- `requested_quantity_value` stores the actual requested amount, such as `7` or `5`
+- `requested_quantity_unit` stores the unit, such as `pcs` or `litres`
+- `variant_label_snapshot` is used when the order matched a preset priced option
+- `pricing_resolution_mode = preset_variant` means the item matched a known priced menu option
+- `pricing_resolution_mode = manual_review` means the quantity is valid operationally but needs manual price confirmation
 - snapshots should remain unchanged even if the live menu later changes
-- `quantity` here means how many of the chosen variant were ordered
 
-### Example selected_customizations
+### Example `selected_customizations`
 
 ```json
 {
@@ -439,7 +495,6 @@ Represents each line item inside an order.
 }
 ```
 
----
 
 ## payments
 
@@ -466,7 +521,6 @@ Represents payment attempts and outcomes for an order.
 - payment verification can use provider identifiers plus backend checks
 - provider payload storage is useful for audits, debugging, and webhook reconciliation later
 
----
 
 ## Enum summary
 
@@ -476,6 +530,11 @@ Represents payment attempts and outcomes for an order.
 
 ### ordering mode
 - `standard`
+- `inquiry_only`
+
+### quantity rule type
+- `preset_only`
+- `minimum_integer`
 - `inquiry_only`
 
 ### fulfillment type
@@ -513,7 +572,14 @@ Represents payment attempts and outcomes for an order.
 - `bundle`
 - `service`
 
----
+### non-preset quantity policy
+- `manual_review`
+- `disallowed`
+
+### pricing resolution mode
+- `preset_variant`
+- `manual_review`
+
 
 ## Business rules to carry into implementation later
 
@@ -525,5 +591,6 @@ These are not all database fields, but they matter to the product:
 - the frontend should only show valid date and time slots
 - blocked periods should be excluded from booking
 - customers should see order progress after checkout based on `order_status`
-- catering services may later use enquiry flows instead of standard checkout
+- catering services may use enquiry flows instead of standard checkout
 - the allergy notice should be visible during ordering
+- the assistant should support customer input in different languages and still map requests to the correct menu items
