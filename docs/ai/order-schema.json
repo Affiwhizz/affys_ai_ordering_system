@@ -1,0 +1,424 @@
+{
+    "name": "affys_order_capture_v2",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "enum": ["v2"]
+        },
+        "conversation_stage": {
+          "type": "string",
+          "enum": [
+            "intent_capture",
+            "item_selection",
+            "fulfillment_selection",
+            "schedule_selection",
+            "customer_details",
+            "review",
+            "ready_for_checkout",
+            "inquiry_handoff"
+          ]
+        },
+        "intent": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "primary": {
+              "type": "string",
+              "enum": [
+                "standard_order",
+                "catering_inquiry",
+                "menu_question",
+                "mixed_request",
+                "other"
+              ]
+            },
+            "secondary": {
+              "type": ["string", "null"],
+              "enum": [
+                "standard_order",
+                "catering_inquiry",
+                "menu_question",
+                "mixed_request",
+                "other",
+                null
+              ]
+            },
+            "confidence": {
+              "type": ["number", "null"]
+            }
+          },
+          "required": ["primary", "secondary", "confidence"]
+        },
+        "order_state": {
+          "type": "string",
+          "enum": [
+            "collecting_information",
+            "has_ambiguities",
+            "needs_availability_check",
+            "needs_human_review",
+            "ready_for_review",
+            "ready_for_checkout",
+            "inquiry_only"
+          ]
+        },
+        "customer": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "full_name": {
+              "type": ["string", "null"]
+            },
+            "whatsapp_number": {
+              "type": ["string", "null"]
+            },
+            "email": {
+              "type": ["string", "null"]
+            }
+          },
+          "required": ["full_name", "whatsapp_number", "email"]
+        },
+        "fulfillment": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": ["string", "null"],
+              "enum": ["pickup", "delivery", null]
+            },
+            "requested_date": {
+              "type": ["string", "null"]
+            },
+            "requested_time": {
+              "type": ["string", "null"]
+            },
+            "timezone": {
+              "type": ["string", "null"]
+            },
+            "pickup_location_name": {
+              "type": ["string", "null"]
+            },
+            "delivery_address": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "line_1": {
+                  "type": ["string", "null"]
+                },
+                "line_2": {
+                  "type": ["string", "null"]
+                },
+                "city": {
+                  "type": ["string", "null"]
+                },
+                "postal_code": {
+                  "type": ["string", "null"]
+                },
+                "instructions": {
+                  "type": ["string", "null"]
+                }
+              },
+              "required": [
+                "line_1",
+                "line_2",
+                "city",
+                "postal_code",
+                "instructions"
+              ]
+            },
+            "availability_check": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "not_checked",
+                    "pending",
+                    "available",
+                    "unavailable",
+                    "partially_available"
+                  ]
+                },
+                "matched_slot_label": {
+                  "type": ["string", "null"]
+                },
+                "reason_if_unavailable": {
+                  "type": ["string", "null"]
+                }
+              },
+              "required": [
+                "status",
+                "matched_slot_label",
+                "reason_if_unavailable"
+              ]
+            }
+          },
+          "required": [
+            "type",
+            "requested_date",
+            "requested_time",
+            "timezone",
+            "pickup_location_name",
+            "delivery_address",
+            "availability_check"
+          ]
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "line_id": {
+                "type": "string"
+              },
+              "requested_name_raw": {
+                "type": ["string", "null"]
+              },
+              "matched_menu_item": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "canonical_name": {
+                    "type": ["string", "null"]
+                  },
+                  "slug": {
+                    "type": ["string", "null"]
+                  },
+                  "category": {
+                    "type": ["string", "null"]
+                  },
+                  "ordering_mode": {
+                    "type": ["string", "null"],
+                    "enum": ["standard", "inquiry_only", null]
+                  },
+                  "match_confidence": {
+                    "type": ["number", "null"]
+                  }
+                },
+                "required": [
+                  "canonical_name",
+                  "slug",
+                  "category",
+                  "ordering_mode",
+                  "match_confidence"
+                ]
+              },
+              "requested_variant_raw": {
+                "type": ["string", "null"]
+              },
+              "matched_variant": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "variant_label": {
+                    "type": ["string", "null"]
+                  },
+                  "unit_type": {
+                    "type": ["string", "null"],
+                    "enum": ["litre", "piece", "bundle", "service", null]
+                  },
+                  "quantity_value": {
+                    "type": ["number", "null"]
+                  },
+                  "quantity_unit_label": {
+                    "type": ["string", "null"]
+                  },
+                  "variant_match_confidence": {
+                    "type": ["number", "null"]
+                  }
+                },
+                "required": [
+                  "variant_label",
+                  "unit_type",
+                  "quantity_value",
+                  "quantity_unit_label",
+                  "variant_match_confidence"
+                ]
+              },
+              "order_quantity": {
+                "type": ["integer", "null"]
+              },
+              "customizations": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    },
+                    "is_confirmed": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": ["name", "value", "is_confirmed"]
+                }
+              },
+              "item_notes": {
+                "type": ["string", "null"]
+              },
+              "line_state": {
+                "type": "string",
+                "enum": [
+                  "complete",
+                  "missing_variant",
+                  "missing_quantity",
+                  "ambiguous_item",
+                  "inquiry_only"
+                ]
+              }
+            },
+            "required": [
+              "line_id",
+              "requested_name_raw",
+              "matched_menu_item",
+              "requested_variant_raw",
+              "matched_variant",
+              "order_quantity",
+              "customizations",
+              "item_notes",
+              "line_state"
+            ]
+          }
+        },
+        "pricing_estimate": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "subtotal_estimate": {
+              "type": ["number", "null"]
+            },
+            "delivery_fee_estimate": {
+              "type": ["number", "null"]
+            },
+            "discount_estimate": {
+              "type": ["number", "null"]
+            },
+            "total_estimate": {
+              "type": ["number", "null"]
+            },
+            "currency": {
+              "type": ["string", "null"]
+            },
+            "is_final": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "subtotal_estimate",
+            "delivery_fee_estimate",
+            "discount_estimate",
+            "total_estimate",
+            "currency",
+            "is_final"
+          ]
+        },
+        "customer_notes": {
+          "type": ["string", "null"]
+        },
+        "missing_required_fields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "customer.full_name",
+              "customer.whatsapp_number",
+              "fulfillment.type",
+              "fulfillment.requested_date",
+              "fulfillment.requested_time",
+              "fulfillment.delivery_address.line_1",
+              "fulfillment.delivery_address.city",
+              "fulfillment.delivery_address.postal_code",
+              "items",
+              "items.matched_variant",
+              "items.order_quantity"
+            ]
+          }
+        },
+        "ambiguities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "scope": {
+                "type": "string",
+                "enum": [
+                  "intent",
+                  "item",
+                  "variant",
+                  "schedule",
+                  "delivery_address",
+                  "other"
+                ]
+              },
+              "message": {
+                "type": "string"
+              },
+              "related_line_id": {
+                "type": ["string", "null"]
+              }
+            },
+            "required": ["scope", "message", "related_line_id"]
+          }
+        },
+        "validation_flags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "contains_inquiry_only_item",
+              "below_minimum_order_value",
+              "requires_24_hour_notice",
+              "requires_10_day_notice",
+              "slot_not_available",
+              "delivery_area_unconfirmed",
+              "needs_manual_review"
+            ]
+          }
+        },
+        "next_action": {
+          "type": "string",
+          "enum": [
+            "ask_follow_up_question",
+            "show_order_review",
+            "run_availability_check",
+            "route_to_inquiry_flow",
+            "handoff_to_human",
+            "proceed_to_checkout"
+          ]
+        },
+        "next_question_hint": {
+          "type": ["string", "null"]
+        },
+        "assistant_notes": {
+          "type": ["string", "null"]
+        }
+      },
+      "required": [
+        "schema_version",
+        "conversation_stage",
+        "intent",
+        "order_state",
+        "customer",
+        "fulfillment",
+        "items",
+        "pricing_estimate",
+        "customer_notes",
+        "missing_required_fields",
+        "ambiguities",
+        "validation_flags",
+        "next_action",
+        "next_question_hint",
+        "assistant_notes"
+      ]
+    }
+  }
