@@ -24,4 +24,4 @@ For V1, a single full-stack Next.js application is the best fit because:
 - it allows faster iteration while building and testing the product
 
 ## Future flexibility
-If the system grows in complexity later, the backend can be extracted into a separate service. For now, V1 will keep frontend and backend logic inside the same Next.js application.
+If the system grows in complexity later, the backend can be extracted into a separate service. For now, V1 will keep frontend and backend logic inside the same Next.js application. 
