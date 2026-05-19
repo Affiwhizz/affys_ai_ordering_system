@@ -1,26 +1,283 @@
 @import "tailwindcss";
 
+/* =========================================================
+   Affy's — brand tokens
+   Modern Nigerian, made in Portugal.
+   White luxury base · gold + forest + red + espresso accents.
+   ========================================================= */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand palette — canonical (2026-05-06) */
+  --gold: #D4AF37;
+  --gold-soft: #E8CC6E;
+  --gold-deep: #A98722;
+
+  --white: #FFFFFF;
+  --cream: #FAFAF7;          /* hairline warm tint for tiny surface differentiation */
+  --cream-deep: #F4F0E6;     /* subtle accent surface for chips / mock previews */
+
+  --red: #94251A;            /* food warmth, cultural richness */
+  --red-soft: #B33A2D;
+  --red-glow: rgba(148, 37, 26, 0.18);
+
+  --forest: #3F7F3B;
+  --forest-soft: #5DA459;
+  --forest-deep: #2A5A26;
+
+  --espresso: #1E1A17;
+  --espresso-soft: #3A3430;
+
+  /* Semantic surfaces — White-first, with hairline tints for occasional accents */
+  --background: var(--white);
+  --surface: var(--white);
+  --surface-warm: var(--cream);
+  --surface-deep: var(--cream-deep);
+
+  /* Ink */
+  --foreground: var(--espresso);
+  --foreground-muted: #5C544D;
+  --foreground-subtle: #8C847C;
+  --foreground-on-dark: var(--white);
+
+  /* Lines */
+  --border: #ECE7DD;
+  --border-strong: #D5CCBB;
+  --border-gold: rgba(212, 175, 55, 0.4);
+
+  /* ---- Backwards-compat aliases (keep so existing components don't break) ---- */
+  --ivory: var(--white);
+  --ivory-warm: var(--cream);
+  --ivory-deep: var(--cream-deep);
+  --oxblood: var(--red);
+  --oxblood-soft: var(--red-soft);
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-warm: var(--surface-warm);
+  --color-surface-deep: var(--surface-deep);
+
   --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-subtle: var(--foreground-subtle);
+  --color-foreground-on-dark: var(--foreground-on-dark);
+
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-border-gold: var(--border-gold);
+
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-gold-deep: var(--gold-deep);
+  --color-forest: var(--forest);
+  --color-forest-soft: var(--forest-soft);
+  --color-forest-deep: var(--forest-deep);
+  --color-red: var(--red);
+  --color-red-soft: var(--red-soft);
+  --color-espresso: var(--espresso);
+  --color-espresso-soft: var(--espresso-soft);
+  --color-white: var(--white);
+  --color-cream: var(--cream);
+  --color-cream-deep: var(--cream-deep);
+
+  /* Aliases (don't remove — existing components reference these) */
+  --color-ivory: var(--ivory);
+  --color-ivory-warm: var(--ivory-warm);
+  --color-ivory-deep: var(--ivory-deep);
+  --color-oxblood: var(--oxblood);
+  --color-oxblood-soft: var(--oxblood-soft);
+
   --font-sans: var(--font-geist-sans);
+  --font-display: var(--font-fraunces);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  border-color: var(--border);
 }
 
-body {
+html, body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Anchor offset — keep anchored sections clear of the sticky header */
+[id] {
+  scroll-margin-top: 96px;
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--espresso);
+}
+
+/* ---------- Display + decorative type ---------- */
+.font-display {
+  font-family: var(--font-fraunces), ui-serif, Georgia, "Times New Roman", serif;
+  font-feature-settings: "ss01", "ss02";
+  letter-spacing: -0.02em;
+}
+
+.eyebrow {
+  font-family: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--foreground-muted);
+}
+
+.gold-rule {
+  display: inline-block;
+  width: 28px;
+  height: 1px;
+  background: var(--gold);
+  vertical-align: middle;
+  margin-right: 12px;
+}
+
+.gold-rule-after {
+  display: inline-block;
+  width: 28px;
+  height: 1px;
+  background: var(--gold);
+  vertical-align: middle;
+  margin-left: 12px;
+}
+
+/* ---------- Layout ---------- */
+.container-x {
+  width: 100%;
+  margin-inline: auto;
+  max-width: 1240px;
+  padding-inline: 1.25rem;
+}
+@media (min-width: 768px)  { .container-x { padding-inline: 2rem; } }
+@media (min-width: 1024px) { .container-x { padding-inline: 2.5rem; } }
+
+/* ---------- Decorative ---------- */
+.shadow-luxe {
+  box-shadow:
+    0 1px 2px rgba(30, 26, 23, 0.04),
+    0 18px 40px -22px rgba(30, 26, 23, 0.18),
+    0 30px 60px -28px rgba(148, 37, 26, 0.10);
+}
+
+.gold-text-stroke {
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold-soft) 50%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Subtle paper-grain wash for hero */
+.bg-paper {
+  background-image:
+    radial-gradient(ellipse at top right, rgba(212, 175, 55, 0.10), transparent 55%),
+    radial-gradient(ellipse at bottom left, rgba(18, 55, 42, 0.07), transparent 55%);
+}
+
+/* ---------- Animations ---------- */
+@keyframes float-soft {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+.animate-float-soft { animation: float-soft 5s ease-in-out infinite; }
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.gold-shimmer {
+  background: linear-gradient(90deg, var(--gold-deep), var(--gold), var(--gold-soft), var(--gold), var(--gold-deep));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 6s linear infinite;
+}
+
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee { animation: marquee 50s linear infinite; }
+
+@keyframes fade-in-up {
+  0%   { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up { animation: fade-in-up 600ms ease-out both; }
+
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.45); }
+  50%      { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
+}
+.pulse-gold { animation: pulse-gold 2.4s ease-out infinite; }
+
+/* ---------- Buttons (semantic helpers) ---------- */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding-inline: 28px;
+  border-radius: 9999px;
+  background: var(--espresso);
+  color: var(--white);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  border: 1px solid var(--gold-deep);
+  transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+  position: relative;
+}
+.btn-primary:hover {
+  background: var(--gold);
+  color: var(--espresso);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -10px rgba(212, 175, 55, 0.55);
+}
+.btn-primary:active { transform: translateY(0); }
+
+/* Backwards-compat alias (existing components use .btn-gold) */
+.btn-gold { display: inline-flex; align-items: center; justify-content: center; height: 48px; padding-inline: 28px; border-radius: 9999px; background: var(--espresso); color: var(--white); font-weight: 600; font-size: 14px; letter-spacing: 0.01em; border: 1px solid var(--gold-deep); transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease, color 0.25s ease; position: relative; }
+.btn-gold:hover { background: var(--gold); color: var(--espresso); transform: translateY(-2px); box-shadow: 0 12px 24px -10px rgba(212, 175, 55, 0.55); }
+.btn-gold:active { transform: translateY(0); }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding-inline: 28px;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--espresso);
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid var(--border-strong);
+  transition: all 0.25s ease;
+}
+.btn-ghost:hover {
+  border-color: var(--espresso);
+  background: var(--cream);
+  transform: translateY(-1px);
+}
+
+/* ---------- Tile / azulejo friends ---------- */
+.azulejo-divider {
+  height: 60px;
+  background-repeat: repeat-x;
+  background-size: 60px 60px;
+  opacity: 0.5;
 }
