@@ -2,27 +2,53 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 /**
- * Next.js proxy — runs on every request before the page renders.
+ * Next.js proxy — runs before a request reaches the page.
  * (In Next.js 16 this replaces the old `middleware` file convention.)
  *
- * Two jobs:
- *  1. Refresh the Supabase auth session cookie so server components see a
- *     fresh token (Supabase access tokens expire every hour).
- *  2. Gate /admin/* routes — only signed-in staff with an active staff_users
- *     row get through. Everyone else is redirected to /admin/login.
+ * Design rule: the PUBLIC site must never depend on Supabase. Only the
+ * /admin area is gated. So we bail out immediately for every public route
+ * and only touch Supabase when the request is actually for /admin. That way
+ * a missing env var or a Supabase outage can never take down the homepage —
+ * worst case, admin sign-in is briefly unavailable.
  *
- * To skip this on assets / Next.js internals, see the `matcher` config
- * at the bottom.
+ * Job (admin routes only):
+ *  1. Refresh the Supabase auth session cookie.
+ *  2. Gate /admin/* — only signed-in staff with an active staff_users row
+ *     get through. Everyone else is redirected to /admin/login.
  */
 
 export async function proxy(request: NextRequest) {
-  let response = NextResponse.next({ request });
+  const path = request.nextUrl.pathname;
 
-  // Public env (NEXT_PUBLIC_*) is safe to use here.
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
+  // Public routes: do nothing, never touch Supabase.
+  if (!path.startsWith("/admin")) {
+    return NextResponse.next();
+  }
+
+  // The login page itself must stay reachable without a session.
+  if (path === "/admin/login") {
+    return NextResponse.next();
+  }
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  // Supabase renamed "anon key" to "publishable key" — accept either name.
+  const supabaseAnonKey =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+  // If Supabase isn't configured on this deployment, send admin traffic to
+  // the login page rather than crashing with a 500.
+  if (!supabaseUrl || !supabaseAnonKey) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/admin/login";
+    url.searchParams.set("error", "not-configured");
+    return NextResponse.redirect(url);
+  }
+
+  try {
+    let response = NextResponse.next({ request });
+
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -35,14 +61,12 @@ export async function proxy(request: NextRequest) {
           );
         },
       },
-    },
-  );
+    });
 
-  const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  // Gate /admin/* — but allow /admin/login through
-  const path = request.nextUrl.pathname;
-  if (path.startsWith("/admin") && path !== "/admin/login") {
     if (!user) {
       const url = request.nextUrl.clone();
       url.pathname = "/admin/login";
@@ -63,20 +87,23 @@ export async function proxy(request: NextRequest) {
       url.searchParams.set("error", "not-staff");
       return NextResponse.redirect(url);
     }
-  }
 
-  return response;
+    return response;
+  } catch {
+    // Any auth/network failure: fail safe to the login page, never 500.
+    const url = request.nextUrl.clone();
+    url.pathname = "/admin/login";
+    url.searchParams.set("error", "auth-error");
+    return NextResponse.redirect(url);
+  }
 }
 
 export const config = {
   matcher: [
     /*
-     * Run on everything EXCEPT:
-     *  - _next/static (built JS/CSS)
-     *  - _next/image (image optimizer)
-     *  - favicon.ico, robots.txt, sitemap.xml
-     *  - public files with extensions (images, fonts, etc.)
+     * Run only on /admin routes. (The public site is intentionally excluded
+     * so it never depends on Supabase or auth.)
      */
-    "/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|.*\\..*).*)",
+    "/admin/:path*",
   ],
 };
