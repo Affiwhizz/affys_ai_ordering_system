@@ -35,7 +35,7 @@ export const LEGAL_DOCS: Record<LegalTopic, LegalDocument> = {
       {
         heading: "Who we are",
         body: [
-          "Affy's is a small Nigerian food brand based in Lisbon, Portugal, trading as atasteofaffy.com. You can reach us anytime at hello@atasteofaffy.com.",
+          "Affy's is a small Nigerian food brand based in Lisbon, Portugal, trading as atasteofaffys.com. You can reach us anytime at hello@atasteofaffys.com.",
         ],
       },
       {
@@ -66,7 +66,7 @@ export const LEGAL_DOCS: Record<LegalTopic, LegalDocument> = {
       {
         heading: "Your rights",
         body: [
-          "You can access, correct, export, or delete your data anytime by emailing hello@atasteofaffy.com. You also have the right to lodge a complaint with the Portuguese data protection authority (CNPD).",
+          "You can access, correct, export, or delete your data anytime by emailing hello@atasteofaffys.com. You also have the right to lodge a complaint with the Portuguese data protection authority (CNPD).",
         ],
       },
     ],
@@ -153,7 +153,7 @@ export const LEGAL_DOCS: Record<LegalTopic, LegalDocument> = {
   accessibility: {
     title: "Accessibility statement",
     intro:
-      "Affy's is committed to making atasteofaffy.com usable for everyone, including people with visual, motor, cognitive, or hearing differences.",
+      "Affy's is committed to making atasteofaffys.com usable for everyone, including people with visual, motor, cognitive, or hearing differences.",
     updated: "Updated May 2026",
     sections: [
       {
@@ -177,7 +177,7 @@ export const LEGAL_DOCS: Record<LegalTopic, LegalDocument> = {
       {
         heading: "Tell us if something isn't working",
         body: [
-          "If you hit a barrier — anything from a button you can't reach by keyboard to text you can't read at your zoom level — please email hello@atasteofaffy.com with the page, the device/browser, and a quick description. We'll fix it.",
+          "If you hit a barrier — anything from a button you can't reach by keyboard to text you can't read at your zoom level — please email hello@atasteofaffys.com with the page, the device/browser, and a quick description. We'll fix it.",
         ],
       },
     ],
@@ -211,7 +211,7 @@ export const LEGAL_DOCS: Record<LegalTopic, LegalDocument> = {
       {
         heading: "If your order arrives wrong or late",
         body: [
-          "Tell us within 24 hours (hello@atasteofaffy.com or WhatsApp) with a photo if relevant. We'll either remake the order, deliver the missing item, or refund the affected portion — your choice.",
+          "Tell us within 24 hours (hello@atasteofaffys.com or WhatsApp) with a photo if relevant. We'll either remake the order, deliver the missing item, or refund the affected portion — your choice.",
         ],
       },
       {

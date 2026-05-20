@@ -50,7 +50,7 @@ const PAYMENT_DETAILS = {
 
 const WHATSAPP_HREF = "https://wa.me/351914145519";
 const WHATSAPP_DISPLAY = "+351 914 145 519";
-const SUPPORT_EMAIL = "hello@atasteofaffy.com";
+const SUPPORT_EMAIL = "hello@atasteofaffys.com";
 const UBER_EATS_HREF = "https://ubereats.com/"; // replace with real Affy's UE store URL
 
 const TAKEOUT_BAG_FEE = 1; // matches reference checkout idea

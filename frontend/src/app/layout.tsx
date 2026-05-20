@@ -26,7 +26,7 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://atasteofaffy.com"),
+  metadataBase: new URL("https://atasteofaffys.com"),
   title: {
     default: "Affy's — Modern Nigerian, made in Portugal",
     template: "%s · Affy's",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     title: "Affy's — Modern Nigerian, made in Portugal",
     description:
       "Bold, comforting, home-style Nigerian food in Portugal. Order with Udia or fill the quick form.",
-    url: "https://atasteofaffy.com",
+    url: "https://atasteofaffys.com",
     siteName: "Affy's",
     locale: "en_US",
     type: "website",

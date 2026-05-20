@@ -54,10 +54,10 @@ export default function LegalModal({ topic, onClose }: LegalModalProps) {
           <p className="mt-9 border-t border-border pt-6 text-sm text-foreground-subtle">
             Questions? Reach us at{" "}
             <a
-              href="mailto:hello@atasteofaffy.com"
+              href="mailto:hello@atasteofaffys.com"
               className="font-semibold text-espresso underline decoration-gold underline-offset-4"
             >
-              hello@atasteofaffy.com
+              hello@atasteofaffys.com
             </a>
             .
           </p>

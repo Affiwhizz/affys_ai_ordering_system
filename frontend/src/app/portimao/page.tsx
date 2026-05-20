@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Affy's in Portimão — preorder for the festival weekend",
     description: `${PORTIMAO.campaignWindow} · Praia da Rocha. Bowls from ${PORTIMAO.bowlPriceFrom}. Pickup or Uber Eats.`,
-    url: "https://atasteofaffy.com/portimao",
+    url: "https://atasteofaffys.com/portimao",
     type: "website",
   },
 };

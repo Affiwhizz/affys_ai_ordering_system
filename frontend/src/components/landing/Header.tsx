@@ -34,8 +34,8 @@ const NAV_ACTIONS: NavLink[] = [
 ];
 
 const NAV_EMAIL = {
-  href: "mailto:hello@atasteofaffy.com",
-  label: "hello@atasteofaffy.com",
+  href: "mailto:hello@atasteofaffys.com",
+  label: "hello@atasteofaffys.com",
 };
 
 interface SocialIcon {

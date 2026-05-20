@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -14,6 +14,7 @@ import {
   LogOut,
   ExternalLink,
 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 const NAV = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -28,6 +29,17 @@ const NAV = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+    } catch {
+      // ignore — still redirect
+    }
+    router.push("/admin/login");
+  };
 
   return (
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-border bg-espresso text-ivory lg:flex">
@@ -78,6 +90,7 @@ export default function Sidebar() {
         </Link>
         <button
           type="button"
+          onClick={handleSignOut}
           className="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-xs text-ivory/55 transition-colors hover:bg-ivory/5 hover:text-ivory"
         >
           <LogOut size={14} />

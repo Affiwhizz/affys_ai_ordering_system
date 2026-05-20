@@ -1,4 +1,5 @@
 import { Bell, Search } from "lucide-react";
+import AdminUserPill from "./AdminUserPill";
 
 interface TopbarProps {
   title: string;
@@ -37,16 +38,8 @@ export default function Topbar({ title, subtitle }: TopbarProps) {
             <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red" />
           </button>
 
-          {/* User pill */}
-          <div className="flex items-center gap-2.5 rounded-full border border-border bg-white py-1 pl-1 pr-3">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gold text-espresso text-xs font-bold">
-              AA
-            </span>
-            <div className="hidden flex-col leading-tight md:flex">
-              <span className="text-xs font-semibold text-espresso">Affiong</span>
-              <span className="text-[10px] uppercase tracking-wider text-foreground-subtle">Owner</span>
-            </div>
-          </div>
+          {/* User pill (self-fetches from Supabase) */}
+          <AdminUserPill />
         </div>
       </div>
     </header>

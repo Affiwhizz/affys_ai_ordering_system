@@ -1,6 +1,6 @@
 # Affy's — Setup & Deployment Guide
 
-A step-by-step guide for getting **atasteofaffy.com** from your laptop to a
+A step-by-step guide for getting **atasteofaffys.com** from your laptop to a
 live URL on the internet. Domain hookup is intentionally the last step
 since it's tied to ownership transfer.
 
@@ -51,7 +51,7 @@ message in the box at the bottom-left (e.g. "Add menu data"), click
 ## Step 2 — Create a Supabase project
 
 1. Go to https://supabase.com → **Start your project**.
-2. Sign up (use the same email you'll use everywhere — `hello@atasteofaffy.com`
+2. Sign up (use the same email you'll use everywhere — `hello@atasteofaffys.com`
    ideally).
 3. Click **New project**.
    - **Organization**: create one called `Affys`.
@@ -152,10 +152,10 @@ These hold uploaded receipts, food photos, and the hero video.
    NEXT_PUBLIC_SUPABASE_URL          = <paste your Supabase Project URL>
    NEXT_PUBLIC_SUPABASE_ANON_KEY     = <paste anon public key>
    SUPABASE_SERVICE_ROLE_KEY         = <paste service_role secret key>
-   NEXT_PUBLIC_SITE_URL              = https://atasteofaffy.com
+   NEXT_PUBLIC_SITE_URL              = https://atasteofaffys.com
    NEXT_PUBLIC_WHATSAPP_DISPLAY      = +351 914 145 519
    NEXT_PUBLIC_WHATSAPP_HREF         = https://wa.me/351914145519
-   NEXT_PUBLIC_SUPPORT_EMAIL         = hello@atasteofaffy.com
+   NEXT_PUBLIC_SUPPORT_EMAIL         = hello@atasteofaffys.com
    ```
 
    For each one, leave "Production, Preview, Development" all ticked.
@@ -189,10 +189,10 @@ Every time you push to GitHub, Vercel auto-deploys the new version
 
 ## Step 9 — Custom domain (do this after ownership transfer)
 
-When `atasteofaffy.com` is in your name:
+When `atasteofaffys.com` is in your name:
 
 1. In Vercel, your project → **Settings → Domains**.
-2. Type `atasteofaffy.com` → **Add**.
+2. Type `atasteofaffys.com` → **Add**.
 3. Vercel shows you DNS records to add at your domain registrar. Two
    things to add: an A record for the root (`@`) and a CNAME for `www`.
    The exact values appear on the Vercel page — copy them.
@@ -202,10 +202,55 @@ When `atasteofaffy.com` is in your name:
 5. Wait 5–30 minutes — Vercel verifies and switches over automatically.
    HTTPS is set up for free without you doing anything.
 
-That's it — `atasteofaffy.com` now points at the Vercel deployment, and
+That's it — `atasteofaffys.com` now points at the Vercel deployment, and
 you have HTTPS for free.
 
 ---
+
+## Step 9.5 — Configure Supabase Auth (for admin sign-in)
+
+The admin area (`/admin`) uses passwordless "magic link" sign-in. Two
+quick settings make it work:
+
+1. In Supabase → **Authentication → URL Configuration**:
+   - **Site URL**: set to your deployed URL. While testing on Vercel use
+     the `*.vercel.app` URL; switch to `https://atasteofaffys.com` after
+     the domain is connected.
+   - **Redirect URLs**: add both of these (one per line):
+     ```
+     https://YOUR-SITE.vercel.app/admin/auth/callback
+     https://atasteofaffys.com/admin/auth/callback
+     ```
+2. In Supabase → **Authentication → Providers → Email**: make sure
+   **Email** is enabled (it is by default). The free tier sends the magic
+   links for you. Later, for branded emails from `hello@atasteofaffys.com`,
+   we'll add custom SMTP — not needed to get started.
+
+## Step 9.6 — Make yourself the first admin (one-time)
+
+Because the admin is locked to registered staff, you bootstrap your own
+account once:
+
+1. Go to `https://YOUR-SITE.vercel.app/admin/login`.
+2. Enter your email → **Send sign-in link** → check your inbox → click the
+   link. You'll land back on the site, but the admin will bounce you to
+   the login page with "Not authorized" — that's expected (you're signed
+   in, but not yet on the staff list).
+3. In Supabase → **Authentication → Users** — you'll see your email listed
+   now. Click it and copy the **User UID** (a long id like
+   `a1b2c3d4-...`).
+4. In Supabase → **SQL Editor → New query**, run this (paste your real UID
+   and name):
+   ```sql
+   insert into staff_users (id, display_name, role)
+   values ('PASTE-YOUR-USER-UID-HERE', 'Affiong', 'owner');
+   ```
+5. Go back to `/admin/login`, sign in again with the same email → this
+   time you're in. You'll see the dashboard.
+
+To add staff later (kitchen helper, etc.): they sign in once, you grab
+their UID from Authentication → Users, and run the same insert with
+`'admin'` or `'kitchen'` as the role.
 
 ## Step 10 — Tell me when each step is done
 

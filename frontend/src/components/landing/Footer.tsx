@@ -26,7 +26,7 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
     title: "Help",
     links: [
       { label: "FAQ", href: "#" },
-      { label: "Contact us", href: "mailto:hello@atasteofaffy.com" },
+      { label: "Contact us", href: "mailto:hello@atasteofaffys.com" },
       { label: "Order status", href: "#" },
       { label: "Allergy notice", href: "#" },
       { label: "Refund policy", href: "#" },
@@ -98,10 +98,10 @@ export default function Footer() {
             <div className="mt-7">
               <p className="eyebrow text-gold">Say hello</p>
               <a
-                href="mailto:hello@atasteofaffy.com"
+                href="mailto:hello@atasteofaffys.com"
                 className="mt-2 inline-block text-sm text-ivory underline decoration-gold/40 underline-offset-4 transition-colors hover:decoration-gold"
               >
-                hello@atasteofaffy.com
+                hello@atasteofaffys.com
               </a>
             </div>
 
