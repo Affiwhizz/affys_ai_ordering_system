@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Mail, ArrowLeft, AlertTriangle, CheckCircle2 } from "lucide-react";
@@ -16,9 +16,26 @@ import { createClient } from "@/lib/supabase/client";
  *
  * The middleware further checks the user has an active staff_users row;
  * if not, it redirects back here with `?error=not-staff`.
+ *
+ * The form reads search params (?next, ?error), so it must be wrapped in a
+ * Suspense boundary — Next.js requires this for the production build.
  */
 
 export default function AdminLogin() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-cream">
+          <span className="text-sm text-foreground-muted">Loading…</span>
+        </div>
+      }
+    >
+      <AdminLoginForm />
+    </Suspense>
+  );
+}
+
+function AdminLoginForm() {
   const params = useSearchParams();
   const nextPath = params.get("next") ?? "/admin";
   const errorParam = params.get("error");

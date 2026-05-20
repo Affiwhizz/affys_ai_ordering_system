@@ -2,7 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 /**
- * Next.js middleware — runs on every request before the page renders.
+ * Next.js proxy — runs on every request before the page renders.
+ * (In Next.js 16 this replaces the old `middleware` file convention.)
  *
  * Two jobs:
  *  1. Refresh the Supabase auth session cookie so server components see a
@@ -10,14 +11,14 @@ import { createServerClient } from "@supabase/ssr";
  *  2. Gate /admin/* routes — only signed-in staff with an active staff_users
  *     row get through. Everyone else is redirected to /admin/login.
  *
- * To skip middleware on assets / Next.js internals, see the `matcher` config
+ * To skip this on assets / Next.js internals, see the `matcher` config
  * at the bottom.
  */
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
-  // Public env (NEXT_PUBLIC_*) is safe to use in middleware.
+  // Public env (NEXT_PUBLIC_*) is safe to use here.
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
