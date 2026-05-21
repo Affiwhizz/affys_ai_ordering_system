@@ -30,3 +30,52 @@ export async function setMenuItemAvailability(
     return { ok: false, error: e instanceof Error ? e.message : "Unknown error" };
   }
 }
+
+export interface UpdateMenuItemInput {
+  dbId: string;
+  name: string;
+  description: string;
+  variants: { id: string; price: number }[];
+}
+
+/**
+ * Edit a dish's name, description, and per-variant prices. Staff-authenticated
+ * so the menu_staff_write / menu_variants_staff_write RLS policies allow it.
+ * Refreshes the public menu so changes show immediately.
+ */
+export async function updateMenuItem(
+  input: UpdateMenuItemInput,
+): Promise<{ ok: boolean; error?: string }> {
+  const name = input.name.trim();
+  if (!name) return { ok: false, error: "Name can't be empty." };
+
+  for (const v of input.variants) {
+    if (!Number.isFinite(v.price) || v.price < 0) {
+      return { ok: false, error: "Prices must be zero or more." };
+    }
+  }
+
+  try {
+    const supabase = await createServerSupabase();
+
+    const { error: itemErr } = await supabase
+      .from("menu_items")
+      .update({ name, description: input.description.trim() } as never)
+      .eq("id", input.dbId);
+    if (itemErr) return { ok: false, error: itemErr.message };
+
+    for (const v of input.variants) {
+      const { error: vErr } = await supabase
+        .from("menu_variants")
+        .update({ price: v.price } as never)
+        .eq("id", v.id);
+      if (vErr) return { ok: false, error: vErr.message };
+    }
+
+    revalidatePath("/admin/menu");
+    revalidatePath("/menu");
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Unknown error" };
+  }
+}

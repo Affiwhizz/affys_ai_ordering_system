@@ -1,6 +1,7 @@
-import { ImageIcon, Pencil } from "lucide-react";
+import { ImageIcon } from "lucide-react";
 import Topbar from "@/components/admin/Topbar";
 import AvailabilityToggle from "@/components/admin/AvailabilityToggle";
+import MenuItemEditor from "@/components/admin/MenuItemEditor";
 import { getAdminMenu, type AdminMenuItem } from "@/lib/menu/get-menu";
 import { MENU_CATEGORIES } from "@/components/menu/menu-data";
 
@@ -136,15 +137,12 @@ export default async function MenuManagerPage() {
                             initial={m.isAvailable}
                             label={m.name}
                           />
-                          <button
-                            type="button"
-                            aria-label={`Edit ${m.name}`}
-                            title="Editing dishes is coming next"
-                            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-white text-foreground-subtle"
-                            disabled
-                          >
-                            <Pencil size={14} />
-                          </button>
+                          <MenuItemEditor
+                            dbId={m.dbId}
+                            name={m.name}
+                            description={m.description}
+                            variants={m.variantRows}
+                          />
                         </div>
                       </li>
                     ))}

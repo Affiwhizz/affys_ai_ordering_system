@@ -19,7 +19,7 @@ interface NavLink {
 }
 
 const NAV_PRIMARY: NavLink[] = [
-  { href: "/#menu", label: "Menu" },
+  { href: "/menu", label: "Menu" },
   { href: "/#catering", label: "Catering" },
   { href: "/portimao", label: "Portimão", hot: PORTIMAO_ACTIVE },
   { href: "/#story", label: "Our story" },

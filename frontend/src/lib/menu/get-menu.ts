@@ -42,11 +42,20 @@ interface ItemRow {
 }
 
 interface VariantRow {
+  id: string;
   size_label: string;
   serves_label: string | null;
   price: number | string;
   sort_order: number;
   is_available: boolean;
+}
+
+/** A variant with its db id, for admin editing. */
+export interface AdminVariant {
+  id: string;
+  size: string;
+  serves?: string;
+  price: number;
 }
 
 /** A menu item enriched with the fields the admin needs to manage it. */
@@ -55,21 +64,33 @@ export interface AdminMenuItem extends MenuItem {
   isAvailable: boolean;
   allergens: string[];
   imageUrl: string | null;
+  variantRows: AdminVariant[];
 }
 
 const SELECT =
   "id, slug, name, name_pt, description, category, monogram, gradient, allergens, is_available, sort_order, image_url, " +
-  "menu_variants ( size_label, serves_label, price, sort_order, is_available )";
+  "menu_variants ( id, size_label, serves_label, price, sort_order, is_available )";
 
 function mapRow(row: ItemRow, opts: { availableVariantsOnly: boolean }): AdminMenuItem {
-  const variants = (row.menu_variants ?? [])
+  const sortedVariants = (row.menu_variants ?? [])
     .filter((v) => (opts.availableVariantsOnly ? v.is_available : true))
-    .sort((a, b) => a.sort_order - b.sort_order)
-    .map((v) => ({
-      size: v.size_label,
-      serves: v.serves_label ?? undefined,
-      price: typeof v.price === "string" ? parseFloat(v.price) : v.price,
-    }));
+    .sort((a, b) => a.sort_order - b.sort_order);
+
+  const toPrice = (p: number | string) =>
+    typeof p === "string" ? parseFloat(p) : p;
+
+  const variants = sortedVariants.map((v) => ({
+    size: v.size_label,
+    serves: v.serves_label ?? undefined,
+    price: toPrice(v.price),
+  }));
+
+  const variantRows = sortedVariants.map((v) => ({
+    id: v.id,
+    size: v.size_label,
+    serves: v.serves_label ?? undefined,
+    price: toPrice(v.price),
+  }));
 
   return {
     id: row.slug,
@@ -79,6 +100,7 @@ function mapRow(row: ItemRow, opts: { availableVariantsOnly: boolean }): AdminMe
     description: row.description ?? "",
     category: row.category as MenuCategory,
     variants,
+    variantRows,
     monogram: row.monogram ?? row.name.charAt(0).toUpperCase(),
     gradient: row.gradient ?? "from-espresso to-espresso",
     isAvailable: row.is_available,
