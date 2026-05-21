@@ -39,10 +39,11 @@ function AdminLoginForm() {
   const params = useSearchParams();
   const nextPath = params.get("next") ?? "/admin";
   const errorParam = params.get("error");
-  // Some Supabase URL configs deliver the sign-in `code` here (to the Site
-  // URL) instead of the callback route. If we see one, hand it off to the
-  // callback so the session can actually be completed — this makes sign-in
-  // work regardless of how the redirect URLs are configured.
+  // Some Supabase URL configs deliver the sign-in `code` straight to the Site
+  // URL (here) rather than the callback route. When we see one, complete the
+  // sign-in right here — exactly once — then hard-redirect so the server picks
+  // up the new session cookie. detectSessionInUrl is disabled on the client so
+  // nothing else races us for this single-use code.
   const codeParam = params.get("code");
 
   const [email, setEmail] = useState("");
@@ -52,10 +53,22 @@ function AdminLoginForm() {
 
   useEffect(() => {
     if (!codeParam) return;
-    const target = `/admin/auth/callback?code=${encodeURIComponent(
-      codeParam,
-    )}&next=${encodeURIComponent(nextPath)}`;
-    window.location.replace(target);
+    let cancelled = false;
+    (async () => {
+      const supabase = createClient();
+      const { error: exchangeErr } =
+        await supabase.auth.exchangeCodeForSession(codeParam);
+      if (cancelled) return;
+      if (exchangeErr) {
+        window.location.replace("/admin/login?error=callback-failed");
+        return;
+      }
+      // Full reload so the server (proxy) sees the freshly-set session cookie.
+      window.location.replace(nextPath);
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [codeParam, nextPath]);
 
   if (codeParam) {

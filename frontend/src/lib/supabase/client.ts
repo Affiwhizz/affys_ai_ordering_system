@@ -19,5 +19,15 @@ export function createClient() {
   return createBrowserClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     SUPABASE_PUBLIC_KEY!,
+    {
+      auth: {
+        // Don't auto-exchange a `?code=` in the URL. The login page does this
+        // explicitly and exactly once — leaving it on caused multiple Supabase
+        // clients (e.g. the admin chrome) to race over the single-use code and
+        // loop the sign-in.
+        detectSessionInUrl: false,
+        flowType: "pkce",
+      },
+    },
   );
 }
