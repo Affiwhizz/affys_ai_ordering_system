@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useCart } from "@/components/cart/CartContext";
 import {
   MENU_CATEGORIES,
-  MENU_ITEMS,
   NORMAL_ORDERING_LOCKED,
   LOCK_MESSAGE,
   MIN_ORDER_NOTE,
@@ -24,16 +23,16 @@ import {
  * Add buttons are replaced with a "Locked during Portimão" notice.
  */
 
-export default function MenuView() {
+export default function MenuView({ items }: { items: MenuItem[] }) {
   const [activeCategory, setActiveCategory] = useState<MenuCategory>(MENU_CATEGORIES[0]);
 
   const itemsByCategory = useMemo(() => {
     const map = new Map<MenuCategory, MenuItem[]>();
     for (const c of MENU_CATEGORIES) {
-      map.set(c, MENU_ITEMS.filter((i) => i.category === c));
+      map.set(c, items.filter((i) => i.category === c));
     }
     return map;
-  }, []);
+  }, [items]);
 
   return (
     <>
