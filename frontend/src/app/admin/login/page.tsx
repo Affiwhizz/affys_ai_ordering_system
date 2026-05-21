@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Mail, ArrowLeft, AlertTriangle, CheckCircle2 } from "lucide-react";
@@ -39,11 +39,32 @@ function AdminLoginForm() {
   const params = useSearchParams();
   const nextPath = params.get("next") ?? "/admin";
   const errorParam = params.get("error");
+  // Some Supabase URL configs deliver the sign-in `code` here (to the Site
+  // URL) instead of the callback route. If we see one, hand it off to the
+  // callback so the session can actually be completed — this makes sign-in
+  // work regardless of how the redirect URLs are configured.
+  const codeParam = params.get("code");
 
   const [email, setEmail] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!codeParam) return;
+    const target = `/admin/auth/callback?code=${encodeURIComponent(
+      codeParam,
+    )}&next=${encodeURIComponent(nextPath)}`;
+    window.location.replace(target);
+  }, [codeParam, nextPath]);
+
+  if (codeParam) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-cream">
+        <span className="text-sm text-foreground-muted">Signing you in…</span>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
