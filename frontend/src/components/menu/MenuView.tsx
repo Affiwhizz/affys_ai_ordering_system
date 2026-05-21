@@ -9,7 +9,6 @@ import {
   NORMAL_ORDERING_LOCKED,
   LOCK_MESSAGE,
   MIN_ORDER_NOTE,
-  type MenuCategory,
   type MenuItem,
 } from "./menu-data";
 import DishDetailModal from "./DishDetailModal";
@@ -20,22 +19,43 @@ import DishDetailModal from "./DishDetailModal";
  * Each dish is a large visual tile (looping video or photo, with the name and
  * "starts from €…" over it). Tapping a tile opens the rich detail modal where
  * the customer sees photos, ingredients, spice level, portions, and adds to
- * the cart. A search box at the top filters across all categories.
+ * the cart. A search box at the top filters across all categories. Categories
+ * and their order come from the database (with the canonical list as fallback).
  */
 
-export default function MenuView({ items }: { items: MenuItem[] }) {
-  const [activeCategory, setActiveCategory] = useState<MenuCategory>(MENU_CATEGORIES[0]);
+export default function MenuView({
+  items,
+  categories,
+}: {
+  items: MenuItem[];
+  categories?: string[];
+}) {
+  // Categories to show, in order: prefer the DB list, fall back to canonical,
+  // and always include any category present on items but missing from the list.
+  const orderedCategories = useMemo(() => {
+    const base =
+      categories && categories.length > 0
+        ? categories
+        : (MENU_CATEGORIES as readonly string[]).slice();
+    const present = Array.from(new Set(items.map((i) => i.category)));
+    const extras = present.filter((c) => !base.includes(c));
+    return [...base, ...extras];
+  }, [categories, items]);
+
+  const [activeCategory, setActiveCategory] = useState<string>(
+    orderedCategories[0] ?? "",
+  );
   const [openItem, setOpenItem] = useState<MenuItem | null>(null);
   const [query, setQuery] = useState("");
   const q = query.trim().toLowerCase();
 
   const itemsByCategory = useMemo(() => {
-    const map = new Map<MenuCategory, MenuItem[]>();
-    for (const c of MENU_CATEGORIES) {
+    const map = new Map<string, MenuItem[]>();
+    for (const c of orderedCategories) {
       map.set(c, items.filter((i) => i.category === c));
     }
     return map;
-  }, [items]);
+  }, [items, orderedCategories]);
 
   const searchResults = useMemo(() => {
     if (!q) return [];
@@ -145,7 +165,7 @@ export default function MenuView({ items }: { items: MenuItem[] }) {
           >
             <div className="container-x">
               <div className="flex gap-2 overflow-x-auto py-3 md:py-4">
-                {MENU_CATEGORIES.map((c) => {
+                {orderedCategories.map((c) => {
                   const count = itemsByCategory.get(c)?.length ?? 0;
                   if (count === 0) return null;
                   const active = activeCategory === c;
@@ -177,7 +197,7 @@ export default function MenuView({ items }: { items: MenuItem[] }) {
 
           {/* Sections */}
           <div className="container-x py-12 md:py-16">
-            {MENU_CATEGORIES.map((c) => {
+            {orderedCategories.map((c) => {
               const catItems = itemsByCategory.get(c) ?? [];
               if (catItems.length === 0) return null;
               return (

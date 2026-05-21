@@ -3,7 +3,6 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import {
   MENU_ITEMS as BUNDLED_MENU,
   type MenuItem,
-  type MenuCategory,
 } from "@/components/menu/menu-data";
 
 /**
@@ -114,7 +113,7 @@ function mapRow(row: ItemRow, opts: { availableVariantsOnly: boolean }): AdminMe
     namePt: row.name_pt ?? undefined,
     description: row.description ?? "",
     longDescription: row.long_description ?? undefined,
-    category: row.category as MenuCategory,
+    category: row.category,
     variants,
     variantRows,
     monogram: row.monogram ?? row.name.charAt(0).toUpperCase(),
@@ -177,6 +176,36 @@ export async function getAdminMenu(): Promise<AdminMenuItem[]> {
 
     return (data as unknown as ItemRow[]).map((r) =>
       mapRow(r, { availableVariantsOnly: false }),
+    );
+  } catch {
+    return [];
+  }
+}
+
+export interface MenuCategoryRecord {
+  id: string;
+  name: string;
+  sortOrder: number;
+}
+
+/**
+ * Ordered list of categories from the menu_categories table. Used to order
+ * and group both the admin manager and the public menu. Returns [] on error
+ * (callers fall back to the canonical MENU_CATEGORIES list).
+ */
+export async function getCategories(): Promise<MenuCategoryRecord[]> {
+  try {
+    const supabase = await createServerSupabase();
+    const { data, error } = await supabase
+      .from("menu_categories")
+      .select("id, name, sort_order")
+      .order("sort_order", { ascending: true })
+      .order("name", { ascending: true });
+
+    if (error || !data) return [];
+
+    return (data as { id: string; name: string; sort_order: number }[]).map(
+      (c) => ({ id: c.id, name: c.name, sortOrder: c.sort_order }),
     );
   } catch {
     return [];

@@ -3,6 +3,21 @@
 import { revalidatePath } from "next/cache";
 import { createServerSupabase } from "@/lib/supabase/server";
 
+function slugify(s: string): string {
+  return (
+    s
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "") || "item"
+  );
+}
+
+function revalidateMenu() {
+  revalidatePath("/admin/menu");
+  revalidatePath("/menu");
+}
+
 /**
  * Toggle a dish on/off. Runs with the staff member's session, so the
  * menu_staff_write RLS policy authorises it. On success we revalidate both
@@ -50,6 +65,147 @@ export async function reorderMenuItems(
     }
     revalidatePath("/admin/menu");
     revalidatePath("/menu");
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Unknown error" };
+  }
+}
+
+/**
+ * Create a new category. Adds it to the end of the category order.
+ */
+export async function createCategory(
+  name: string,
+): Promise<{ ok: boolean; error?: string }> {
+  const clean = name.trim();
+  if (!clean) return { ok: false, error: "Category name can't be empty." };
+  try {
+    const supabase = await createServerSupabase();
+    const { data: maxRow } = await supabase
+      .from("menu_categories")
+      .select("sort_order")
+      .order("sort_order", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const nextOrder = ((maxRow as { sort_order: number } | null)?.sort_order ?? 0) + 1;
+
+    const { error } = await supabase
+      .from("menu_categories")
+      .insert({ name: clean, sort_order: nextOrder } as never);
+    if (error) {
+      if (error.code === "23505") return { ok: false, error: "That category already exists." };
+      return { ok: false, error: error.message };
+    }
+    revalidateMenu();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Unknown error" };
+  }
+}
+
+/** Persist a new category order (orderedIds top-to-bottom → sort_order). */
+export async function reorderCategories(
+  orderedIds: string[],
+): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const supabase = await createServerSupabase();
+    for (let i = 0; i < orderedIds.length; i++) {
+      const { error } = await supabase
+        .from("menu_categories")
+        .update({ sort_order: i } as never)
+        .eq("id", orderedIds[i]);
+      if (error) return { ok: false, error: error.message };
+    }
+    revalidateMenu();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Unknown error" };
+  }
+}
+
+export interface CreateMenuItemInput {
+  name: string;
+  category: string;
+  description: string;
+  variants: { size: string; price: number }[];
+}
+
+/**
+ * Create a new dish in a category, with one or more portions. Slug is
+ * auto-generated and de-duplicated. Goes to the end of its category.
+ */
+export async function createMenuItem(
+  input: CreateMenuItemInput,
+): Promise<{ ok: boolean; error?: string }> {
+  const name = input.name.trim();
+  const category = input.category.trim();
+  if (!name) return { ok: false, error: "Dish name can't be empty." };
+  if (!category) return { ok: false, error: "Pick a category." };
+  const variants = input.variants
+    .map((v) => ({ size: v.size.trim(), price: v.price }))
+    .filter((v) => v.size.length > 0 && Number.isFinite(v.price) && v.price >= 0);
+  if (variants.length === 0)
+    return { ok: false, error: "Add at least one portion with a price." };
+
+  try {
+    const supabase = await createServerSupabase();
+
+    // Unique slug
+    const base = slugify(name);
+    const { data: existingRows } = await supabase
+      .from("menu_items")
+      .select("slug")
+      .like("slug", `${base}%`);
+    const taken = new Set(
+      ((existingRows as { slug: string }[] | null) ?? []).map((r) => r.slug),
+    );
+    let slug = base;
+    if (taken.has(slug)) {
+      let n = 2;
+      while (taken.has(`${base}-${n}`)) n++;
+      slug = `${base}-${n}`;
+    }
+
+    // Position at the end of the category
+    const { data: maxRow } = await supabase
+      .from("menu_items")
+      .select("sort_order")
+      .eq("category", category)
+      .order("sort_order", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const nextOrder = ((maxRow as { sort_order: number } | null)?.sort_order ?? 0) + 1;
+
+    const { data: inserted, error: itemErr } = await supabase
+      .from("menu_items")
+      .insert({
+        slug,
+        name,
+        description: input.description.trim() || null,
+        category,
+        sort_order: nextOrder,
+        monogram: name.charAt(0).toUpperCase(),
+        is_available: true,
+      } as never)
+      .select("id")
+      .single();
+    if (itemErr) return { ok: false, error: itemErr.message };
+
+    const newId = (inserted as { id: string }).id;
+
+    const rows = variants.map((v, i) => ({
+      menu_item_id: newId,
+      size_label: v.size,
+      price: v.price,
+      sort_order: i,
+      is_available: true,
+    }));
+    const { error: vErr } = await supabase
+      .from("menu_variants")
+      .insert(rows as never);
+    if (vErr) return { ok: false, error: vErr.message };
+
+    revalidateMenu();
     return { ok: true };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "Unknown error" };

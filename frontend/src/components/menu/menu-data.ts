@@ -22,7 +22,9 @@ export interface MenuItem {
   name: string;
   namePt?: string;
   description: string;
-  category: MenuCategory;
+  // A category name. The original 11 are MENU_CATEGORIES, but staff can add
+  // new ones (e.g. "Combos") from the admin, so this is a free string.
+  category: string;
   variants: MenuVariant[];
   monogram: string;
   gradient: string;
