@@ -76,9 +76,9 @@ export const MENU_CATEGORIES: MenuCategory[] = [
 
 /** Standard variant sets that repeat across the menu. */
 const TRAY_SERVINGS = [
-  { size: "2L tray", serves: "Feeds 3–4" },
-  { size: "3L tray", serves: "Feeds 5" },
-  { size: "4L tray", serves: "Feeds 6–7" },
+  { size: "2 Litres", serves: "Feeds 3–4" },
+  { size: "3 Litres", serves: "Feeds 5" },
+  { size: "4 Litres", serves: "Feeds 6–7" },
 ];
 
 const PIECE_SERVINGS_5_10_15 = [

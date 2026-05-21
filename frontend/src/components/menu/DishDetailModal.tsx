@@ -138,17 +138,6 @@ export default function DishDetailModal({
               {item.longDescription || item.description}
             </p>
 
-            {/* Video */}
-            {item.videoUrl && (
-              <video
-                controls
-                playsInline
-                preload="metadata"
-                className="mt-4 w-full rounded-xl border border-border"
-                src={item.videoUrl}
-              />
-            )}
-
             {/* Ingredients */}
             {ingredients.length > 0 && (
               <div className="mt-5">
@@ -182,7 +171,7 @@ export default function DishDetailModal({
                         key={lvl}
                         type="button"
                         onClick={() => setSpice(lvl)}
-                        className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold capitalize transition-colors ${
+                        className={`flex flex-col items-center gap-1.5 rounded-xl border px-4 py-2.5 transition-colors ${
                           active
                             ? "border-red bg-red text-ivory"
                             : "border-border bg-white text-espresso hover:border-red"
@@ -192,7 +181,7 @@ export default function DishDetailModal({
                           {Array.from({ length: 4 }).map((_, i) => (
                             <Flame
                               key={i}
-                              size={11}
+                              size={13}
                               className={
                                 i < SPICE_HEAT[lvl]
                                   ? active
@@ -206,7 +195,7 @@ export default function DishDetailModal({
                             />
                           ))}
                         </span>
-                        {lvl}
+                        <span className="text-[11px] font-semibold capitalize">{lvl}</span>
                       </button>
                     );
                   })}

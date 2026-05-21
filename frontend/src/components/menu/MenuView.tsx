@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Lock, AlertCircle, ShoppingBag } from "lucide-react";
+import { Lock, Search, ShoppingBag, X } from "lucide-react";
 import Link from "next/link";
 import { useCart } from "@/components/cart/CartContext";
 import {
@@ -11,22 +11,23 @@ import {
   MIN_ORDER_NOTE,
   type MenuCategory,
   type MenuItem,
-  type MenuVariant,
 } from "./menu-data";
 import DishDetailModal from "./DishDetailModal";
 
 /**
- * Full daily ordering menu — all categories from Affy's PDF.
+ * Full daily ordering menu.
  *
- * Per category, dish cards show the monogram + name + description + a row
- * of variant pills (each pill = a portion size with price). Tapping a
- * variant adds it to the cart. When NORMAL_ORDERING_LOCKED is true, all
- * Add buttons are replaced with a "Locked during Portimão" notice.
+ * Each dish is a large visual tile (looping video or photo, with the name and
+ * "starts from €…" over it). Tapping a tile opens the rich detail modal where
+ * the customer sees photos, ingredients, spice level, portions, and adds to
+ * the cart. A search box at the top filters across all categories.
  */
 
 export default function MenuView({ items }: { items: MenuItem[] }) {
   const [activeCategory, setActiveCategory] = useState<MenuCategory>(MENU_CATEGORIES[0]);
   const [openItem, setOpenItem] = useState<MenuItem | null>(null);
+  const [query, setQuery] = useState("");
+  const q = query.trim().toLowerCase();
 
   const itemsByCategory = useMemo(() => {
     const map = new Map<MenuCategory, MenuItem[]>();
@@ -36,9 +37,20 @@ export default function MenuView({ items }: { items: MenuItem[] }) {
     return map;
   }, [items]);
 
+  const searchResults = useMemo(() => {
+    if (!q) return [];
+    return items.filter(
+      (it) =>
+        it.name.toLowerCase().includes(q) ||
+        (it.description ?? "").toLowerCase().includes(q) ||
+        (it.ingredients ?? []).some((ing) => ing.toLowerCase().includes(q)) ||
+        String(it.category).toLowerCase().includes(q),
+    );
+  }, [items, q]);
+
   return (
     <>
-      {/* Hero band */}
+      {/* Hero band + search */}
       <section className="relative overflow-hidden border-b border-border bg-cream">
         <div className="container-x relative py-12 md:py-16">
           <span className="eyebrow inline-flex items-center">
@@ -51,12 +63,35 @@ export default function MenuView({ items }: { items: MenuItem[] }) {
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-foreground-muted sm:text-lg">
             Rice dishes, stews, soups, traditional plates, sides and small chops —
-            all in 2L / 3L / 4L trays (or 5 / 10 / 15 pieces, depending on the
-            dish). Tap a portion to add it to your cart.
+            in 2, 3 and 4 litres (or by the piece, depending on the dish). Tap any
+            dish to see its photos, ingredients and spice options, and add it to
+            your order.
           </p>
-          <p className="mt-4 max-w-2xl text-xs text-foreground-subtle">
-            {MIN_ORDER_NOTE}
-          </p>
+
+          {/* Search */}
+          <div className="mt-6 flex max-w-md items-center gap-2 rounded-full border border-border bg-white px-4 py-2.5 shadow-sm focus-within:border-espresso">
+            <Search size={16} className="shrink-0 text-foreground-muted" />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search dishes or ingredients…"
+              className="flex-1 bg-transparent text-sm text-espresso placeholder:text-foreground-subtle focus:outline-none"
+              aria-label="Search the menu"
+            />
+            {query && (
+              <button
+                type="button"
+                aria-label="Clear search"
+                onClick={() => setQuery("")}
+                className="inline-flex h-6 w-6 items-center justify-center rounded-full text-foreground-muted hover:bg-cream"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+
+          <p className="mt-4 max-w-2xl text-xs text-foreground-subtle">{MIN_ORDER_NOTE}</p>
         </div>
       </section>
 
@@ -73,7 +108,7 @@ export default function MenuView({ items }: { items: MenuItem[] }) {
             </p>
             <Link
               href="/portimao"
-              className="inline-flex h-9 items-center rounded-full bg-espresso px-4 text-xs font-semibold text-ivory hover:bg-gold hover:text-espresso transition-colors"
+              className="inline-flex h-9 items-center rounded-full bg-espresso px-4 text-xs font-semibold text-ivory transition-colors hover:bg-gold hover:text-espresso"
             >
               See Portimão menu
             </Link>
@@ -81,75 +116,91 @@ export default function MenuView({ items }: { items: MenuItem[] }) {
         </div>
       )}
 
-      {/* Category nav (sticky) */}
-      <nav
-        aria-label="Menu categories"
-        className="sticky top-[76px] z-20 border-b border-border bg-white/95 backdrop-blur-md md:top-[88px]"
-      >
-        <div className="container-x">
-          <div className="flex gap-2 overflow-x-auto py-3 md:py-4">
+      {q ? (
+        /* ---------------- Search results ---------------- */
+        <div className="container-x py-12 md:py-16">
+          <h2 className="mb-6 font-display text-2xl font-medium tracking-tight text-espresso">
+            {searchResults.length} {searchResults.length === 1 ? "result" : "results"} for
+            &ldquo;{query}&rdquo;
+          </h2>
+          {searchResults.length === 0 ? (
+            <p className="text-sm text-foreground-muted">
+              No dishes match that. Try another word, or clear the search to browse
+              everything.
+            </p>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {searchResults.map((it) => (
+                <DishTile key={it.id} item={it} onOpen={() => setOpenItem(it)} />
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        <>
+          {/* Category nav (sticky) */}
+          <nav
+            aria-label="Menu categories"
+            className="sticky top-[76px] z-20 border-b border-border bg-white/95 backdrop-blur-md md:top-[88px]"
+          >
+            <div className="container-x">
+              <div className="flex gap-2 overflow-x-auto py-3 md:py-4">
+                {MENU_CATEGORIES.map((c) => {
+                  const count = itemsByCategory.get(c)?.length ?? 0;
+                  if (count === 0) return null;
+                  const active = activeCategory === c;
+                  return (
+                    <a
+                      key={c}
+                      href={`#cat-${slug(c)}`}
+                      onClick={() => setActiveCategory(c)}
+                      className={`inline-flex h-9 shrink-0 items-center gap-2 rounded-full border px-4 text-xs font-semibold uppercase tracking-wider transition-colors ${
+                        active
+                          ? "border-espresso bg-espresso text-ivory"
+                          : "border-border bg-white text-foreground-muted hover:border-espresso hover:text-espresso"
+                      }`}
+                    >
+                      {c}
+                      <span
+                        className={`rounded-full px-1.5 py-0.5 text-[10px] ${
+                          active ? "bg-gold text-espresso" : "bg-cream-deep text-foreground-muted"
+                        }`}
+                      >
+                        {count}
+                      </span>
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          </nav>
+
+          {/* Sections */}
+          <div className="container-x py-12 md:py-16">
             {MENU_CATEGORIES.map((c) => {
-              const count = itemsByCategory.get(c)?.length ?? 0;
-              const active = activeCategory === c;
+              const catItems = itemsByCategory.get(c) ?? [];
+              if (catItems.length === 0) return null;
               return (
-                <a
-                  key={c}
-                  href={`#cat-${slug(c)}`}
-                  onClick={() => setActiveCategory(c)}
-                  className={`inline-flex h-9 shrink-0 items-center gap-2 rounded-full border px-4 text-xs font-semibold uppercase tracking-wider transition-colors ${
-                    active
-                      ? "border-espresso bg-espresso text-ivory"
-                      : "border-border bg-white text-foreground-muted hover:border-espresso hover:text-espresso"
-                  }`}
-                >
-                  {c}
-                  <span
-                    className={`rounded-full px-1.5 py-0.5 text-[10px] ${
-                      active ? "bg-gold text-espresso" : "bg-cream-deep text-foreground-muted"
-                    }`}
-                  >
-                    {count}
-                  </span>
-                </a>
+                <section key={c} id={`cat-${slug(c)}`} className="mb-14 scroll-mt-[160px]">
+                  <div className="mb-6 flex items-baseline justify-between">
+                    <h2 className="font-display text-3xl font-medium tracking-tight text-espresso sm:text-4xl">
+                      {c}
+                    </h2>
+                    <span className="text-xs uppercase tracking-wider text-foreground-subtle">
+                      {catItems.length} {catItems.length === 1 ? "dish" : "dishes"}
+                    </span>
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {catItems.map((it) => (
+                      <DishTile key={it.id} item={it} onOpen={() => setOpenItem(it)} />
+                    ))}
+                  </div>
+                </section>
               );
             })}
           </div>
-        </div>
-      </nav>
-
-      {/* Sections */}
-      <div className="container-x py-12 md:py-16">
-        {MENU_CATEGORIES.map((c) => {
-          const items = itemsByCategory.get(c) ?? [];
-          if (items.length === 0) return null;
-          return (
-            <section
-              key={c}
-              id={`cat-${slug(c)}`}
-              className="mb-14 scroll-mt-[160px]"
-            >
-              <div className="mb-6 flex items-baseline justify-between">
-                <h2 className="font-display text-3xl font-medium tracking-tight text-espresso sm:text-4xl">
-                  {c}
-                </h2>
-                <span className="text-xs uppercase tracking-wider text-foreground-subtle">
-                  {items.length} {items.length === 1 ? "dish" : "dishes"}
-                </span>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                {items.map((it) => (
-                  <DishCard
-                    key={it.id}
-                    item={it}
-                    locked={NORMAL_ORDERING_LOCKED}
-                    onOpen={() => setOpenItem(it)}
-                  />
-                ))}
-              </div>
-            </section>
-          );
-        })}
-      </div>
+        </>
+      )}
 
       {/* Bottom CTA */}
       <section className="border-t border-border bg-cream/40">
@@ -177,127 +228,74 @@ export default function MenuView({ items }: { items: MenuItem[] }) {
 }
 
 // ===========================================================================
-// Dish card
+// Dish tile — large visual card (video / photo / gradient) that opens the modal
 // ===========================================================================
 
-function DishCard({
-  item,
-  locked,
-  onOpen,
-}: {
-  item: MenuItem;
-  locked: boolean;
-  onOpen: () => void;
-}) {
-  const { add } = useCart();
-  const [addedVariant, setAddedVariant] = useState<string | null>(null);
-  const thumb = item.images?.[0];
+function DishTile({ item, onOpen }: { item: MenuItem; onOpen: () => void }) {
+  const lowest =
+    item.variants.length > 0
+      ? Math.min(...item.variants.map((v) => v.price))
+      : null;
+  const video = item.videoUrl;
+  const img = item.images?.[0];
 
-  const handleAdd = (variant: MenuVariant) => {
-    if (locked) return;
-    add({
-      itemId: item.id,
-      name: item.name,
-      variant: variant.size,
-      price: variant.price,
-      channel: "normal",
-      thumbnail: { initial: item.monogram, gradient: item.gradient },
-    });
-    setAddedVariant(variant.size);
-    setTimeout(() => setAddedVariant(null), 1200);
-  };
+  const fmt = (n: number) => `€${n.toFixed(n % 1 === 0 ? 0 : 2)}`;
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-border bg-white transition-all hover:border-gold/50 hover:shadow-luxe">
-      {/* Clickable body → opens detail modal */}
-      <button
-        type="button"
-        onClick={onOpen}
-        className="flex w-full gap-4 p-5 text-left"
-      >
-        {/* Visual */}
-        {thumb ? (
-          <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={thumb.url}
-              alt={thumb.alt ?? item.name}
-              className="h-full w-full object-cover"
-            />
-          </div>
-        ) : (
-          <div
-            className={`flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${item.gradient}`}
-            aria-hidden
-          >
-            <span className="font-display text-3xl text-gold/85">{item.monogram}</span>
-          </div>
-        )}
-
-        {/* Copy */}
-        <div className="min-w-0 flex-1">
-          <h3 className="font-display text-lg font-semibold leading-tight text-espresso">
-            {item.name}
-          </h3>
-          {item.namePt && (
-            <p className="text-[11px] italic text-foreground-subtle">{item.namePt}</p>
-          )}
-          <p className="mt-1.5 text-sm leading-relaxed text-foreground-muted">
-            {item.description}
-          </p>
-          <span className="mt-1.5 inline-block text-[11px] font-semibold uppercase tracking-wider text-gold">
-            View &amp; order →
-          </span>
+    <button
+      type="button"
+      onClick={onOpen}
+      className="group relative block aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border bg-cream-deep text-left transition-shadow hover:shadow-luxe sm:aspect-[4/3]"
+    >
+      {/* Media */}
+      {video ? (
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster={img?.url}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          src={video}
+        />
+      ) : img ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={img.url}
+          alt={img.alt ?? item.name}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+      ) : (
+        <div
+          className={`absolute inset-0 flex items-center justify-center bg-gradient-to-br ${item.gradient}`}
+          aria-hidden
+        >
+          <span className="font-display text-6xl text-gold/85">{item.monogram}</span>
         </div>
-      </button>
+      )}
 
-      {/* Variants */}
-      <div className="border-t border-border bg-cream/40 px-5 py-4">
-        {locked ? (
-          <p className="flex items-center gap-2 text-[12px] text-foreground-muted">
-            <AlertCircle size={13} className="text-red" />
-            Daily ordering is paused — see the Portimão menu instead.
-          </p>
-        ) : (
-          <ul className="grid gap-2 sm:grid-cols-3">
-            {item.variants.map((v) => {
-              const just = addedVariant === v.size;
-              return (
-                <li key={v.size}>
-                  <button
-                    type="button"
-                    onClick={() => handleAdd(v)}
-                    className={`group flex w-full flex-col gap-0.5 rounded-xl border px-3 py-2 text-left transition-all ${
-                      just
-                        ? "border-forest bg-forest text-ivory"
-                        : "border-border bg-white hover:border-espresso hover:bg-espresso hover:text-ivory"
-                    }`}
-                  >
-                    <span className="text-[11px] font-semibold uppercase tracking-wider">
-                      {v.size}
-                    </span>
-                    {v.serves && (
-                      <span
-                        className={`text-[10px] ${just ? "text-ivory/80" : "text-foreground-muted group-hover:text-ivory/80"}`}
-                      >
-                        {v.serves}
-                      </span>
-                    )}
-                    <span
-                      className={`mt-1 font-display text-sm font-semibold ${
-                        just ? "text-gold" : "text-red group-hover:text-gold"
-                      }`}
-                    >
-                      {just ? "✓ Added" : `€${v.price.toFixed(v.price % 1 === 0 ? 0 : 2)}`}
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+      {/* Legibility overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-espresso/90 via-espresso/25 to-transparent" />
+
+      {/* Text */}
+      <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
+        <h3 className="font-display text-xl font-semibold leading-tight text-ivory drop-shadow-sm sm:text-2xl">
+          {item.name}
+        </h3>
+        {item.namePt && (
+          <p className="text-[11px] italic text-ivory/75">{item.namePt}</p>
         )}
+        {lowest !== null && (
+          <p className="mt-1 text-sm font-medium text-gold">
+            Starts from {fmt(lowest)}
+          </p>
+        )}
+        <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-gold px-3.5 py-1.5 text-xs font-semibold text-espresso opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
+          View &amp; order →
+        </span>
       </div>
-    </article>
+    </button>
   );
 }
 
