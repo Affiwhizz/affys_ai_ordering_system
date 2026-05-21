@@ -43,9 +43,17 @@ interface ItemRow {
 }
 
 interface ImageRow {
+  id: string;
   url: string;
   alt: string | null;
   sort_order: number;
+}
+
+/** An image with its db id, for admin management. */
+export interface AdminImage {
+  id: string;
+  url: string;
+  alt?: string;
 }
 
 interface VariantRow {
@@ -72,13 +80,14 @@ export interface AdminMenuItem extends MenuItem {
   allergens: string[];
   imageUrl: string | null;
   variantRows: AdminVariant[];
+  imageRows: AdminImage[];
 }
 
 const SELECT =
   "id, slug, name, name_pt, description, long_description, category, monogram, gradient, allergens, " +
   "ingredients, spice_levels, video_url, is_weekly_special, is_available, sort_order, image_url, " +
   "menu_variants ( id, size_label, serves_label, price, sort_order, is_available ), " +
-  "menu_images ( url, alt, sort_order )";
+  "menu_images ( id, url, alt, sort_order )";
 
 function mapRow(row: ItemRow, opts: { availableVariantsOnly: boolean }): AdminMenuItem {
   const sortedVariants = (row.menu_variants ?? [])
@@ -101,10 +110,15 @@ function mapRow(row: ItemRow, opts: { availableVariantsOnly: boolean }): AdminMe
     price: toPrice(v.price),
   }));
 
-  const images = (row.menu_images ?? [])
+  const sortedImages = (row.menu_images ?? [])
     .slice()
-    .sort((a, b) => a.sort_order - b.sort_order)
-    .map((im) => ({ url: im.url, alt: im.alt ?? undefined }));
+    .sort((a, b) => a.sort_order - b.sort_order);
+  const images = sortedImages.map((im) => ({ url: im.url, alt: im.alt ?? undefined }));
+  const imageRows = sortedImages.map((im) => ({
+    id: im.id,
+    url: im.url,
+    alt: im.alt ?? undefined,
+  }));
 
   return {
     id: row.slug,
@@ -122,6 +136,7 @@ function mapRow(row: ItemRow, opts: { availableVariantsOnly: boolean }): AdminMe
     spiceLevels: row.spice_levels ?? [],
     videoUrl: row.video_url ?? undefined,
     images,
+    imageRows,
     isWeeklySpecial: row.is_weekly_special ?? false,
     isAvailable: row.is_available,
     allergens: row.allergens ?? [],

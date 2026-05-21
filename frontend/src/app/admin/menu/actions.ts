@@ -123,6 +123,81 @@ export async function reorderCategories(
   }
 }
 
+/**
+ * Record an uploaded photo for a dish (the file itself is uploaded straight to
+ * Storage from the browser; here we just save the public URL). Appends to the
+ * end of the dish's gallery. Returns the new image id.
+ */
+export async function addDishImage(
+  dishId: string,
+  url: string,
+  alt?: string,
+): Promise<{ ok: boolean; id?: string; error?: string }> {
+  if (!url) return { ok: false, error: "Missing image URL." };
+  try {
+    const supabase = await createServerSupabase();
+    const { data: maxRow } = await supabase
+      .from("menu_images")
+      .select("sort_order")
+      .eq("menu_item_id", dishId)
+      .order("sort_order", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const nextOrder = ((maxRow as { sort_order: number } | null)?.sort_order ?? -1) + 1;
+
+    const { data, error } = await supabase
+      .from("menu_images")
+      .insert({
+        menu_item_id: dishId,
+        url,
+        alt: alt?.trim() || null,
+        sort_order: nextOrder,
+      } as never)
+      .select("id")
+      .single();
+    if (error) return { ok: false, error: error.message };
+
+    revalidateMenu();
+    return { ok: true, id: (data as { id: string }).id };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Unknown error" };
+  }
+}
+
+/** Remove a dish photo (deletes the gallery row; the Storage file is harmless if left). */
+export async function removeDishImage(
+  imageId: string,
+): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const supabase = await createServerSupabase();
+    const { error } = await supabase.from("menu_images").delete().eq("id", imageId);
+    if (error) return { ok: false, error: error.message };
+    revalidateMenu();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Unknown error" };
+  }
+}
+
+/** Set or clear a dish's video URL (pass null to remove). */
+export async function setDishVideo(
+  dishId: string,
+  url: string | null,
+): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const supabase = await createServerSupabase();
+    const { error } = await supabase
+      .from("menu_items")
+      .update({ video_url: url } as never)
+      .eq("id", dishId);
+    if (error) return { ok: false, error: error.message };
+    revalidateMenu();
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Unknown error" };
+  }
+}
+
 export interface CreateMenuItemInput {
   name: string;
   category: string;

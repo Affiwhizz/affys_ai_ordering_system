@@ -4,15 +4,15 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Pencil, X, Star } from "lucide-react";
 import { updateMenuItem } from "@/app/admin/menu/actions";
-import type { AdminVariant } from "@/lib/menu/get-menu";
+import type { AdminVariant, AdminImage } from "@/lib/menu/get-menu";
 import { SPICE_LEVELS } from "@/components/menu/menu-data";
+import DishMediaManager from "./DishMediaManager";
 
 /**
  * Pencil button + edit modal for a single dish. Edits name, description,
- * longer description, ingredients, spice levels, weekly-special flag, and
- * each variant's price, then saves via the updateMenuItem server action and
- * refreshes so changes show on the public menu. (Photo/video upload and
- * pairings come in later stages.)
+ * longer description, ingredients, spice levels, weekly-special flag, each
+ * variant's price, and the dish's photos + video. Text changes save via the
+ * updateMenuItem action; media saves immediately as it's uploaded.
  */
 export default function MenuItemEditor({
   dbId,
@@ -23,6 +23,8 @@ export default function MenuItemEditor({
   spiceLevels,
   isWeeklySpecial,
   variants,
+  images,
+  videoUrl,
 }: {
   dbId: string;
   name: string;
@@ -32,9 +34,12 @@ export default function MenuItemEditor({
   spiceLevels: string[];
   isWeeklySpecial: boolean;
   variants: AdminVariant[];
+  images: AdminImage[];
+  videoUrl?: string;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [mediaChanged, setMediaChanged] = useState(false);
   const [n, setN] = useState(name);
   const [d, setD] = useState(description);
   const [ld, setLd] = useState(longDescription);
@@ -56,7 +61,15 @@ export default function MenuItemEditor({
     setWeekly(isWeeklySpecial);
     setPrices(Object.fromEntries(variants.map((v) => [v.id, String(v.price)])));
     setErr(null);
+    setMediaChanged(false);
     setOpen(true);
+  };
+
+  // Close the modal; if photos/video changed, refresh so the list reflects it.
+  const closeModal = () => {
+    if (pending) return;
+    setOpen(false);
+    if (mediaChanged) router.refresh();
   };
 
   const toggleSpice = (lvl: string) =>
@@ -105,7 +118,7 @@ export default function MenuItemEditor({
           <button
             type="button"
             aria-label="Close"
-            onClick={() => !pending && setOpen(false)}
+            onClick={closeModal}
             className="absolute inset-0 bg-espresso/40 backdrop-blur-sm"
           />
           <div className="relative z-10 flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-luxe">
@@ -116,7 +129,7 @@ export default function MenuItemEditor({
               <button
                 type="button"
                 aria-label="Close"
-                onClick={() => !pending && setOpen(false)}
+                onClick={closeModal}
                 className="inline-flex h-8 w-8 items-center justify-center rounded-full text-foreground-muted hover:bg-cream"
               >
                 <X size={16} />
@@ -160,6 +173,16 @@ export default function MenuItemEditor({
                   className="mt-1 w-full rounded-lg border border-border bg-cream px-3 py-2 text-sm text-espresso focus:border-espresso focus:outline-none resize-none"
                 />
               </Field>
+
+              {/* Photos & video upload (saves immediately) */}
+              <div className="rounded-xl border border-border bg-cream/40 p-3">
+                <DishMediaManager
+                  dishId={dbId}
+                  initialImages={images}
+                  initialVideoUrl={videoUrl}
+                  onChange={() => setMediaChanged(true)}
+                />
+              </div>
 
               <Field label="Spice levels offered">
                 <div className="mt-1 flex flex-wrap gap-2">
@@ -235,7 +258,7 @@ export default function MenuItemEditor({
             <footer className="flex items-center justify-end gap-2 border-t border-border px-5 py-4">
               <button
                 type="button"
-                onClick={() => !pending && setOpen(false)}
+                onClick={closeModal}
                 className="inline-flex h-9 items-center rounded-full border border-border bg-white px-4 text-sm font-semibold text-espresso hover:border-espresso"
               >
                 Cancel

@@ -14,7 +14,7 @@ function signature(items: AdminMenuItem[]): string {
       (m) =>
         `${m.dbId}:${m.name}:${m.isAvailable}:${m.isWeeklySpecial}:${m.variantRows
           .map((v) => v.price)
-          .join("/")}`,
+          .join("/")}:imgs${m.imageRows.length}:vid${m.videoUrl ? 1 : 0}`,
     )
     .join("|");
 }

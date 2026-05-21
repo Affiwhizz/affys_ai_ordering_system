@@ -134,6 +134,8 @@ export default function AdminMenuCategory({
               spiceLevels={m.spiceLevels ?? []}
               isWeeklySpecial={m.isWeeklySpecial ?? false}
               variants={m.variantRows}
+              images={m.imageRows}
+              videoUrl={m.videoUrl}
             />
           </div>
         </li>
