@@ -31,6 +31,31 @@ export async function setMenuItemAvailability(
   }
 }
 
+/**
+ * Persist a new dish order within a category. `orderedIds` is the dish db ids
+ * in their new top-to-bottom order; we write sort_order = position. Staff RLS
+ * authorises it; revalidates the public menu so the order matches.
+ */
+export async function reorderMenuItems(
+  orderedIds: string[],
+): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const supabase = await createServerSupabase();
+    for (let i = 0; i < orderedIds.length; i++) {
+      const { error } = await supabase
+        .from("menu_items")
+        .update({ sort_order: i } as never)
+        .eq("id", orderedIds[i]);
+      if (error) return { ok: false, error: error.message };
+    }
+    revalidatePath("/admin/menu");
+    revalidatePath("/menu");
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Unknown error" };
+  }
+}
+
 export interface UpdateMenuItemInput {
   dbId: string;
   name: string;

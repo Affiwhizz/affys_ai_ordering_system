@@ -182,13 +182,10 @@ export default function MenuView({ items }: { items: MenuItem[] }) {
               if (catItems.length === 0) return null;
               return (
                 <section key={c} id={`cat-${slug(c)}`} className="mb-14 scroll-mt-[160px]">
-                  <div className="mb-6 flex items-baseline justify-between">
+                  <div className="mb-6">
                     <h2 className="font-display text-3xl font-medium tracking-tight text-espresso sm:text-4xl">
                       {c}
                     </h2>
-                    <span className="text-xs uppercase tracking-wider text-foreground-subtle">
-                      {catItems.length} {catItems.length === 1 ? "dish" : "dishes"}
-                    </span>
                   </div>
                   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {catItems.map((it) => (
