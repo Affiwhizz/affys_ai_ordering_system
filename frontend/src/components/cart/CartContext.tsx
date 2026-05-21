@@ -16,10 +16,11 @@ import {
  */
 
 export interface CartItem {
-  id: string;             // unique line id ("{itemId}::{variant}")
+  id: string;             // unique line id ("{itemId}::{variant}::{spice}")
   itemId: string;         // base menu item id (for grouping the same item)
   name: string;
   variant?: string;       // optional size/portion label
+  spice?: string;         // optional spice preference (mild/spicy/hot/extra)
   price: number;          // unit price
   qty: number;
   channel: "normal" | "portimao";
@@ -48,6 +49,7 @@ interface AddInput {
   itemId: string;
   name: string;
   variant?: string;
+  spice?: string;
   price: number;
   qty?: number;
   channel?: "normal" | "portimao";
@@ -58,8 +60,8 @@ const STORAGE_KEY = "affys.cart.v1";
 
 const CartContext = createContext<CartState | null>(null);
 
-function buildId(itemId: string, variant?: string) {
-  return variant ? `${itemId}::${variant}` : itemId;
+function buildId(itemId: string, variant?: string, spice?: string) {
+  return [itemId, variant ?? "", spice ?? ""].join("::");
 }
 
 function readPersisted(): CartItem[] {
@@ -108,7 +110,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items]);
 
   const add = useCallback((input: AddInput) => {
-    const id = buildId(input.itemId, input.variant);
+    const id = buildId(input.itemId, input.variant, input.spice);
     setItems((prev) => {
       const existing = prev.find((x) => x.id === id);
       if (existing) {
@@ -123,6 +125,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           itemId: input.itemId,
           name: input.name,
           variant: input.variant,
+          spice: input.spice,
           price: input.price,
           qty: input.qty ?? 1,
           channel: input.channel ?? "normal",

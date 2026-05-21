@@ -13,6 +13,7 @@ import {
   type MenuItem,
   type MenuVariant,
 } from "./menu-data";
+import DishDetailModal from "./DishDetailModal";
 
 /**
  * Full daily ordering menu — all categories from Affy's PDF.
@@ -25,6 +26,7 @@ import {
 
 export default function MenuView({ items }: { items: MenuItem[] }) {
   const [activeCategory, setActiveCategory] = useState<MenuCategory>(MENU_CATEGORIES[0]);
+  const [openItem, setOpenItem] = useState<MenuItem | null>(null);
 
   const itemsByCategory = useMemo(() => {
     const map = new Map<MenuCategory, MenuItem[]>();
@@ -136,7 +138,12 @@ export default function MenuView({ items }: { items: MenuItem[] }) {
               </div>
               <div className="grid gap-4 md:grid-cols-2">
                 {items.map((it) => (
-                  <DishCard key={it.id} item={it} locked={NORMAL_ORDERING_LOCKED} />
+                  <DishCard
+                    key={it.id}
+                    item={it}
+                    locked={NORMAL_ORDERING_LOCKED}
+                    onOpen={() => setOpenItem(it)}
+                  />
                 ))}
               </div>
             </section>
@@ -161,6 +168,10 @@ export default function MenuView({ items }: { items: MenuItem[] }) {
           <CartShortcut />
         </div>
       </section>
+
+      {openItem && (
+        <DishDetailModal item={openItem} onClose={() => setOpenItem(null)} />
+      )}
     </>
   );
 }
@@ -169,9 +180,18 @@ export default function MenuView({ items }: { items: MenuItem[] }) {
 // Dish card
 // ===========================================================================
 
-function DishCard({ item, locked }: { item: MenuItem; locked: boolean }) {
+function DishCard({
+  item,
+  locked,
+  onOpen,
+}: {
+  item: MenuItem;
+  locked: boolean;
+  onOpen: () => void;
+}) {
   const { add } = useCart();
   const [addedVariant, setAddedVariant] = useState<string | null>(null);
+  const thumb = item.images?.[0];
 
   const handleAdd = (variant: MenuVariant) => {
     if (locked) return;
@@ -189,14 +209,30 @@ function DishCard({ item, locked }: { item: MenuItem; locked: boolean }) {
 
   return (
     <article className="overflow-hidden rounded-2xl border border-border bg-white transition-all hover:border-gold/50 hover:shadow-luxe">
-      <div className="flex gap-4 p-5">
+      {/* Clickable body → opens detail modal */}
+      <button
+        type="button"
+        onClick={onOpen}
+        className="flex w-full gap-4 p-5 text-left"
+      >
         {/* Visual */}
-        <div
-          className={`flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${item.gradient}`}
-          aria-hidden
-        >
-          <span className="font-display text-3xl text-gold/85">{item.monogram}</span>
-        </div>
+        {thumb ? (
+          <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={thumb.url}
+              alt={thumb.alt ?? item.name}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        ) : (
+          <div
+            className={`flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${item.gradient}`}
+            aria-hidden
+          >
+            <span className="font-display text-3xl text-gold/85">{item.monogram}</span>
+          </div>
+        )}
 
         {/* Copy */}
         <div className="min-w-0 flex-1">
@@ -209,8 +245,11 @@ function DishCard({ item, locked }: { item: MenuItem; locked: boolean }) {
           <p className="mt-1.5 text-sm leading-relaxed text-foreground-muted">
             {item.description}
           </p>
+          <span className="mt-1.5 inline-block text-[11px] font-semibold uppercase tracking-wider text-gold">
+            View &amp; order →
+          </span>
         </div>
-      </div>
+      </button>
 
       {/* Variants */}
       <div className="border-t border-border bg-cream/40 px-5 py-4">

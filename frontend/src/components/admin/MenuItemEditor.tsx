@@ -2,30 +2,45 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Pencil, X } from "lucide-react";
+import { Pencil, X, Star } from "lucide-react";
 import { updateMenuItem } from "@/app/admin/menu/actions";
 import type { AdminVariant } from "@/lib/menu/get-menu";
+import { SPICE_LEVELS } from "@/components/menu/menu-data";
 
 /**
- * Pencil button + edit modal for a single dish. Lets staff change the name,
- * description, and each variant's price, then saves via the updateMenuItem
- * server action and refreshes so the change shows on the public menu.
+ * Pencil button + edit modal for a single dish. Edits name, description,
+ * longer description, ingredients, spice levels, weekly-special flag, and
+ * each variant's price, then saves via the updateMenuItem server action and
+ * refreshes so changes show on the public menu. (Photo/video upload and
+ * pairings come in later stages.)
  */
 export default function MenuItemEditor({
   dbId,
   name,
   description,
+  longDescription,
+  ingredients,
+  spiceLevels,
+  isWeeklySpecial,
   variants,
 }: {
   dbId: string;
   name: string;
   description: string;
+  longDescription: string;
+  ingredients: string[];
+  spiceLevels: string[];
+  isWeeklySpecial: boolean;
   variants: AdminVariant[];
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [n, setN] = useState(name);
   const [d, setD] = useState(description);
+  const [ld, setLd] = useState(longDescription);
+  const [ing, setIng] = useState(ingredients.join(", "));
+  const [spice, setSpice] = useState<string[]>(spiceLevels);
+  const [weekly, setWeekly] = useState(isWeeklySpecial);
   const [prices, setPrices] = useState<Record<string, string>>(() =>
     Object.fromEntries(variants.map((v) => [v.id, String(v.price)])),
   );
@@ -35,10 +50,19 @@ export default function MenuItemEditor({
   const openModal = () => {
     setN(name);
     setD(description);
+    setLd(longDescription);
+    setIng(ingredients.join(", "));
+    setSpice(spiceLevels);
+    setWeekly(isWeeklySpecial);
     setPrices(Object.fromEntries(variants.map((v) => [v.id, String(v.price)])));
     setErr(null);
     setOpen(true);
   };
+
+  const toggleSpice = (lvl: string) =>
+    setSpice((cur) =>
+      cur.includes(lvl) ? cur.filter((x) => x !== lvl) : [...cur, lvl],
+    );
 
   const save = () => {
     setErr(null);
@@ -47,6 +71,10 @@ export default function MenuItemEditor({
         dbId,
         name: n,
         description: d,
+        longDescription: ld,
+        ingredients: ing.split(/[,\n]/).map((s) => s.trim()).filter(Boolean),
+        spiceLevels: spice,
+        isWeeklySpecial: weekly,
         variants: variants.map((v) => ({
           id: v.id,
           price: parseFloat(prices[v.id] ?? "0") || 0,
@@ -74,15 +102,13 @@ export default function MenuItemEditor({
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Backdrop */}
           <button
             type="button"
             aria-label="Close"
             onClick={() => !pending && setOpen(false)}
             className="absolute inset-0 bg-espresso/40 backdrop-blur-sm"
           />
-          {/* Panel */}
-          <div className="relative z-10 w-full max-w-md overflow-hidden rounded-2xl border border-border bg-white shadow-luxe">
+          <div className="relative z-10 flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-luxe">
             <header className="flex items-center justify-between border-b border-border px-5 py-4">
               <h2 className="font-display text-base font-semibold text-espresso">
                 Edit dish
@@ -97,35 +123,72 @@ export default function MenuItemEditor({
               </button>
             </header>
 
-            <div className="space-y-4 px-5 py-5">
-              <div>
-                <label className="text-[10px] uppercase tracking-wider text-foreground-subtle">
-                  Name
-                </label>
+            <div className="space-y-4 overflow-y-auto px-5 py-5">
+              <Field label="Name">
                 <input
                   value={n}
                   onChange={(e) => setN(e.target.value)}
                   className="mt-1 w-full rounded-lg border border-border bg-cream px-3 py-2 text-sm text-espresso focus:border-espresso focus:outline-none"
                 />
-              </div>
+              </Field>
 
-              <div>
-                <label className="text-[10px] uppercase tracking-wider text-foreground-subtle">
-                  Description
-                </label>
+              <Field label="Short description (shown on the card)">
                 <textarea
                   value={d}
                   onChange={(e) => setD(e.target.value)}
-                  rows={3}
-                  className="mt-1 w-full resize-none rounded-lg border border-border bg-cream px-3 py-2 text-sm text-espresso focus:border-espresso focus:outline-none"
+                  rows={2}
+                  className="mt-1 w-full rounded-lg border border-border bg-cream px-3 py-2 text-sm text-espresso focus:border-espresso focus:outline-none resize-none"
                 />
-              </div>
+              </Field>
+
+              <Field label="Longer description (shown in the detail popup)">
+                <textarea
+                  value={ld}
+                  onChange={(e) => setLd(e.target.value)}
+                  rows={3}
+                  placeholder="A richer description for the dish detail view…"
+                  className="mt-1 w-full rounded-lg border border-border bg-cream px-3 py-2 text-sm text-espresso focus:border-espresso focus:outline-none resize-none"
+                />
+              </Field>
+
+              <Field label="Ingredients (separate with commas)">
+                <textarea
+                  value={ing}
+                  onChange={(e) => setIng(e.target.value)}
+                  rows={2}
+                  placeholder="e.g. rice, tomato, pepper, onion, chicken stock"
+                  className="mt-1 w-full rounded-lg border border-border bg-cream px-3 py-2 text-sm text-espresso focus:border-espresso focus:outline-none resize-none"
+                />
+              </Field>
+
+              <Field label="Spice levels offered">
+                <div className="mt-1 flex flex-wrap gap-2">
+                  {SPICE_LEVELS.map((lvl) => {
+                    const on = spice.includes(lvl);
+                    return (
+                      <button
+                        key={lvl}
+                        type="button"
+                        onClick={() => toggleSpice(lvl)}
+                        className={`rounded-full border px-3 py-1.5 text-xs font-semibold capitalize transition-colors ${
+                          on
+                            ? "border-red bg-red text-ivory"
+                            : "border-border bg-white text-espresso hover:border-red"
+                        }`}
+                      >
+                        {lvl}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="mt-1 text-[11px] text-foreground-subtle">
+                  Pick the levels that apply. None selected = no spice picker for
+                  this dish.
+                </p>
+              </Field>
 
               {variants.length > 0 && (
-                <div>
-                  <label className="text-[10px] uppercase tracking-wider text-foreground-subtle">
-                    Prices (€)
-                  </label>
+                <Field label="Prices (€)">
                   <div className="mt-1 space-y-2">
                     {variants.map((v) => (
                       <div key={v.id} className="flex items-center gap-3">
@@ -150,8 +213,21 @@ export default function MenuItemEditor({
                       </div>
                     ))}
                   </div>
-                </div>
+                </Field>
               )}
+
+              <label className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-border bg-cream/50 px-3 py-2.5">
+                <input
+                  type="checkbox"
+                  checked={weekly}
+                  onChange={(e) => setWeekly(e.target.checked)}
+                  className="h-4 w-4 accent-gold"
+                />
+                <span className="flex items-center gap-1.5 text-sm font-medium text-espresso">
+                  <Star size={14} className="text-gold" />
+                  Feature in this week&rsquo;s specials
+                </span>
+              </label>
 
               {err && <p className="text-xs text-red">{err}</p>}
             </div>
@@ -179,5 +255,16 @@ export default function MenuItemEditor({
         </div>
       )}
     </>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="text-[10px] uppercase tracking-wider text-foreground-subtle">
+        {label}
+      </label>
+      {children}
+    </div>
   );
 }

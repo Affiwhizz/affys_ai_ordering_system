@@ -20,21 +20,33 @@ import {
  *    item id so the admin can edit them.
  */
 
-// Shape of a menu_items row joined with its menu_variants.
+// Shape of a menu_items row joined with its menu_variants + menu_images.
 interface ItemRow {
   id: string;
   slug: string;
   name: string;
   name_pt: string | null;
   description: string | null;
+  long_description: string | null;
   category: string;
   monogram: string | null;
   gradient: string | null;
   allergens: string[] | null;
+  ingredients: string[] | null;
+  spice_levels: string[] | null;
+  video_url: string | null;
+  is_weekly_special: boolean | null;
   is_available: boolean;
   sort_order: number;
   image_url: string | null;
   menu_variants: VariantRow[] | null;
+  menu_images: ImageRow[] | null;
+}
+
+interface ImageRow {
+  url: string;
+  alt: string | null;
+  sort_order: number;
 }
 
 interface VariantRow {
@@ -64,8 +76,10 @@ export interface AdminMenuItem extends MenuItem {
 }
 
 const SELECT =
-  "id, slug, name, name_pt, description, category, monogram, gradient, allergens, is_available, sort_order, image_url, " +
-  "menu_variants ( id, size_label, serves_label, price, sort_order, is_available )";
+  "id, slug, name, name_pt, description, long_description, category, monogram, gradient, allergens, " +
+  "ingredients, spice_levels, video_url, is_weekly_special, is_available, sort_order, image_url, " +
+  "menu_variants ( id, size_label, serves_label, price, sort_order, is_available ), " +
+  "menu_images ( url, alt, sort_order )";
 
 function mapRow(row: ItemRow, opts: { availableVariantsOnly: boolean }): AdminMenuItem {
   const sortedVariants = (row.menu_variants ?? [])
@@ -88,17 +102,28 @@ function mapRow(row: ItemRow, opts: { availableVariantsOnly: boolean }): AdminMe
     price: toPrice(v.price),
   }));
 
+  const images = (row.menu_images ?? [])
+    .slice()
+    .sort((a, b) => a.sort_order - b.sort_order)
+    .map((im) => ({ url: im.url, alt: im.alt ?? undefined }));
+
   return {
     id: row.slug,
     dbId: row.id,
     name: row.name,
     namePt: row.name_pt ?? undefined,
     description: row.description ?? "",
+    longDescription: row.long_description ?? undefined,
     category: row.category as MenuCategory,
     variants,
     variantRows,
     monogram: row.monogram ?? row.name.charAt(0).toUpperCase(),
     gradient: row.gradient ?? "from-espresso to-espresso",
+    ingredients: row.ingredients ?? [],
+    spiceLevels: row.spice_levels ?? [],
+    videoUrl: row.video_url ?? undefined,
+    images,
+    isWeeklySpecial: row.is_weekly_special ?? false,
     isAvailable: row.is_available,
     allergens: row.allergens ?? [],
     imageUrl: row.image_url ?? null,

@@ -97,8 +97,13 @@ export default async function MenuManagerPage() {
                         {/* Main */}
                         <div className="min-w-0 flex-1">
                           <div className="flex items-baseline justify-between gap-2">
-                            <p className="font-display text-base font-semibold text-espresso">
+                            <p className="flex items-center gap-2 font-display text-base font-semibold text-espresso">
                               {m.name}
+                              {m.isWeeklySpecial && (
+                                <span className="rounded-full bg-gold/20 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-espresso">
+                                  ★ This week
+                                </span>
+                              )}
                             </p>
                             <span className="font-mono text-xs text-foreground-subtle">
                               {m.id}
@@ -141,6 +146,10 @@ export default async function MenuManagerPage() {
                             dbId={m.dbId}
                             name={m.name}
                             description={m.description}
+                            longDescription={m.longDescription ?? ""}
+                            ingredients={m.ingredients ?? []}
+                            spiceLevels={m.spiceLevels ?? []}
+                            isWeeklySpecial={m.isWeeklySpecial ?? false}
                             variants={m.variantRows}
                           />
                         </div>

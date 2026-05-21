@@ -12,6 +12,11 @@ export interface MenuVariant {
   price: number;
 }
 
+export interface DishImage {
+  url: string;
+  alt?: string;
+}
+
 export interface MenuItem {
   id: string;
   name: string;
@@ -21,7 +26,26 @@ export interface MenuItem {
   variants: MenuVariant[];
   monogram: string;
   gradient: string;
+  /** Rich fields (optional — populated from the database when present). */
+  longDescription?: string;
+  ingredients?: string[];
+  spiceLevels?: string[];
+  videoUrl?: string;
+  images?: DishImage[];
+  isWeeklySpecial?: boolean;
 }
+
+/** The spice levels Affy offers (preference only — no price change). */
+export const SPICE_LEVELS = ["mild", "spicy", "hot", "extra"] as const;
+export type SpiceLevel = (typeof SPICE_LEVELS)[number];
+
+/** Heat dots (filled count) for each level — for the spice-picker visual. */
+export const SPICE_HEAT: Record<SpiceLevel, number> = {
+  mild: 1,
+  spicy: 2,
+  hot: 3,
+  extra: 4,
+};
 
 export type MenuCategory =
   | "Rice dishes"

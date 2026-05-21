@@ -35,6 +35,10 @@ export interface UpdateMenuItemInput {
   dbId: string;
   name: string;
   description: string;
+  longDescription: string;
+  ingredients: string[];
+  spiceLevels: string[];
+  isWeeklySpecial: boolean;
   variants: { id: string; price: number }[];
 }
 
@@ -58,9 +62,23 @@ export async function updateMenuItem(
   try {
     const supabase = await createServerSupabase();
 
+    const cleanIngredients = input.ingredients
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+    const cleanSpice = input.spiceLevels
+      .map((s) => s.trim().toLowerCase())
+      .filter((s) => s.length > 0);
+
     const { error: itemErr } = await supabase
       .from("menu_items")
-      .update({ name, description: input.description.trim() } as never)
+      .update({
+        name,
+        description: input.description.trim(),
+        long_description: input.longDescription.trim() || null,
+        ingredients: cleanIngredients,
+        spice_levels: cleanSpice,
+        is_weekly_special: input.isWeeklySpecial,
+      } as never)
       .eq("id", input.dbId);
     if (itemErr) return { ok: false, error: itemErr.message };
 
