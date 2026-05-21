@@ -117,7 +117,9 @@ export async function getPublicMenu(): Promise<MenuItem[]> {
       .from("menu_items")
       .select(SELECT)
       .eq("is_available", true)
-      .order("sort_order", { ascending: true });
+      .order("sort_order", { ascending: true })
+      // Stable tiebreaker so editing a row never reshuffles the list.
+      .order("created_at", { ascending: true });
 
     if (error || !data || data.length === 0) return BUNDLED_MENU;
 
@@ -142,7 +144,9 @@ export async function getAdminMenu(): Promise<AdminMenuItem[]> {
       .from("menu_items")
       .select(SELECT)
       .order("category", { ascending: true })
-      .order("sort_order", { ascending: true });
+      .order("sort_order", { ascending: true })
+      // Stable tiebreaker so toggling a dish never reshuffles the list.
+      .order("created_at", { ascending: true });
 
     if (error || !data) return [];
 
