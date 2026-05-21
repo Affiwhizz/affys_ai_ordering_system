@@ -1,5 +1,4 @@
 import "server-only";
-import { createClient as createSupabaseJsClient } from "@supabase/supabase-js";
 import { createServerSupabase } from "@/lib/supabase/server";
 import {
   MENU_ITEMS as BUNDLED_MENU,
@@ -7,16 +6,13 @@ import {
   type MenuCategory,
 } from "@/components/menu/menu-data";
 
-// Browser-safe key — Supabase renamed "anon key" to "publishable key", so we
-// accept either env var name.
-const SUPABASE_PUBLIC_KEY =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-
 /**
  * Server-side menu reads from Supabase.
  *
- *  - getPublicMenu(): read-only, available items only, anon key, NO cookies.
+ *  - getPublicMenu(): read-only, available items only. Uses the same SSR
+ *    client as the admin (proven to work with the publishable key); an
+ *    anonymous visitor has no session, so RLS naturally returns only public
+ *    rows, and we additionally filter to is_available items.
  *    Falls back to the bundled menu if Supabase is unreachable / empty, so the
  *    public storefront can never break.
  *  - getAdminMenu(): authenticated staff read (via the request's session
@@ -115,14 +111,8 @@ function mapRow(row: ItemRow, opts: { availableVariantsOnly: boolean }): AdminMe
  * bundled menu on any failure.
  */
 export async function getPublicMenu(): Promise<MenuItem[]> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = SUPABASE_PUBLIC_KEY;
-  if (!url || !key) return BUNDLED_MENU;
-
   try {
-    const supabase = createSupabaseJsClient(url, key, {
-      auth: { persistSession: false },
-    });
+    const supabase = await createServerSupabase();
     const { data, error } = await supabase
       .from("menu_items")
       .select(SELECT)

@@ -11,9 +11,10 @@ export const metadata: Metadata = {
     "Affy's full daily ordering menu — Nigerian rice dishes, stews, soups, peppersoups, traditional dishes, sides, protein, swallows, and pastries.",
 };
 
-// Re-generate the page at most once a minute; admin edits also trigger an
-// on-demand refresh via revalidatePath("/menu").
-export const revalidate = 60;
+// Always render fresh from the database so admin edits (prices, names,
+// availability) show up immediately. One small query per visit — fine for a
+// menu, and removes any caching ambiguity.
+export const dynamic = "force-dynamic";
 
 export default async function MenuPage() {
   const items = await getPublicMenu();
