@@ -113,8 +113,10 @@ function AdminLoginForm() {
               </div>
             )}
 
-            {/* Error from proxy (Supabase not configured / auth failure) */}
-            {(errorParam === "not-configured" || errorParam === "auth-error") && (
+            {/* Error from proxy / callback (config, auth, or code-exchange failure) */}
+            {(errorParam === "not-configured" ||
+              errorParam === "auth-error" ||
+              errorParam === "callback-failed") && (
               <div className="mt-5 flex items-start gap-3 rounded-xl border border-red/30 bg-red/5 p-4">
                 <AlertTriangle size={16} className="mt-0.5 shrink-0 text-red" />
                 <div className="text-sm">
@@ -122,7 +124,9 @@ function AdminLoginForm() {
                   <p className="mt-0.5 text-foreground-muted">
                     {errorParam === "not-configured"
                       ? "The admin isn’t connected to its database yet. Check that the Supabase keys are set in the hosting environment."
-                      : "We couldn’t reach the sign-in service just now. Please try again in a moment."}
+                      : errorParam === "callback-failed"
+                        ? "That sign-in link couldn’t be completed — it may have expired or already been used. Please request a fresh link below, and open it in this same browser."
+                        : "We couldn’t reach the sign-in service just now. Please try again in a moment."}
                   </p>
                 </div>
               </div>
