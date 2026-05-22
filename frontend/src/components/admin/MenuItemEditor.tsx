@@ -26,6 +26,8 @@ export default function MenuItemEditor({
   variants,
   images,
   videoUrl,
+  pairings,
+  allDishes,
 }: {
   dbId: string;
   name: string;
@@ -38,6 +40,8 @@ export default function MenuItemEditor({
   variants: AdminVariant[];
   images: AdminImage[];
   videoUrl?: string;
+  pairings: string[];
+  allDishes: { dbId: string; name: string }[];
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -49,6 +53,8 @@ export default function MenuItemEditor({
   const [spice, setSpice] = useState<string[]>(spiceLevels);
   const [weekly, setWeekly] = useState(isWeeklySpecial);
   const [featured, setFeatured] = useState(isFeatured);
+  const [pairs, setPairs] = useState<string[]>(pairings);
+  const [pairQuery, setPairQuery] = useState("");
   const [prices, setPrices] = useState<Record<string, string>>(() =>
     Object.fromEntries(variants.map((v) => [v.id, String(v.price)])),
   );
@@ -63,11 +69,16 @@ export default function MenuItemEditor({
     setSpice(spiceLevels);
     setWeekly(isWeeklySpecial);
     setFeatured(isFeatured);
+    setPairs(pairings);
+    setPairQuery("");
     setPrices(Object.fromEntries(variants.map((v) => [v.id, String(v.price)])));
     setErr(null);
     setMediaChanged(false);
     setOpen(true);
   };
+
+  const togglePair = (id: string) =>
+    setPairs((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]));
 
   // Close the modal; if photos/video changed, refresh so the list reflects it.
   const closeModal = () => {
@@ -93,6 +104,7 @@ export default function MenuItemEditor({
         spiceLevels: spice,
         isWeeklySpecial: weekly,
         isFeatured: featured,
+        pairings: pairs,
         variants: variants.map((v) => ({
           id: v.id,
           price: parseFloat(prices[v.id] ?? "0") || 0,
@@ -212,6 +224,45 @@ export default function MenuItemEditor({
                 <p className="mt-1 text-[11px] text-foreground-subtle">
                   Pick the levels that apply. None selected = no spice picker for
                   this dish.
+                </p>
+              </Field>
+
+              <Field label={`Pairs well with${pairs.length ? ` (${pairs.length})` : ""}`}>
+                <input
+                  value={pairQuery}
+                  onChange={(e) => setPairQuery(e.target.value)}
+                  placeholder="Search dishes to pair…"
+                  className="mt-1 w-full rounded-lg border border-border bg-cream px-3 py-2 text-sm text-espresso focus:border-espresso focus:outline-none"
+                />
+                <div className="mt-2 max-h-44 space-y-1 overflow-y-auto rounded-lg border border-border p-1.5">
+                  {allDishes
+                    .filter((dish) => dish.dbId !== dbId)
+                    .filter((dish) =>
+                      dish.name.toLowerCase().includes(pairQuery.trim().toLowerCase()),
+                    )
+                    .map((dish) => {
+                      const on = pairs.includes(dish.dbId);
+                      return (
+                        <label
+                          key={dish.dbId}
+                          className={`flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm ${
+                            on ? "bg-gold/15 text-espresso" : "text-foreground-muted hover:bg-cream"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={on}
+                            onChange={() => togglePair(dish.dbId)}
+                            className="h-3.5 w-3.5 accent-gold"
+                          />
+                          {dish.name}
+                        </label>
+                      );
+                    })}
+                </div>
+                <p className="mt-1 text-[11px] text-foreground-subtle">
+                  These show as &ldquo;Pairs well with&rdquo; suggestions in the dish
+                  popup, nudging bigger orders.
                 </p>
               </Field>
 

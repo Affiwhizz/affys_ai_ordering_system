@@ -143,7 +143,37 @@ function mapRow(row: ItemRow, opts: { availableVariantsOnly: boolean }): AdminMe
     isAvailable: row.is_available,
     allergens: row.allergens ?? [],
     imageUrl: row.image_url ?? null,
+    pairingIds: [],
   };
+}
+
+/**
+ * Map of dish dbId -> paired dish dbIds, fetched separately so a pairings
+ * problem can never break the main menu read. Returns an empty map on error.
+ */
+async function fetchPairingsMap(
+  supabase: Awaited<ReturnType<typeof createServerSupabase>>,
+): Promise<Map<string, string[]>> {
+  const map = new Map<string, string[]>();
+  try {
+    const { data, error } = await supabase
+      .from("menu_pairings")
+      .select("menu_item_id, paired_item_id, sort_order")
+      .order("sort_order", { ascending: true });
+    if (error || !data) return map;
+    for (const r of data as {
+      menu_item_id: string;
+      paired_item_id: string;
+      sort_order: number;
+    }[]) {
+      const arr = map.get(r.menu_item_id) ?? [];
+      arr.push(r.paired_item_id);
+      map.set(r.menu_item_id, arr);
+    }
+  } catch {
+    // ignore — return whatever we have
+  }
+  return map;
 }
 
 /**
@@ -164,9 +194,12 @@ export async function getPublicMenu(): Promise<MenuItem[]> {
 
     if (error || !data || data.length === 0) return BUNDLED_MENU;
 
-    return (data as unknown as ItemRow[]).map((r) =>
+    const items = (data as unknown as ItemRow[]).map((r) =>
       mapRow(r, { availableVariantsOnly: true }),
     );
+    const pairings = await fetchPairingsMap(supabase);
+    for (const it of items) it.pairingIds = pairings.get(it.dbId) ?? [];
+    return items;
   } catch {
     return BUNDLED_MENU;
   }
@@ -191,9 +224,12 @@ export async function getAdminMenu(): Promise<AdminMenuItem[]> {
 
     if (error || !data) return [];
 
-    return (data as unknown as ItemRow[]).map((r) =>
+    const items = (data as unknown as ItemRow[]).map((r) =>
       mapRow(r, { availableVariantsOnly: false }),
     );
+    const pairings = await fetchPairingsMap(supabase);
+    for (const it of items) it.pairingIds = pairings.get(it.dbId) ?? [];
+    return items;
   } catch {
     return [];
   }

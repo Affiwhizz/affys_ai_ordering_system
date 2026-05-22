@@ -57,6 +57,20 @@ export default function MenuView({
     return map;
   }, [items, orderedCategories]);
 
+  // Lookup for resolving "pairs well with" ids → dishes.
+  const byDbId = useMemo(() => {
+    const map = new Map<string, MenuItem>();
+    for (const it of items) if (it.dbId) map.set(it.dbId, it);
+    return map;
+  }, [items]);
+
+  const openItemPairings = useMemo(() => {
+    if (!openItem) return [];
+    return (openItem.pairingIds ?? [])
+      .map((id) => byDbId.get(id))
+      .filter((x): x is MenuItem => Boolean(x));
+  }, [openItem, byDbId]);
+
   const searchResults = useMemo(() => {
     if (!q) return [];
     return items.filter(
@@ -238,7 +252,12 @@ export default function MenuView({
       </section>
 
       {openItem && (
-        <DishDetailModal item={openItem} onClose={() => setOpenItem(null)} />
+        <DishDetailModal
+          item={openItem}
+          onClose={() => setOpenItem(null)}
+          pairings={openItemPairings}
+          onOpenPaired={(it) => setOpenItem(it)}
+        />
       )}
     </>
   );

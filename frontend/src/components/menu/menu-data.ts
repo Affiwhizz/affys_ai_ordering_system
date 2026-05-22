@@ -36,6 +36,10 @@ export interface MenuItem {
   images?: DishImage[];
   isWeeklySpecial?: boolean;
   isFeatured?: boolean;
+  /** DB uuid of this dish (used to match pairings). */
+  dbId?: string;
+  /** DB uuids of dishes that pair well with this one. */
+  pairingIds?: string[];
 }
 
 /** The spice levels Affy offers (preference only — no price change). */

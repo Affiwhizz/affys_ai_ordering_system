@@ -14,7 +14,7 @@ function signature(items: AdminMenuItem[]): string {
       (m) =>
         `${m.dbId}:${m.name}:${m.isAvailable}:${m.isWeeklySpecial}:${m.isFeatured}:${m.variantRows
           .map((v) => v.price)
-          .join("/")}:imgs${m.imageRows.length}:vid${m.videoUrl ? 1 : 0}`,
+          .join("/")}:imgs${m.imageRows.length}:vid${m.videoUrl ? 1 : 0}:pair${(m.pairingIds ?? []).join(",")}`,
     )
     .join("|");
 }
@@ -41,6 +41,7 @@ export default function AdminMenuManager({
 
   const byCategory = (name: string) => items.filter((m) => m.category === name);
   const categoryNames = cats.map((c) => c.name);
+  const allDishes = items.map((m) => ({ dbId: m.dbId, name: m.name }));
 
   const handleCatDragOver = (overId: string) => {
     if (!catDragId || catDragId === overId) return;
@@ -140,7 +141,11 @@ export default function AdminMenuManager({
                 </span>
               </header>
 
-              <AdminMenuCategory key={signature(catItems)} items={catItems} />
+              <AdminMenuCategory
+                key={signature(catItems)}
+                items={catItems}
+                allDishes={allDishes}
+              />
             </section>
           );
         })}

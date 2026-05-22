@@ -19,8 +19,10 @@ function fmtCurrency(n: number): string {
  */
 export default function AdminMenuCategory({
   items: initial,
+  allDishes,
 }: {
   items: AdminMenuItem[];
+  allDishes: { dbId: string; name: string }[];
 }) {
   const [items, setItems] = useState(initial);
   const [dragId, setDragId] = useState<string | null>(null);
@@ -137,6 +139,8 @@ export default function AdminMenuCategory({
               variants={m.variantRows}
               images={m.imageRows}
               videoUrl={m.videoUrl}
+              pairings={m.pairingIds ?? []}
+              allDishes={allDishes}
             />
           </div>
         </li>

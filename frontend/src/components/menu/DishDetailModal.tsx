@@ -22,9 +22,13 @@ import {
 export default function DishDetailModal({
   item,
   onClose,
+  pairings,
+  onOpenPaired,
 }: {
   item: MenuItem;
   onClose: () => void;
+  pairings?: MenuItem[];
+  onOpenPaired?: (item: MenuItem) => void;
 }) {
   const { add } = useCart();
 
@@ -237,6 +241,59 @@ export default function DishDetailModal({
                           className={`mt-0.5 font-display text-sm font-semibold ${active ? "text-gold" : "text-red"}`}
                         >
                           {fmt(v.price)}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Pairs well with */}
+            {pairings && pairings.length > 0 && (
+              <div className="mt-6 border-t border-border pt-5">
+                <h3 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground-subtle">
+                  Pairs well with
+                </h3>
+                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                  {pairings.map((p) => {
+                    const lo =
+                      p.variants.length > 0
+                        ? Math.min(...p.variants.map((v) => v.price))
+                        : null;
+                    const pimg = p.images?.[0];
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => onOpenPaired?.(p)}
+                        className="group flex items-center gap-3 rounded-xl border border-border p-2 text-left transition-colors hover:border-gold"
+                      >
+                        {pimg ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={pimg.url}
+                            alt={pimg.alt ?? p.name}
+                            className="h-12 w-12 shrink-0 rounded-lg object-cover"
+                          />
+                        ) : (
+                          <span
+                            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${p.gradient}`}
+                          >
+                            <span className="font-display text-lg text-gold/85">
+                              {p.monogram}
+                            </span>
+                          </span>
+                        )}
+                        <span className="min-w-0">
+                          <span className="block truncate text-sm font-semibold text-espresso">
+                            {p.name}
+                          </span>
+                          {lo !== null && (
+                            <span className="text-xs font-medium text-red">
+                              Add from {fmt(lo)}
+                            </span>
+                          )}
                         </span>
                       </button>
                     );

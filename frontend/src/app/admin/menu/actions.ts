@@ -296,6 +296,8 @@ export interface UpdateMenuItemInput {
   isWeeklySpecial: boolean;
   isFeatured: boolean;
   variants: { id: string; price: number }[];
+  /** dbIds of dishes this one pairs well with. */
+  pairings: string[];
 }
 
 /**
@@ -345,6 +347,22 @@ export async function updateMenuItem(
         .update({ price: v.price } as never)
         .eq("id", v.id);
       if (vErr) return { ok: false, error: vErr.message };
+    }
+
+    // Replace pairings: clear existing, then insert the chosen ones (no self).
+    await supabase.from("menu_pairings").delete().eq("menu_item_id", input.dbId);
+    const pairRows = input.pairings
+      .filter((id) => id && id !== input.dbId)
+      .map((id, i) => ({
+        menu_item_id: input.dbId,
+        paired_item_id: id,
+        sort_order: i,
+      }));
+    if (pairRows.length > 0) {
+      const { error: pErr } = await supabase
+        .from("menu_pairings")
+        .insert(pairRows as never);
+      if (pErr) return { ok: false, error: pErr.message };
     }
 
     revalidateMenu();
