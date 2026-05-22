@@ -35,6 +35,7 @@ export interface MenuItem {
   videoUrl?: string;
   images?: DishImage[];
   isWeeklySpecial?: boolean;
+  isFeatured?: boolean;
 }
 
 /** The spice levels Affy offers (preference only — no price change). */

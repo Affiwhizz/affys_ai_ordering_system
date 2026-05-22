@@ -133,6 +133,7 @@ export default function AdminMenuCategory({
               ingredients={m.ingredients ?? []}
               spiceLevels={m.spiceLevels ?? []}
               isWeeklySpecial={m.isWeeklySpecial ?? false}
+              isFeatured={m.isFeatured ?? false}
               variants={m.variantRows}
               images={m.imageRows}
               videoUrl={m.videoUrl}

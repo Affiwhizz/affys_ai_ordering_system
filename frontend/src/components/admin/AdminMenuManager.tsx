@@ -12,7 +12,7 @@ function signature(items: AdminMenuItem[]): string {
   return items
     .map(
       (m) =>
-        `${m.dbId}:${m.name}:${m.isAvailable}:${m.isWeeklySpecial}:${m.variantRows
+        `${m.dbId}:${m.name}:${m.isAvailable}:${m.isWeeklySpecial}:${m.isFeatured}:${m.variantRows
           .map((v) => v.price)
           .join("/")}:imgs${m.imageRows.length}:vid${m.videoUrl ? 1 : 0}`,
     )

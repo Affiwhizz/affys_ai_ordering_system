@@ -16,6 +16,7 @@ function slugify(s: string): string {
 function revalidateMenu() {
   revalidatePath("/admin/menu");
   revalidatePath("/menu");
+  revalidatePath("/"); // homepage "this week" + featured dishes
 }
 
 /**
@@ -38,8 +39,7 @@ export async function setMenuItemAvailability(
 
     if (error) return { ok: false, error: error.message };
 
-    revalidatePath("/admin/menu");
-    revalidatePath("/menu");
+    revalidateMenu();
     return { ok: true };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "Unknown error" };
@@ -63,8 +63,7 @@ export async function reorderMenuItems(
         .eq("id", orderedIds[i]);
       if (error) return { ok: false, error: error.message };
     }
-    revalidatePath("/admin/menu");
-    revalidatePath("/menu");
+    revalidateMenu();
     return { ok: true };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "Unknown error" };
@@ -295,6 +294,7 @@ export interface UpdateMenuItemInput {
   ingredients: string[];
   spiceLevels: string[];
   isWeeklySpecial: boolean;
+  isFeatured: boolean;
   variants: { id: string; price: number }[];
 }
 
@@ -334,6 +334,7 @@ export async function updateMenuItem(
         ingredients: cleanIngredients,
         spice_levels: cleanSpice,
         is_weekly_special: input.isWeeklySpecial,
+        is_featured: input.isFeatured,
       } as never)
       .eq("id", input.dbId);
     if (itemErr) return { ok: false, error: itemErr.message };
@@ -346,8 +347,7 @@ export async function updateMenuItem(
       if (vErr) return { ok: false, error: vErr.message };
     }
 
-    revalidatePath("/admin/menu");
-    revalidatePath("/menu");
+    revalidateMenu();
     return { ok: true };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "Unknown error" };

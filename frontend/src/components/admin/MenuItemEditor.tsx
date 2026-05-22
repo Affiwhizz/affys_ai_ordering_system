@@ -22,6 +22,7 @@ export default function MenuItemEditor({
   ingredients,
   spiceLevels,
   isWeeklySpecial,
+  isFeatured,
   variants,
   images,
   videoUrl,
@@ -33,6 +34,7 @@ export default function MenuItemEditor({
   ingredients: string[];
   spiceLevels: string[];
   isWeeklySpecial: boolean;
+  isFeatured: boolean;
   variants: AdminVariant[];
   images: AdminImage[];
   videoUrl?: string;
@@ -46,6 +48,7 @@ export default function MenuItemEditor({
   const [ing, setIng] = useState(ingredients.join(", "));
   const [spice, setSpice] = useState<string[]>(spiceLevels);
   const [weekly, setWeekly] = useState(isWeeklySpecial);
+  const [featured, setFeatured] = useState(isFeatured);
   const [prices, setPrices] = useState<Record<string, string>>(() =>
     Object.fromEntries(variants.map((v) => [v.id, String(v.price)])),
   );
@@ -59,6 +62,7 @@ export default function MenuItemEditor({
     setIng(ingredients.join(", "));
     setSpice(spiceLevels);
     setWeekly(isWeeklySpecial);
+    setFeatured(isFeatured);
     setPrices(Object.fromEntries(variants.map((v) => [v.id, String(v.price)])));
     setErr(null);
     setMediaChanged(false);
@@ -88,6 +92,7 @@ export default function MenuItemEditor({
         ingredients: ing.split(/[,\n]/).map((s) => s.trim()).filter(Boolean),
         spiceLevels: spice,
         isWeeklySpecial: weekly,
+        isFeatured: featured,
         variants: variants.map((v) => ({
           id: v.id,
           price: parseFloat(prices[v.id] ?? "0") || 0,
@@ -249,6 +254,19 @@ export default function MenuItemEditor({
                 <span className="flex items-center gap-1.5 text-sm font-medium text-espresso">
                   <Star size={14} className="text-gold" />
                   Feature in this week&rsquo;s specials
+                </span>
+              </label>
+
+              <label className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-border bg-cream/50 px-3 py-2.5">
+                <input
+                  type="checkbox"
+                  checked={featured}
+                  onChange={(e) => setFeatured(e.target.checked)}
+                  className="h-4 w-4 accent-gold"
+                />
+                <span className="flex items-center gap-1.5 text-sm font-medium text-espresso">
+                  <Star size={14} className="text-espresso" />
+                  Show on homepage &ldquo;Plates that tell stories&rdquo;
                 </span>
               </label>
 

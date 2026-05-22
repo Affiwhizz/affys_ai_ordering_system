@@ -35,6 +35,7 @@ interface ItemRow {
   spice_levels: string[] | null;
   video_url: string | null;
   is_weekly_special: boolean | null;
+  is_featured: boolean | null;
   is_available: boolean;
   sort_order: number;
   image_url: string | null;
@@ -85,7 +86,7 @@ export interface AdminMenuItem extends MenuItem {
 
 const SELECT =
   "id, slug, name, name_pt, description, long_description, category, monogram, gradient, allergens, " +
-  "ingredients, spice_levels, video_url, is_weekly_special, is_available, sort_order, image_url, " +
+  "ingredients, spice_levels, video_url, is_weekly_special, is_featured, is_available, sort_order, image_url, " +
   "menu_variants ( id, size_label, serves_label, price, sort_order, is_available ), " +
   "menu_images ( id, url, alt, sort_order )";
 
@@ -138,6 +139,7 @@ function mapRow(row: ItemRow, opts: { availableVariantsOnly: boolean }): AdminMe
     images,
     imageRows,
     isWeeklySpecial: row.is_weekly_special ?? false,
+    isFeatured: row.is_featured ?? false,
     isAvailable: row.is_available,
     allergens: row.allergens ?? [],
     imageUrl: row.image_url ?? null,
@@ -225,4 +227,51 @@ export async function getCategories(): Promise<MenuCategoryRecord[]> {
   } catch {
     return [];
   }
+}
+
+/** Available dishes flagged as "this week's specials", in menu order. */
+export async function getWeeklySpecials(): Promise<MenuItem[]> {
+  try {
+    const supabase = await createServerSupabase();
+    const { data, error } = await supabase
+      .from("menu_items")
+      .select(SELECT)
+      .eq("is_available", true)
+      .eq("is_weekly_special", true)
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true });
+    if (error || !data) return [];
+    return (data as unknown as ItemRow[]).map((r) =>
+      mapRow(r, { availableVariantsOnly: true }),
+    );
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Dishes for the homepage "Plates that tell stories" showcase. Prefers dishes
+ * flagged is_featured; if none are flagged, falls back to the first handful of
+ * available dishes so the section is never empty.
+ */
+export async function getFeaturedDishes(limit = 6): Promise<MenuItem[]> {
+  try {
+    const supabase = await createServerSupabase();
+    const { data, error } = await supabase
+      .from("menu_items")
+      .select(SELECT)
+      .eq("is_available", true)
+      .eq("is_featured", true)
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true });
+    if (!error && data && data.length > 0) {
+      return (data as unknown as ItemRow[])
+        .map((r) => mapRow(r, { availableVariantsOnly: true }))
+        .slice(0, limit);
+    }
+  } catch {
+    // fall through to fallback
+  }
+  const all = await getPublicMenu();
+  return all.slice(0, limit);
 }
