@@ -79,8 +79,10 @@ export default function CheckoutModal() {
     paymentChoice ?? (isPortimao ? "stripe" : "bank");
 
   // ---------- Delivery location (cascading) ----------
+  const [region, setRegion] = useState<"aml" | "rest">("aml");
   const [municipalityKey, setMunicipalityKey] = useState<string>("lisboa");
   const [parish, setParish] = useState<string>("");
+  const [restCity, setRestCity] = useState<string>("");
 
   // ---------- Address (split into 4 fields) ----------
   const [street, setStreet] = useState("");
@@ -146,8 +148,9 @@ export default function CheckoutModal() {
     (street.trim().length > 1 &&
       houseNumber.trim().length > 0 &&
       postcode.trim().length > 3 &&
-      municipalityKey !== "" &&
-      (municipalityKey === "outside-aml" || parish !== ""));
+      (region === "aml"
+        ? municipalityKey !== "" && municipalityKey !== "outside-aml" && parish !== ""
+        : restCity.trim().length > 1));
 
   // A valid preferred date is required (the picker clears itself if invalid).
   const dateValid = preferredDate.trim().length > 0;
@@ -301,39 +304,55 @@ export default function CheckoutModal() {
                     {/* Region */}
                     <Select
                       label="Delivery region"
-                      value={AML.key}
-                      onChange={() => {}}
+                      value={region}
+                      onChange={(v) => {
+                        const r = v as "aml" | "rest";
+                        setRegion(r);
+                        setParish("");
+                        if (r === "rest") {
+                          setMunicipalityKey("outside-aml");
+                        } else {
+                          setMunicipalityKey("lisboa");
+                          setRestCity("");
+                        }
+                      }}
                       options={[
-                        { value: AML.key, label: AML.label },
-                        { value: "outside-aml", label: "Rest of Portugal" },
+                        { value: "aml", label: AML.label },
+                        { value: "rest", label: "Rest of Portugal" },
                       ]}
                       hint="Region we're delivering to"
                     />
-                    {/* Municipality */}
-                    <Select
-                      label="Municipality"
-                      value={municipalityKey}
-                      onChange={(v) => {
-                        setMunicipalityKey(v);
-                        setParish("");
-                      }}
-                      options={[
-                        ...AML.municipalities.map((m) => ({
+
+                    {region === "aml" ? (
+                      /* Municipality (Lisbon metro) */
+                      <Select
+                        label="Municipality"
+                        value={municipalityKey}
+                        onChange={(v) => {
+                          setMunicipalityKey(v);
+                          setParish("");
+                        }}
+                        options={AML.municipalities.map((m) => ({
                           value: m.key,
                           label: `${m.name} — ${formatEuro(m.baseFee)}`,
-                        })),
-                        {
-                          value: "outside-aml",
-                          label: `${OUTSIDE_AML.label} — from ${formatEuro(OUTSIDE_AML.baseFee)}`,
-                        },
-                      ]}
-                      hint="Sets the base delivery fee"
-                      required
-                    />
+                        }))}
+                        hint="Sets the base delivery fee"
+                        required
+                      />
+                    ) : (
+                      /* City / town for the rest of Portugal */
+                      <Field
+                        label="City / town (required)"
+                        value={restCity}
+                        onChange={setRestCity}
+                        placeholder="e.g. Porto, Braga, Faro…"
+                        required
+                      />
+                    )}
                   </div>
 
                   {/* Parish (only for AML municipalities) */}
-                  {municipalityKey !== "outside-aml" && parishOptions.length > 0 && (
+                  {region === "aml" && parishOptions.length > 0 && (
                     <div className="mt-3">
                       <Select
                         label="Parish / Freguesia"
@@ -346,6 +365,18 @@ export default function CheckoutModal() {
                         required
                       />
                     </div>
+                  )}
+
+                  {/* Rest-of-Portugal note */}
+                  {region === "rest" && (
+                    <p className="mt-3 rounded-lg border border-gold/40 bg-gold/10 px-3 py-2 text-[11px] text-foreground-muted">
+                      Outside Lisbon — delivery starts from{" "}
+                      <strong className="text-espresso">
+                        {formatEuro(OUTSIDE_AML.baseFee)}
+                      </strong>
+                      . Larger/heavier orders may need a quick weight check; we&rsquo;ll
+                      confirm the final delivery cost before payment.
+                    </p>
                   )}
 
                   {/* Tier-fee notice */}
