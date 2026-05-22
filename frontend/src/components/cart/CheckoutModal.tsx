@@ -18,6 +18,7 @@ import Link from "next/link";
 import { Modal } from "@/components/motion";
 import { useCart } from "./CartContext";
 import PhoneInput, { composeE164 } from "./PhoneInput";
+import OrderDatePicker from "./OrderDatePicker";
 import { AML, OUTSIDE_AML, getMunicipality } from "./aml-data";
 import {
   computeDelivery,
@@ -90,6 +91,7 @@ export default function CheckoutModal() {
   // ---------- Misc ----------
   const [promo, setPromo] = useState("");
   const [notes, setNotes] = useState("");
+  const [preferredDate, setPreferredDate] = useState("");
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [allowNotifications, setAllowNotifications] = useState(true);
   const [copied, setCopied] = useState<string | null>(null);
@@ -414,6 +416,11 @@ export default function CheckoutModal() {
                     Apply
                   </button>
                 </div>
+              </Section>
+
+              {/* Preferred date */}
+              <Section title="When would you like it?">
+                <OrderDatePicker value={preferredDate} onChange={setPreferredDate} />
               </Section>
 
               {/* 5. Notes */}
