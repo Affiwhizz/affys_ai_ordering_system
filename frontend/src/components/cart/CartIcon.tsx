@@ -37,7 +37,7 @@ export default function CartIcon() {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
             transition={{ type: "spring", stiffness: 480, damping: 22 }}
-            className="absolute -right-1 -top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full border-2 border-white bg-red px-1 text-[10px] font-bold text-ivory leading-none"
+            className="absolute -right-1 -top-1 flex h-5 min-w-[20px] items-center justify-center rounded-full border-2 border-white bg-forest px-1 text-[10px] font-bold text-ivory leading-none"
             aria-hidden
           >
             {count > 99 ? "99+" : count}

@@ -54,7 +54,7 @@ const WHATSAPP_DISPLAY = "+351 914 145 519";
 const SUPPORT_EMAIL = "hello@atasteofaffys.com";
 const UBER_EATS_HREF = "https://ubereats.com/"; // replace with real Affy's UE store URL
 
-const TAKEOUT_BAG_FEE = 1; // matches reference checkout idea
+const TAKEOUT_BAG_FEE = 0.4; // €0.40 per bag
 const TAKEOUT_BAG_THRESHOLD = 2; // 1 bag covers up to 2 plates
 
 type Fulfilment = "delivery" | "pickup";
@@ -149,9 +149,13 @@ export default function CheckoutModal() {
       municipalityKey !== "" &&
       (municipalityKey === "outside-aml" || parish !== ""));
 
+  // A valid preferred date is required (the picker clears itself if invalid).
+  const dateValid = preferredDate.trim().length > 0;
+
   const canSubmit =
     items.length > 0 &&
     detailsValid &&
+    dateValid &&
     addressValid &&
     !requiresWhatsapp &&
     (payment === "stripe" || paymentConfirmed);
@@ -468,14 +472,10 @@ export default function CheckoutModal() {
                     </div>
                     <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-cream-deep">
                       <div
-                        className="h-full rounded-full bg-gradient-to-r from-red via-gold to-forest transition-all"
+                        className="h-full rounded-full bg-forest transition-all"
                         style={{ width: `${progress}%` }}
                       />
                     </div>
-                    <p className="mt-1.5 text-[10px] text-foreground-subtle">
-                      First-time customers only — recognized by phone or email
-                      (once the backend&rsquo;s wired).
-                    </p>
                   </div>
                 )}
 

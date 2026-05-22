@@ -214,7 +214,7 @@ export default function CartDrawer() {
                       <motion.div
                         animate={{ width: `${progress}%` }}
                         transition={{ duration: 0.4 }}
-                        className="h-full rounded-full bg-gradient-to-r from-red via-gold to-forest"
+                        className="h-full rounded-full bg-forest"
                       />
                     </div>
                   </div>
