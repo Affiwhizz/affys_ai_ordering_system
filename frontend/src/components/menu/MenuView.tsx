@@ -49,6 +49,16 @@ export default function MenuView({
   const [query, setQuery] = useState("");
   const q = query.trim().toLowerCase();
 
+  // Live operator pause (set from the admin Portimão control).
+  const { orderingPaused, resumeDate } = useCart();
+  const resumeLabel = resumeDate
+    ? new Date(`${resumeDate}T00:00:00`).toLocaleDateString("en-GB", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      })
+    : null;
+
   const itemsByCategory = useMemo(() => {
     const map = new Map<string, MenuItem[]>();
     for (const c of orderedCategories) {
@@ -128,6 +138,31 @@ export default function MenuView({
           <p className="mt-4 max-w-2xl text-xs text-foreground-subtle">{MIN_ORDER_NOTE}</p>
         </div>
       </section>
+
+      {/* Live operator pause (admin-controlled) */}
+      {orderingPaused && (
+        <div className="border-b border-border bg-gold/10 px-4 py-4 md:px-8">
+          <div className="container-x flex flex-wrap items-center gap-3 text-sm">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gold text-espresso">
+              <Lock size={14} />
+            </span>
+            <p className="flex-1 text-espresso">
+              <strong className="font-semibold">
+                We&rsquo;re at Afro Nation — daily Lisbon orders are paused.
+              </strong>{" "}
+              {resumeLabel
+                ? `Browse the menu and come back — we resume on ${resumeLabel}.`
+                : "Browse the menu and come back soon — we resume shortly."}
+            </p>
+            <Link
+              href="/portimao"
+              className="inline-flex h-9 items-center rounded-full bg-espresso px-4 text-xs font-semibold text-ivory transition-colors hover:bg-gold hover:text-espresso"
+            >
+              See Portimão menu
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Lock notice */}
       {NORMAL_ORDERING_LOCKED && (

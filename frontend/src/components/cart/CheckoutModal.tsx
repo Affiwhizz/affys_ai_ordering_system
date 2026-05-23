@@ -65,8 +65,11 @@ type Fulfilment = "delivery" | "pickup";
 type PaymentMethod = "bank" | "stripe";
 
 export default function CheckoutModal() {
-  const { items, subtotal, checkoutOpen, closeCheckout, clear } = useCart();
+  const { items, subtotal, checkoutOpen, closeCheckout, clear, orderingPaused, resumeDate } =
+    useCart();
   const isPortimao = items.some((it) => it.channel === "portimao");
+  // Regular Lisbon ordering paused by the operator (Portimão preorders are exempt).
+  const dailyPaused = orderingPaused && !isPortimao;
 
   // ---------- Customer ----------
   const [name, setName] = useState("");
@@ -244,6 +247,7 @@ export default function CheckoutModal() {
 
   const canSubmit =
     items.length > 0 &&
+    !dailyPaused &&
     detailsValid &&
     dateValid &&
     addressValid &&
@@ -362,6 +366,24 @@ export default function CheckoutModal() {
             <div className="mt-8 rounded-2xl border border-dashed border-border-strong bg-cream/40 p-8 text-center text-sm text-foreground-muted">
               <ShoppingBag className="mx-auto" size={20} />
               <p className="mt-3">Your cart is empty. Add a dish first.</p>
+            </div>
+          )}
+
+          {/* Daily-ordering paused notice */}
+          {items.length > 0 && dailyPaused && (
+            <div className="mt-8 rounded-2xl border border-gold/40 bg-gold/10 p-5 text-sm text-espresso">
+              <p className="font-semibold">Daily Lisbon ordering is paused right now.</p>
+              <p className="mt-1 text-foreground-muted">
+                {resumeDate
+                  ? `We're away at Afro Nation — regular orders resume on ${new Date(
+                      `${resumeDate}T00:00:00`,
+                    ).toLocaleDateString("en-GB", {
+                      weekday: "long",
+                      day: "numeric",
+                      month: "long",
+                    })}. You can still order for Portimão pickup.`
+                  : "We're away at Afro Nation — regular orders resume shortly. You can still order for Portimão pickup."}
+              </p>
             </div>
           )}
 

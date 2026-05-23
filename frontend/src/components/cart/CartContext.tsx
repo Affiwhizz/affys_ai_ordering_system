@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { fetchStoreFlags } from "@/lib/store/actions";
 
 /**
  * Cart context — single source of truth for items, totals, drawer state.
@@ -43,6 +44,10 @@ interface CartState {
   closeCheckout: () => void;
   /** Triggers the cart-icon pulse animation. */
   pulseSeed: number;
+  /** Regular (Lisbon) ordering paused by the operator — e.g. while at a pop-up. */
+  orderingPaused: boolean;
+  /** ISO date regular ordering resumes (shown to customers). */
+  resumeDate: string | null;
 }
 
 interface AddInput {
@@ -91,6 +96,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [pulseSeed, setPulseSeed] = useState(0);
+  const [orderingPaused, setOrderingPaused] = useState(false);
+  const [resumeDate, setResumeDate] = useState<string | null>(null);
+
+  // Pull the operator flags (daily-ordering pause + resume date) once on mount.
+  useEffect(() => {
+    let active = true;
+    fetchStoreFlags()
+      .then((f) => {
+        if (!active) return;
+        setOrderingPaused(f.dailyOrderingPaused);
+        setResumeDate(f.dailyResumeDate);
+      })
+      .catch(() => {
+        /* keep defaults — ordering stays live */
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // Hydrate from localStorage once on mount.
   // We deliberately keep initial state empty (so SSR + first client render
@@ -109,7 +133,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     persist(items);
   }, [items]);
 
-  const add = useCallback((input: AddInput) => {
+  const add = useCallback(
+    (input: AddInput) => {
+    const channel = input.channel ?? "normal";
+    // Regular Lisbon ordering is paused — block normal items (Portimão preorders
+    // are unaffected). The UI also disables the buttons; this is a safety net.
+    if (orderingPaused && channel === "normal") return;
     const id = buildId(input.itemId, input.variant, input.spice);
     setItems((prev) => {
       const existing = prev.find((x) => x.id === id);
@@ -128,13 +157,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
           spice: input.spice,
           price: input.price,
           qty: input.qty ?? 1,
-          channel: input.channel ?? "normal",
+          channel,
           thumbnail: input.thumbnail,
         },
       ];
     });
     setPulseSeed((n) => n + 1);
-  }, []);
+    },
+    [orderingPaused],
+  );
 
   const remove = useCallback((id: string) => {
     setItems((prev) => prev.filter((x) => x.id !== id));
@@ -179,6 +210,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     },
     closeCheckout: () => setCheckoutOpen(false),
     pulseSeed,
+    orderingPaused,
+    resumeDate,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

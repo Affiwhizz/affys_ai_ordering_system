@@ -35,10 +35,13 @@ export default function AddToCartButton({
   className = "",
   size = "md",
 }: AddToCartButtonProps) {
-  const { add } = useCart();
+  const { add, orderingPaused, resumeDate } = useCart();
   const [justAdded, setJustAdded] = useState(false);
 
+  const paused = orderingPaused && channel === "normal";
+
   const handleAdd = () => {
+    if (paused) return;
     add({ itemId, name, variant, price, channel, thumbnail });
     setJustAdded(true);
     setTimeout(() => setJustAdded(false), 1200);
@@ -48,6 +51,29 @@ export default function AddToCartButton({
     size === "sm"
       ? "h-9 text-xs"
       : "h-11 text-sm";
+
+  if (paused) {
+    const resume = resumeDate
+      ? new Date(`${resumeDate}T00:00:00`).toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "long",
+        })
+      : null;
+    return (
+      <button
+        type="button"
+        disabled
+        title={
+          resume
+            ? `Ordering paused — we're back ${resume}`
+            : "Ordering paused — back soon"
+        }
+        className={`inline-flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-full border border-border bg-cream/60 font-semibold text-foreground-muted ${base} ${className}`}
+      >
+        {resume ? `Paused · back ${resume}` : "Ordering paused"}
+      </button>
+    );
+  }
 
   return (
     <motion.button

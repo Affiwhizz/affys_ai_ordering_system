@@ -10,7 +10,10 @@ import PortimaoRules from "@/components/portimao/Rules";
 import PortimaoFAQ from "@/components/portimao/FAQ";
 import PortimaoSoldOut from "@/components/portimao/SoldOut";
 import PortimaoOffSeason from "@/components/portimao/OffSeason";
-import { PORTIMAO_STATUS, PORTIMAO } from "@/components/portimao/config";
+import { PORTIMAO } from "@/components/portimao/config";
+import { getStoreFlags } from "@/lib/store/get-store-flags";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Portimão preorder",
@@ -23,8 +26,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function PortimaoPage() {
-  if (PORTIMAO_STATUS === "off-season") {
+export default async function PortimaoPage() {
+  const { portimaoStatus } = await getStoreFlags();
+
+  if (portimaoStatus === "off-season") {
     return (
       <div className="flex min-h-screen flex-1 flex-col bg-background">
         <Header />
@@ -34,7 +39,7 @@ export default function PortimaoPage() {
     );
   }
 
-  if (PORTIMAO_STATUS === "sold-out") {
+  if (portimaoStatus === "sold-out") {
     return (
       <div className="flex min-h-screen flex-1 flex-col bg-background">
         <Header />

@@ -14,14 +14,16 @@ export const PORTIMAO_STATUS: PortimaoStatus = "live";
 
 export const PORTIMAO = {
   // Campaign meta
+  // NOTE: these are display strings only. The real open/close window is set in
+  // the admin Portimão control (store_settings → portimao_start / portimao_end).
   campaignName: "Afro Nation week 2026",
-  campaignWindow: "Jul 2 — Jul 7, 2026",
-  campaignWindowShort: "Thurs 2 — Mon 7 July",
+  campaignWindow: "Jul 2 — Jul 6, 2026",
+  campaignWindowShort: "Thurs 2 — Mon 6 July",
 
-  // Order deadlines / windows
+  // Order deadlines / windows (Afro Nation is 3–5 July; we sell 2–6 July)
   preorderDeadline: "Thursday (2 July) · 10:00 WET",
-  deliveryStart: "Preorder delivery starts Thursday (2 July) · 10:00 WET",
-  pickupWindow: "Thurs (2 July) — Mon (7 July) · Rua da Pedra",
+  deliveryStart: "Preorder pickup starts Thursday (2 July) · 10:00 WET",
+  pickupWindow: "Thurs (2 July) — Mon (6 July) · Rua da Pedra",
   pickupLocation: "Rua da Pedra, Portimão",
   pickupNote: "Exact pickup point sent by email after we confirm.",
 
