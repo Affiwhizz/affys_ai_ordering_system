@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Truck,
   Store,
@@ -20,12 +20,15 @@ import { useCart } from "./CartContext";
 import PhoneInput, { composeE164 } from "./PhoneInput";
 import OrderDatePicker from "./OrderDatePicker";
 import { AML, OUTSIDE_AML, getMunicipality } from "./aml-data";
+import { formatEuro, type DeliveryResult } from "./delivery-zones";
+import { fetchDeliverySettings } from "@/lib/delivery/actions";
 import {
-  computeDelivery,
-  FREE_DELIVERY_THRESHOLD,
-  formatEuro,
-  type DeliveryResult,
-} from "./delivery-zones";
+  DEFAULT_GLOBALS,
+  DEFAULT_PAYMENT,
+  type DeliverySettings,
+  type DeliveryGlobals,
+  type PaymentInfo,
+} from "@/lib/delivery/types";
 
 /**
  * Checkout modal — opens from the cart drawer.
@@ -41,13 +44,6 @@ import {
  *
  * UI-only — wire to backend (Stripe + Supabase) in the next phase.
  */
-
-const PAYMENT_DETAILS = {
-  mbway: "927062759",
-  iban: "PT50 0035 0159 0009 1873 0307 7",
-  accountName: "Affy's · Unipessoal LDA",
-  bicSwift: "CGDIPTPL",
-};
 
 const WHATSAPP_HREF = "https://wa.me/351914145519";
 const WHATSAPP_DISPLAY = "+351 914 145 519";
@@ -102,6 +98,40 @@ export default function CheckoutModal() {
   const [submitted, setSubmitted] = useState(false);
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
 
+  // ---------- Live delivery + payment settings (admin-managed) ----------
+  const [settings, setSettings] = useState<DeliverySettings | null>(null);
+  useEffect(() => {
+    let active = true;
+    fetchDeliverySettings()
+      .then((s) => {
+        if (active) setSettings(s);
+      })
+      .catch(() => {
+        /* keep defaults */
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const globals = useMemo<DeliveryGlobals>(
+    () => settings?.globals ?? DEFAULT_GLOBALS,
+    [settings],
+  );
+  const zones = useMemo(() => settings?.zones ?? [], [settings]);
+  const payInfo = useMemo<PaymentInfo>(
+    () => settings?.payment ?? DEFAULT_PAYMENT,
+    [settings],
+  );
+
+  // Resolve the base delivery fee for an AML municipality — prefer the
+  // admin-edited zone fee, fall back to the static aml-data baseFee.
+  const zoneFee = (key: string): number => {
+    const z = zones.find((x) => x.key === key);
+    if (z) return z.fee;
+    return getMunicipality(key)?.baseFee ?? 0;
+  };
+
   // ---------- Derived ----------
   const selectedMunicipality = useMemo(() => {
     if (municipalityKey === "outside-aml") return OUTSIDE_AML;
@@ -125,8 +155,45 @@ export default function CheckoutModal() {
 
   const deliveryResult: DeliveryResult | null = useMemo(() => {
     if (fulfilment !== "delivery") return null;
-    return computeDelivery(municipalityKey, subtotal);
-  }, [fulfilment, municipalityKey, subtotal]);
+
+    // Very large orders go to WhatsApp regardless of region.
+    if (subtotal > globals.whatsappThreshold) {
+      return {
+        kind: "whatsapp",
+        reason: `Orders over ${formatEuro(globals.whatsappThreshold)} — message us on WhatsApp to finalize the details and pricing.`,
+      };
+    }
+
+    // Rest of Portugal: outside-AML base fee + weight surcharge on heavier orders.
+    if (region === "rest") {
+      let amount = globals.outsideAmlFee;
+      let note = `From ${formatEuro(globals.outsideAmlFee)} — final fee confirmed after a quick weight check.`;
+      if (subtotal > globals.weightThreshold) {
+        amount += globals.weightSurcharge;
+        note = `Includes a ${formatEuro(globals.weightSurcharge)} weight surcharge for heavier out-of-Lisbon orders.`;
+      }
+      return { kind: "fee", amount, note };
+    }
+
+    // Lisbon metro (AML): tiered fees for big orders, else municipality base.
+    if (subtotal > globals.tier2Threshold) {
+      return {
+        kind: "fee",
+        amount: globals.tier2Fee,
+        note: `Tiered fee for ${formatEuro(globals.tier2Threshold)}+ orders`,
+      };
+    }
+    if (subtotal > globals.tier1Threshold) {
+      return {
+        kind: "fee",
+        amount: globals.tier1Fee,
+        note: `Tiered fee for ${formatEuro(globals.tier1Threshold)}+ orders`,
+      };
+    }
+    const z = zones.find((x) => x.key === municipalityKey);
+    const base = z ? z.fee : getMunicipality(municipalityKey)?.baseFee ?? 0;
+    return { kind: "fee", amount: base };
+  }, [fulfilment, region, municipalityKey, subtotal, globals, zones]);
 
   const deliveryFee =
     deliveryResult && deliveryResult.kind === "fee" ? deliveryResult.amount : 0;
@@ -134,8 +201,10 @@ export default function CheckoutModal() {
 
   const total = subtotal + deliveryFee + takeoutFee;
 
-  const remainingFree = Math.max(0, FREE_DELIVERY_THRESHOLD - subtotal);
-  const progress = Math.min(100, (subtotal / FREE_DELIVERY_THRESHOLD) * 100);
+  const freeThreshold = globals.freeDeliveryThreshold;
+  const remainingFree = Math.max(0, freeThreshold - subtotal);
+  const progress =
+    freeThreshold > 0 ? Math.min(100, (subtotal / freeThreshold) * 100) : 100;
 
   // ---------- Validation ----------
   const detailsValid =
@@ -334,7 +403,7 @@ export default function CheckoutModal() {
                         }}
                         options={AML.municipalities.map((m) => ({
                           value: m.key,
-                          label: `${m.name} — ${formatEuro(m.baseFee)}`,
+                          label: `${m.name} — ${formatEuro(zoneFee(m.key))}`,
                         }))}
                         hint="Sets the base delivery fee"
                         required
@@ -372,23 +441,33 @@ export default function CheckoutModal() {
                     <p className="mt-3 rounded-lg border border-gold/40 bg-gold/10 px-3 py-2 text-[11px] text-foreground-muted">
                       Outside Lisbon — delivery starts from{" "}
                       <strong className="text-espresso">
-                        {formatEuro(OUTSIDE_AML.baseFee)}
+                        {formatEuro(globals.outsideAmlFee)}
                       </strong>
-                      . Larger/heavier orders may need a quick weight check; we&rsquo;ll
-                      confirm the final delivery cost before payment.
+                      . Orders over {formatEuro(globals.weightThreshold)} add a{" "}
+                      <strong className="text-espresso">
+                        {formatEuro(globals.weightSurcharge)}
+                      </strong>{" "}
+                      weight surcharge; we&rsquo;ll confirm the final delivery cost
+                      before payment.
                     </p>
                   )}
 
-                  {/* Tier-fee notice */}
-                  {subtotal > 200 && subtotal <= 500 && (
-                    <p className="mt-3 rounded-lg border border-gold/40 bg-gold/10 px-3 py-2 text-[11px] text-foreground-muted">
-                      Larger order ({formatEuro(subtotal)}) — tiered delivery fee of{" "}
-                      <strong className="text-espresso">
-                        {formatEuro(subtotal > 400 ? 50 : 30)}
-                      </strong>{" "}
-                      applies (overrides the municipality base).
-                    </p>
-                  )}
+                  {/* Tier-fee notice (Lisbon metro only) */}
+                  {region === "aml" &&
+                    subtotal > globals.tier1Threshold &&
+                    subtotal <= globals.whatsappThreshold && (
+                      <p className="mt-3 rounded-lg border border-gold/40 bg-gold/10 px-3 py-2 text-[11px] text-foreground-muted">
+                        Larger order ({formatEuro(subtotal)}) — tiered delivery fee of{" "}
+                        <strong className="text-espresso">
+                          {formatEuro(
+                            subtotal > globals.tier2Threshold
+                              ? globals.tier2Fee
+                              : globals.tier1Fee,
+                          )}
+                        </strong>{" "}
+                        applies (overrides the municipality base).
+                      </p>
+                    )}
 
                   {/* Address — split */}
                   <div className="mt-5">
@@ -495,7 +574,7 @@ export default function CheckoutModal() {
                       <span className="font-mono uppercase tracking-wider text-foreground-muted">
                         {remainingFree === 0
                           ? "Free delivery (first order) ✓"
-                          : `Free delivery on first order over ${formatEuro(FREE_DELIVERY_THRESHOLD)}`}
+                          : `Free delivery on first order over ${formatEuro(freeThreshold)}`}
                       </span>
                       <span className="font-semibold text-espresso">
                         {remainingFree === 0 ? "" : `${formatEuro(remainingFree)} to go`}
@@ -601,8 +680,10 @@ export default function CheckoutModal() {
                   {payment === "bank" && !isPortimao && (
                     <div className="mt-4 rounded-2xl border border-border bg-cream p-5">
                       <p className="text-sm text-foreground-muted">
-                        Please send payment before confirmation and share the
-                        receipt via WhatsApp on{" "}
+                        {payInfo.note}
+                      </p>
+                      <p className="mt-2 text-sm text-foreground-muted">
+                        Share the receipt via WhatsApp on{" "}
                         <a
                           href={WHATSAPP_HREF}
                           target="_blank"
@@ -621,30 +702,30 @@ export default function CheckoutModal() {
                         .
                       </p>
                       <dl className="mt-4 divide-y divide-border-strong">
-                        <PaymentRow
-                          label="MBWAY"
-                          value={PAYMENT_DETAILS.mbway}
-                          copied={copied === "mbway"}
-                          onCopy={() => copyToClipboard("mbway", PAYMENT_DETAILS.mbway)}
-                        />
-                        <PaymentRow
-                          label="IBAN"
-                          value={PAYMENT_DETAILS.iban}
-                          copied={copied === "iban"}
-                          onCopy={() => copyToClipboard("iban", PAYMENT_DETAILS.iban)}
-                        />
-                        <PaymentRow
-                          label="Account name"
-                          value={PAYMENT_DETAILS.accountName}
-                          copied={copied === "name"}
-                          onCopy={() => copyToClipboard("name", PAYMENT_DETAILS.accountName)}
-                        />
-                        <PaymentRow
-                          label="BIC/SWIFT"
-                          value={PAYMENT_DETAILS.bicSwift}
-                          copied={copied === "swift"}
-                          onCopy={() => copyToClipboard("swift", PAYMENT_DETAILS.bicSwift)}
-                        />
+                        {payInfo.mbway && (
+                          <PaymentRow
+                            label="MBWAY"
+                            value={payInfo.mbway}
+                            copied={copied === "mbway"}
+                            onCopy={() => copyToClipboard("mbway", payInfo.mbway)}
+                          />
+                        )}
+                        {payInfo.iban && (
+                          <PaymentRow
+                            label="IBAN"
+                            value={payInfo.iban}
+                            copied={copied === "iban"}
+                            onCopy={() => copyToClipboard("iban", payInfo.iban)}
+                          />
+                        )}
+                        {payInfo.accountName && (
+                          <PaymentRow
+                            label="Account name"
+                            value={payInfo.accountName}
+                            copied={copied === "name"}
+                            onCopy={() => copyToClipboard("name", payInfo.accountName)}
+                          />
+                        )}
                       </dl>
                       <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-white px-4 py-3 text-sm text-foreground-muted">
                         <input
