@@ -13,6 +13,7 @@ import {
   ShoppingBag,
   Upload,
   ChevronDown,
+  Ticket,
 } from "lucide-react";
 import Link from "next/link";
 import { Modal } from "@/components/motion";
@@ -29,6 +30,13 @@ import {
   type DeliveryGlobals,
   type PaymentInfo,
 } from "@/lib/delivery/types";
+import { validatePromoCode, redeemPromoCode } from "@/lib/promo/actions";
+import {
+  computeDiscount,
+  promoRewardLabel,
+  type AppliedPromo,
+} from "@/lib/promo/types";
+import { getDeviceId } from "@/lib/promo/device-id";
 
 /**
  * Checkout modal — opens from the cart drawer.
@@ -88,6 +96,10 @@ export default function CheckoutModal() {
 
   // ---------- Misc ----------
   const [promo, setPromo] = useState("");
+  const [appliedPromo, setAppliedPromo] = useState<AppliedPromo | null>(null);
+  const [promoMsg, setPromoMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [promoPending, setPromoPending] = useState(false);
+  const [deviceId] = useState<string>(() => getDeviceId());
   const [notes, setNotes] = useState("");
   const [preferredDate, setPreferredDate] = useState("");
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
@@ -199,7 +211,13 @@ export default function CheckoutModal() {
     deliveryResult && deliveryResult.kind === "fee" ? deliveryResult.amount : 0;
   const requiresWhatsapp = deliveryResult?.kind === "whatsapp";
 
-  const total = subtotal + deliveryFee + takeoutFee;
+  // Promo discount recomputes live against the current subtotal + delivery fee.
+  const discount = useMemo(
+    () => computeDiscount(appliedPromo, subtotal, deliveryFee),
+    [appliedPromo, subtotal, deliveryFee],
+  );
+
+  const total = Math.max(0, subtotal + deliveryFee + takeoutFee - discount);
 
   const freeThreshold = globals.freeDeliveryThreshold;
   const remainingFree = Math.max(0, freeThreshold - subtotal);
@@ -232,6 +250,35 @@ export default function CheckoutModal() {
     !requiresWhatsapp &&
     (payment === "stripe" || paymentConfirmed);
 
+  // ---------- Promo ----------
+  const applyPromo = async () => {
+    const code = promo.trim();
+    if (!code || promoPending) return;
+    setPromoPending(true);
+    setPromoMsg(null);
+    const res = await validatePromoCode({
+      code,
+      subtotal,
+      phone: composeE164(phoneCountry, phoneNumber),
+      email,
+      deviceId,
+    });
+    if (res.ok) {
+      setAppliedPromo(res.promo);
+      setPromoMsg({ ok: true, text: res.message });
+    } else {
+      setAppliedPromo(null);
+      setPromoMsg({ ok: false, text: res.message });
+    }
+    setPromoPending(false);
+  };
+
+  const removePromo = () => {
+    setAppliedPromo(null);
+    setPromoMsg(null);
+    setPromo("");
+  };
+
   // ---------- Copy helpers ----------
   const copyToClipboard = async (label: string, value: string) => {
     try {
@@ -247,6 +294,18 @@ export default function CheckoutModal() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
+    // Record the promo redemption (best-effort, fire-and-forget) so single-use
+    // and usage caps are enforced for the next customer.
+    if (appliedPromo) {
+      void redeemPromoCode({
+        code: appliedPromo.code,
+        discount,
+        subtotal,
+        phone: composeE164(phoneCountry, phoneNumber),
+        email,
+        deviceId,
+      });
+    }
     // TODO wire to /api/orders (Supabase) + Stripe redirect.
     // For now we move to the confirmation step (with receipt-upload UI).
     setSubmitted(true);
@@ -515,21 +574,50 @@ export default function CheckoutModal() {
 
               {/* 4. Promo */}
               <Section title="Promo code">
-                <div className="flex gap-2">
-                  <Field
-                    label=""
-                    value={promo}
-                    onChange={setPromo}
-                    placeholder="PROMO CODE"
-                    uppercase
-                  />
-                  <button
-                    type="button"
-                    className="inline-flex h-11 shrink-0 items-center rounded-lg border border-border bg-white px-4 text-sm font-semibold text-espresso hover:border-espresso transition-colors"
-                  >
-                    Apply
-                  </button>
-                </div>
+                {appliedPromo ? (
+                  <div className="flex items-center justify-between gap-3 rounded-lg border border-forest/40 bg-forest/5 px-4 py-3">
+                    <span className="flex items-center gap-2 text-sm text-espresso">
+                      <span className="font-mono font-bold tracking-wide">
+                        {appliedPromo.code}
+                      </span>
+                      <span className="rounded-full bg-forest/15 px-2 py-0.5 text-[11px] font-semibold text-forest">
+                        {promoRewardLabel(appliedPromo.kind, appliedPromo.value)}
+                      </span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={removePromo}
+                      className="text-xs font-semibold text-foreground-muted underline underline-offset-2 hover:text-red"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex gap-2">
+                      <Field
+                        label=""
+                        value={promo}
+                        onChange={setPromo}
+                        placeholder="PROMO CODE"
+                        uppercase
+                      />
+                      <button
+                        type="button"
+                        onClick={applyPromo}
+                        disabled={promoPending || promo.trim().length === 0}
+                        className="inline-flex h-11 shrink-0 items-center rounded-lg border border-border bg-white px-4 text-sm font-semibold text-espresso transition-colors hover:border-espresso disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {promoPending ? "Checking…" : "Apply"}
+                      </button>
+                    </div>
+                    {promoMsg && !promoMsg.ok && (
+                      <p className="mt-2 text-xs font-semibold text-red">
+                        {promoMsg.text}
+                      </p>
+                    )}
+                  </>
+                )}
               </Section>
 
               {/* Preferred date */}
@@ -620,6 +708,21 @@ export default function CheckoutModal() {
                         </span>
                       }
                       value={`+${formatEuro(takeoutFee)}`}
+                    />
+                  )}
+                  {discount > 0 && appliedPromo && (
+                    <Line
+                      label={
+                        <span className="flex items-center gap-1.5 text-forest">
+                          <Ticket size={12} />
+                          Promo · {appliedPromo.code}
+                        </span>
+                      }
+                      value={
+                        <span className="font-semibold text-forest">
+                          −{formatEuro(discount)}
+                        </span>
+                      }
                     />
                   )}
                   <hr className="border-border" />
