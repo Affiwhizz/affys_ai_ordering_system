@@ -37,6 +37,8 @@ import {
   type AppliedPromo,
 } from "@/lib/promo/types";
 import { getDeviceId } from "@/lib/promo/device-id";
+import { createOrder } from "@/lib/orders/actions";
+import type { NewOrderInput } from "@/lib/orders/types";
 
 /**
  * Checkout modal — opens from the cart drawer.
@@ -111,6 +113,9 @@ export default function CheckoutModal() {
 
   // ---------- Submission state ----------
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [orderCode, setOrderCode] = useState<string | null>(null);
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
 
   // ---------- Live delivery + payment settings (admin-managed) ----------
@@ -295,23 +300,82 @@ export default function CheckoutModal() {
   };
 
   // ---------- Submit ----------
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!canSubmit) return;
-    // Record the promo redemption (best-effort, fire-and-forget) so single-use
+    if (!canSubmit || submitting) return;
+    setSubmitting(true);
+    setSubmitError(null);
+
+    const phoneE164 = composeE164(phoneCountry, phoneNumber);
+    const isDelivery = fulfilment === "delivery";
+
+    const payload: NewOrderInput = {
+      customerName: name.trim(),
+      customerPhone: phoneE164,
+      customerEmail: email.trim() || null,
+      channel: isPortimao ? "portimao" : "form",
+      fulfilment,
+      scheduledFor: preferredDate
+        ? new Date(`${preferredDate}T12:00:00`).toISOString()
+        : null,
+      deliveryRegion: isDelivery
+        ? region === "rest"
+          ? "Rest of Portugal"
+          : "Lisbon Metro (AML)"
+        : null,
+      deliveryMunicipalityKey: isDelivery
+        ? region === "rest"
+          ? restCity.trim()
+          : municipalityKey
+        : null,
+      deliveryParish: isDelivery && region === "aml" ? parish : null,
+      deliveryStreet: isDelivery ? street.trim() : null,
+      deliveryHouseNumber: isDelivery ? houseNumber.trim() : null,
+      deliveryFloor: isDelivery ? floor.trim() || null : null,
+      deliveryPostcode: isDelivery ? postcode.trim() : null,
+      subtotal,
+      deliveryFee,
+      takeoutBagFee: takeoutFee,
+      promoCode: appliedPromo?.code ?? null,
+      promoDiscount: discount,
+      total,
+      paymentMethod: payment,
+      notes: notes.trim() || null,
+      allowNotifications,
+      items: items.map((it) => ({
+        name: it.name,
+        variantLabel: it.variant ?? null,
+        unitPrice: it.price,
+        quantity: it.qty,
+        lineTotal: it.price * it.qty,
+        notes: it.spice ? `Spice: ${it.spice}` : null,
+      })),
+    };
+
+    const res = await createOrder(payload);
+    if (!res.ok) {
+      setSubmitError(
+        "Sorry — we couldn't save your order. Please try again, or message us on WhatsApp.",
+      );
+      setSubmitting(false);
+      return;
+    }
+
+    // Order saved — record the promo redemption (best-effort) so single-use
     // and usage caps are enforced for the next customer.
     if (appliedPromo) {
       void redeemPromoCode({
         code: appliedPromo.code,
         discount,
         subtotal,
-        phone: composeE164(phoneCountry, phoneNumber),
+        phone: phoneE164,
         email,
         deviceId,
       });
     }
-    // TODO wire to /api/orders (Supabase) + Stripe redirect.
-    // For now we move to the confirmation step (with receipt-upload UI).
+
+    setOrderCode(res.shortCode);
+    setSubmitting(false);
     setSubmitted(true);
   };
 
@@ -322,6 +386,8 @@ export default function CheckoutModal() {
       setSubmitted(false);
       setReceiptFile(null);
       setPaymentConfirmed(false);
+      setOrderCode(null);
+      setSubmitError(null);
       clear();
     }, 200);
   };
@@ -340,6 +406,7 @@ export default function CheckoutModal() {
           payment={payment}
           phone={composeE164(phoneCountry, phoneNumber)}
           email={email}
+          shortCode={orderCode}
           receiptFile={receiptFile}
           onReceiptFile={setReceiptFile}
           onDone={closeAndReset}
@@ -888,16 +955,28 @@ export default function CheckoutModal() {
               {!requiresWhatsapp && (
                 <button
                   type="submit"
-                  disabled={!canSubmit}
+                  disabled={!canSubmit || submitting}
                   className={`mt-6 inline-flex h-12 w-full items-center justify-center rounded-full px-6 text-sm font-semibold transition-all ${
-                    canSubmit
+                    canSubmit && !submitting
                       ? "bg-espresso text-ivory hover:bg-gold hover:text-espresso shadow-luxe"
                       : "bg-border-strong text-foreground-muted cursor-not-allowed"
                   }`}
                 >
-                  {payment === "stripe" ? "Continue to Stripe" : "Confirm payment sent above"}
-                  <span aria-hidden className="ml-2">→</span>
+                  {submitting
+                    ? "Placing your order…"
+                    : payment === "stripe"
+                      ? "Continue to Stripe"
+                      : "Confirm payment sent above"}
+                  {!submitting && (
+                    <span aria-hidden className="ml-2">→</span>
+                  )}
                 </button>
+              )}
+
+              {submitError && (
+                <p className="mt-3 text-center text-sm font-semibold text-red">
+                  {submitError}
+                </p>
               )}
 
               <p className="mt-4 text-center text-[11px] text-foreground-subtle">
@@ -928,6 +1007,7 @@ interface PostSubmitConfirmationProps {
   payment: PaymentMethod;
   phone: string;
   email: string;
+  shortCode: string | null;
   receiptFile: File | null;
   onReceiptFile: (f: File | null) => void;
   onDone: () => void;
@@ -938,6 +1018,7 @@ function PostSubmitConfirmation({
   payment,
   phone,
   email,
+  shortCode,
   receiptFile,
   onReceiptFile,
   onDone,
@@ -955,6 +1036,13 @@ function PostSubmitConfirmation({
       <h2 className="mt-5 font-display text-3xl font-medium tracking-tight text-espresso sm:text-4xl">
         {isBank ? "Order received — last step" : "Order received"}
       </h2>
+      {shortCode && (
+        <p className="mt-2 text-sm text-foreground-muted">
+          Your order reference is{" "}
+          <span className="font-mono font-bold text-espresso">{shortCode}</span> — keep
+          it handy when you message us.
+        </p>
+      )}
       <p className="mt-3 text-sm leading-relaxed text-foreground-muted">
         {isBank
           ? "Send the payment to the account shown, then share the receipt with us in one of the ways below. We'll confirm via WhatsApp + email as soon as we see it."
