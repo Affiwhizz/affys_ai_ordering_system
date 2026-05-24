@@ -259,6 +259,20 @@ export default function CheckoutModal() {
     !requiresWhatsapp &&
     (payment === "stripe" || paymentConfirmed);
 
+  // What's still stopping the customer from confirming — surfaced under the
+  // button so they're never left wondering why it's greyed out.
+  const missing: string[] = [];
+  if (items.length === 0) missing.push("add an item to your order");
+  if (name.trim().length <= 1) missing.push("your name");
+  if (phoneNumber.trim().length <= 5) missing.push("your phone number");
+  if (isPortimao && email.trim().length <= 3) missing.push("your email");
+  if (fulfilment === "delivery" && !addressValid)
+    missing.push("your full delivery address");
+  if (!dateValid) missing.push("a preferred date");
+  if (payment === "bank" && !paymentConfirmed)
+    missing.push("tick the box to confirm you've sent payment");
+  if (dailyPaused) missing.push("ordering is currently paused");
+
   // ---------- Promo ----------
   const applyPromo = async () => {
     const code = promo.trim();
@@ -976,6 +990,12 @@ export default function CheckoutModal() {
               {submitError && (
                 <p className="mt-3 text-center text-sm font-semibold text-red">
                   {submitError}
+                </p>
+              )}
+
+              {!requiresWhatsapp && !canSubmit && missing.length > 0 && (
+                <p className="mt-3 text-center text-xs text-foreground-muted">
+                  Still needed: {missing.join(", ")}.
                 </p>
               )}
 

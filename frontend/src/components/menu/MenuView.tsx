@@ -12,6 +12,7 @@ import {
   type MenuItem,
 } from "./menu-data";
 import DishDetailModal from "./DishDetailModal";
+import NotifyMeForm from "@/components/NotifyMeForm";
 
 /**
  * Full daily ordering menu.
@@ -160,6 +161,12 @@ export default function MenuView({
             >
               See Portimão menu
             </Link>
+          </div>
+          <div className="container-x mt-3">
+            <p className="mb-1.5 text-xs text-foreground-muted">
+              Want a nudge when we&rsquo;re back? Leave your email or number:
+            </p>
+            <NotifyMeForm source="daily-pause" compact buttonLabel="Notify me" />
           </div>
         </div>
       )}

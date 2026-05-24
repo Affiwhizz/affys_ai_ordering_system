@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FadeIn, RevealHeading } from "@/components/motion";
 import { AzulejoTile } from "../landing/Azulejo";
+import NotifyMeForm from "@/components/NotifyMeForm";
 
 /**
  * OFF-SEASON state — campaign not active.
@@ -36,15 +37,11 @@ export default function PortimaoOffSeason() {
               delay={0.35}
               className="mt-6 font-display text-5xl font-medium leading-[1.02] tracking-tight text-espresso sm:text-6xl lg:text-7xl"
               tokens={[
-                "Affy",
-                "wasn",
-                <span key="t">&apos;t</span>,
-                "in",
-                <span key="ital" className="italic text-red">
-                  Portimão
+                <span key="line">
+                  Affy&rsquo;s is not in{" "}
+                  <span className="italic text-red">Portimão</span> at this
+                  time.
                 </span>,
-                "this",
-                "season.",
               ]}
             />
 
@@ -57,30 +54,11 @@ export default function PortimaoOffSeason() {
             </FadeIn>
 
             <FadeIn delay={0.8}>
-              <div className="mx-auto mt-9 max-w-md rounded-2xl border border-border bg-surface p-5 shadow-luxe">
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div>
-                    <label className="text-[11px] uppercase tracking-[0.18em] text-foreground-subtle">
-                      Email
-                    </label>
-                    <div className="mt-1 flex items-center justify-between rounded-lg border border-border bg-cream px-3 py-2.5 text-sm text-foreground-muted">
-                      <span>you@example.com</span>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-[11px] uppercase tracking-[0.18em] text-foreground-subtle">
-                      Phone
-                    </label>
-                    <div className="mt-1 flex items-center justify-between rounded-lg border border-border bg-cream px-3 py-2.5 text-sm text-foreground-muted">
-                      <span>+351 9·· ··· ···</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-4">
-                  <Link href="#" className="btn-gold w-full sm:w-auto">
-                    Notify me next time
-                  </Link>
-                </div>
+              <div className="mx-auto mt-9 max-w-md rounded-2xl border border-border bg-surface p-5 text-left shadow-luxe">
+                <NotifyMeForm
+                  source="portimao-offseason"
+                  buttonLabel="Notify me next time"
+                />
               </div>
             </FadeIn>
 

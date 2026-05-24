@@ -6,6 +6,7 @@ import { AzulejoTile } from "./Azulejo";
 import { FadeIn, RevealHeading, MotionCard } from "@/components/motion";
 import AddToCartButton from "@/components/cart/AddToCartButton";
 import PortimaoPreorderModal from "./modals/PortimaoPreorderModal";
+import type { PortimaoStatus } from "@/lib/store/types";
 
 function priceFromLabel(s: string): number {
   const match = s.match(/€\s*([\d,.]+)/);
@@ -16,12 +17,13 @@ function priceFromLabel(s: string): number {
  * Portimão campaign block.
  *
  * Toggle visibility / urgency from one place. Wire this to admin later.
- * When active: the section is loud, urgent, and pushes preorders.
- * When inactive: quieter post-campaign / "see you next year" state.
+ * Driven by the admin Portimão control (store_settings → portimao status):
+ *   live      → loud, urgent preorder block
+ *   sold-out  → compact sold-out / waitlist strip
+ *   off-season→ hidden from the homepage entirely
  */
-const PORTIMAO_ACTIVE = true;
 const CAMPAIGN_DELIVERY_START = "Thursday (2 July) · 10:00 WET";
-const CAMPAIGN_PICKUP = "Thurs (2 July) — Mon (7 July) · Rua da Pedra";
+const CAMPAIGN_PICKUP = "Thurs (2 July) — Mon (6 July) · Rua da Pedra";
 const CAMPAIGN_SLOTS_LEFT = 28;
 
 const FESTIVAL_BOWLS: { name: string; from: string; tag: string }[] = [
@@ -31,15 +33,23 @@ const FESTIVAL_BOWLS: { name: string; from: string; tag: string }[] = [
   { name: "Small chops platter", from: "From €9", tag: "Sharing" },
 ];
 
-export default function Portimao() {
+export default function Portimao({
+  status = "live",
+}: {
+  status?: PortimaoStatus;
+}) {
   const [modalOpen, setModalOpen] = useState(false);
 
-  if (!PORTIMAO_ACTIVE) {
+  // Campaign over — remove the block from the homepage entirely.
+  if (status === "off-season") return null;
+
+  // Sold out — compact strip pointing to the waitlist on the campaign page.
+  if (status === "sold-out") {
     return (
       <section
         id="portimao"
-        aria-label="Portimão campaign"
-        className="relative py-16 md:py-20 bg-surface border-y border-border"
+        aria-label="Portimão campaign — sold out"
+        className="relative border-y border-border bg-surface py-16 md:py-20"
       >
         <div className="container-x">
           <FadeIn>
@@ -47,19 +57,16 @@ export default function Portimao() {
               <div>
                 <span className="eyebrow inline-flex items-center">
                   <span className="gold-rule" />
-                  Portimão · Off-season
+                  Portimão · Sold out
                   <span className="gold-rule-after" />
                 </span>
                 <p className="mt-2 max-w-md text-base text-foreground-muted">
-                  Affy&rsquo;s was in Portimão for the festival weeks. The
-                  pop-up is closed for now — see you next year.
+                  Today&rsquo;s Portimão slots are fully booked. Join the
+                  waitlist and we&rsquo;ll message you the moment a slot opens.
                 </p>
               </div>
-              <Link
-                href="#order"
-                className="btn-ghost"
-              >
-                Get notified next time
+              <Link href="/portimao" className="btn-ghost">
+                Join the waitlist
               </Link>
             </div>
           </FadeIn>

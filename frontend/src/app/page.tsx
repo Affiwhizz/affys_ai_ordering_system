@@ -12,15 +12,17 @@ import BlogTeaser from "@/components/landing/BlogTeaser";
 import Footer from "@/components/landing/Footer";
 import MobileDock from "@/components/landing/MobileDock";
 import { getWeeklySpecials, getFeaturedDishes } from "@/lib/menu/get-menu";
+import { getStoreFlags } from "@/lib/store/get-store-flags";
 
 // Render fresh so weekly/featured changes from admin show right away (the
 // readers use the cookie-based Supabase client, so the page is dynamic anyway).
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [weeklySpecials, featuredDishes] = await Promise.all([
+  const [weeklySpecials, featuredDishes, flags] = await Promise.all([
     getWeeklySpecials(),
     getFeaturedDishes(6),
+    getStoreFlags(),
   ]);
 
   return (
@@ -29,7 +31,7 @@ export default async function Home() {
       {/* pb-24 on mobile gives breathing room above the fixed MobileDock */}
       <main className="flex-1 pb-24 lg:pb-0">
         <Hero />
-        <Portimao />
+        <Portimao status={flags.portimaoStatus} />
         <ThisWeek specials={weeklySpecials} />
         <SignatureDishes dishes={featuredDishes} />
         <OrderOptions />

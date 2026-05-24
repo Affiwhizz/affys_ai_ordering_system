@@ -60,7 +60,7 @@ export async function getDeliverySettings(): Promise<DeliverySettings> {
     };
     const payment: PaymentInfo = {
       accountName: (row.pay_account_name as string) || DEFAULT_PAYMENT.accountName,
-      iban: (row.pay_iban as string) || "",
+      iban: (row.pay_iban as string) || DEFAULT_PAYMENT.iban,
       mbway: (row.pay_mbway as string) || DEFAULT_PAYMENT.mbway,
       note: (row.pay_note as string) || DEFAULT_PAYMENT.note,
     };

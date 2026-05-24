@@ -2,6 +2,7 @@ import Link from "next/link";
 import { FadeIn, RevealHeading } from "@/components/motion";
 import { AzulejoTile } from "../landing/Azulejo";
 import { PORTIMAO } from "./config";
+import NotifyMeForm from "@/components/NotifyMeForm";
 
 /**
  * SOLD OUT state — campaign is live, daily slots are full.
@@ -100,20 +101,10 @@ export default function PortimaoSoldOut() {
                   guests a quick WhatsApp the moment one opens.
                 </p>
                 <div className="mt-6 rounded-2xl border border-border bg-cream p-5">
-                  <label className="text-[11px] uppercase tracking-[0.18em] text-foreground-subtle">
-                    Phone number
-                  </label>
-                  <div className="mt-1 flex items-center justify-between rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground-muted">
-                    <span>+351 9·· ··· ···</span>
-                  </div>
-                </div>
-                <div className="mt-6">
-                  <Link
-                    href="#"
-                    className="btn-gold"
-                  >
-                    Join the waitlist
-                  </Link>
+                  <NotifyMeForm
+                    source="portimao-waitlist"
+                    buttonLabel="Join the waitlist"
+                  />
                 </div>
               </article>
             </FadeIn>

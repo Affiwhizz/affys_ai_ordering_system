@@ -55,14 +55,26 @@ export default function PortimaoControl({ initial }: { initial: StoreFlags }) {
     setTimeout(() => setFlash(null), 1800);
   };
 
-  const saveWindow = () => {
+  const persist = (nextMode: PortimaoMode, nextStart: string, nextEnd: string) => {
     setError(null);
     startTransition(async () => {
-      const res = await setPortimaoSettings(mode, start || null, end || null);
+      const res = await setPortimaoSettings(
+        nextMode,
+        nextStart || null,
+        nextEnd || null,
+      );
       if (res.ok) ping("Portimão settings saved");
       else setError(res.error ?? "Couldn't save.");
     });
   };
+
+  // Mode tiles save immediately on click (no separate Save press needed).
+  const chooseMode = (nextMode: PortimaoMode) => {
+    setMode(nextMode);
+    persist(nextMode, start, end);
+  };
+
+  const saveWindow = () => persist(mode, start, end);
 
   const savePause = (nextPaused: boolean, nextResume: string) => {
     startTransition(async () => {
@@ -149,7 +161,7 @@ export default function PortimaoControl({ initial }: { initial: StoreFlags }) {
               Portimão campaign mode
             </h2>
             <p className="text-xs text-foreground-subtle">
-              Currently: <strong>{effective}</strong>. Automatic follows the window below.
+              Currently: <strong>{effective}</strong>. Tap a mode to apply it instantly. Automatic follows the window below.
             </p>
           </div>
         </header>
@@ -160,7 +172,7 @@ export default function PortimaoControl({ initial }: { initial: StoreFlags }) {
               <li key={m.id}>
                 <button
                   type="button"
-                  onClick={() => setMode(m.id)}
+                  onClick={() => chooseMode(m.id)}
                   className={`w-full rounded-2xl border p-4 text-left transition-all ${
                     active
                       ? `${m.accent} ring-2 ring-offset-2 ring-gold`
@@ -197,6 +209,7 @@ export default function PortimaoControl({ initial }: { initial: StoreFlags }) {
               type="date"
               value={start}
               onChange={(e) => setStart(e.target.value)}
+              onBlur={saveWindow}
               className={inputCls}
             />
           </div>
@@ -208,6 +221,7 @@ export default function PortimaoControl({ initial }: { initial: StoreFlags }) {
               type="date"
               value={end}
               onChange={(e) => setEnd(e.target.value)}
+              onBlur={saveWindow}
               className={inputCls}
             />
           </div>

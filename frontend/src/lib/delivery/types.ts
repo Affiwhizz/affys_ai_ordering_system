@@ -50,7 +50,9 @@ export const DEFAULT_GLOBALS: DeliveryGlobals = {
 
 export const DEFAULT_PAYMENT: PaymentInfo = {
   accountName: "Affy's · Unipessoal LDA",
-  iban: "",
+  // Fallback so the account number never disappears if it hasn't been set in
+  // admin yet. Affy can override this on the Delivery & Pay page.
+  iban: "PT50 0035 0159 0009 1873 0307 7",
   mbway: "+351 914 145 519",
   note: "Please send payment before confirmation and share the receipt via WhatsApp.",
 };
