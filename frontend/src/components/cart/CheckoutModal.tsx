@@ -1150,7 +1150,7 @@ function PostSubmitConfirmation({
         <ol className="mt-3 space-y-2 text-sm text-foreground-muted">
           <li>
             <span className="font-semibold text-espresso">1.</span> We verify
-            your {isBank ? "receipt" : "payment"} (within a few hours, usually faster).
+            your {isBank ? "receipt" : "payment"}.
           </li>
           <li>
             <span className="font-semibold text-espresso">2.</span> You get a

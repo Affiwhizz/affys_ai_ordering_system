@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { getNewOrdersCount } from "@/app/admin/orders/actions";
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -36,6 +38,24 @@ const NAV = [
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const [newOrders, setNewOrders] = useState(0);
+
+  // Poll the count of orders awaiting a status (refreshes on navigation too).
+  useEffect(() => {
+    let active = true;
+    const load = () =>
+      getNewOrdersCount()
+        .then((n) => {
+          if (active) setNewOrders(n);
+        })
+        .catch(() => {});
+    load();
+    const t = setInterval(load, 60_000);
+    return () => {
+      active = false;
+      clearInterval(t);
+    };
+  }, [pathname]);
 
   const handleSignOut = async () => {
     try {
@@ -78,6 +98,15 @@ export default function Sidebar() {
                 >
                   <Icon size={18} strokeWidth={1.8} />
                   {n.label}
+                  {n.href === "/admin/orders" && newOrders > 0 && (
+                    <span
+                      className={`ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-bold ${
+                        isActive ? "bg-espresso text-gold" : "bg-forest text-ivory"
+                      }`}
+                    >
+                      {newOrders}
+                    </span>
+                  )}
                 </Link>
               </li>
             );

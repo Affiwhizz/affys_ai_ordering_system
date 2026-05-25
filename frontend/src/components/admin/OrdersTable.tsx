@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Download } from "lucide-react";
+import { Download, MessageCircle } from "lucide-react";
 import StatusPill from "@/components/admin/StatusPill";
 import { formatCurrency, formatDate } from "@/components/admin/mock-data";
 import { setOrderStatus } from "@/app/admin/orders/actions";
@@ -25,6 +25,20 @@ const TABS: { id: Filter; label: string }[] = [
 
 const channelLabel = (c: OrderChannel) =>
   c === "udia" ? "Udia" : c === "form" ? "Form" : "Portimão";
+
+// Pre-filled WhatsApp confirmation message to the customer (one-tap send).
+function waLink(o: AdminOrder): string {
+  const digits = o.customerPhone.replace(/[^\d]/g, "");
+  const when = o.scheduledFor
+    ? ` for ${new Date(o.scheduledFor).toLocaleDateString("en-GB", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      })}`
+    : "";
+  const msg = `Hi ${o.customerName.split(" ")[0]}, your Affy's order ${o.shortCode} is confirmed${when}. Total ${formatCurrency(o.total)}. Thank you! — Affy's`;
+  return `https://wa.me/${digits}?text=${encodeURIComponent(msg)}`;
+}
 
 function toCsv(rows: AdminOrder[]): string {
   const head = [
@@ -281,6 +295,15 @@ export default function OrdersTable({ initial }: { initial: AdminOrder[] }) {
                             </option>
                           ))}
                         </select>
+                        <a
+                          href={waLink(o)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Send the confirmation to the customer on WhatsApp"
+                          className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-forest/40 bg-forest/5 px-2 text-[11px] font-semibold text-forest transition-colors hover:bg-forest hover:text-ivory"
+                        >
+                          <MessageCircle size={12} /> WhatsApp
+                        </a>
                       </div>
                     </td>
                   </tr>

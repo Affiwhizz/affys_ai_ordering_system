@@ -3,6 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { createAdminSupabase } from "@/lib/supabase/admin";
 import type { NewOrderInput } from "./types";
+import { sendEmail } from "@/lib/email/send";
+import {
+  orderReceivedEmail,
+  ownerNewOrderEmail,
+  type EmailOrder,
+} from "@/lib/email/templates";
 
 export type CreateOrderResult =
   | { ok: true; shortCode: string; publicToken: string }
@@ -78,6 +84,66 @@ export async function createOrder(input: NewOrderInput): Promise<CreateOrderResu
     if (itemsError) {
       // The order row exists; surface the issue but don't hard-fail the customer.
       return { ok: false, error: itemsError.message };
+    }
+
+    // Confirmation emails — customer "order received" + owner alert. Never block
+    // or fail the order on email problems (sendEmail no-ops without a key).
+    try {
+      const addressLine =
+        input.fulfilment === "delivery"
+          ? [
+              [input.deliveryStreet, input.deliveryHouseNumber]
+                .filter(Boolean)
+                .join(" "),
+              input.deliveryFloor,
+              input.deliveryParish,
+              input.deliveryMunicipalityKey,
+              input.deliveryPostcode,
+            ]
+              .filter((x) => x && String(x).trim().length > 0)
+              .join(", ")
+          : null;
+
+      const emailOrder: EmailOrder = {
+        shortCode: order.short_code,
+        customerName: input.customerName,
+        channel: input.channel,
+        fulfilment: input.fulfilment,
+        scheduledFor: input.scheduledFor ?? null,
+        addressLine,
+        items: input.items.map((it) => ({
+          name: it.name,
+          variantLabel: it.variantLabel ?? null,
+          quantity: it.quantity,
+          lineTotal: it.lineTotal,
+          notes: it.notes ?? null,
+        })),
+        subtotal: input.subtotal,
+        deliveryFee: input.deliveryFee,
+        takeoutBagFee: input.takeoutBagFee,
+        promoCode: input.promoCode ?? null,
+        promoDiscount: input.promoDiscount,
+        total: input.total,
+        paymentMethod: input.paymentMethod,
+        notes: input.notes ?? null,
+      };
+
+      const ownerTo =
+        process.env.OWNER_EMAIL || process.env.NEXT_PUBLIC_SUPPORT_EMAIL;
+      const sends: Promise<unknown>[] = [];
+      if (input.customerEmail) {
+        const e = orderReceivedEmail(emailOrder);
+        sends.push(
+          sendEmail({ to: input.customerEmail, subject: e.subject, html: e.html }),
+        );
+      }
+      if (ownerTo) {
+        const o = ownerNewOrderEmail(emailOrder);
+        sends.push(sendEmail({ to: ownerTo, subject: o.subject, html: o.html }));
+      }
+      await Promise.allSettled(sends);
+    } catch {
+      /* email failures never affect the order */
     }
 
     revalidatePath("/admin/orders");
