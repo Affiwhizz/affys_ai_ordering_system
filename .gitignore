@@ -138,3 +138,22 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .DS_Store
+
+# ---------- Affy's: private docs (never publish to GitHub) ----------
+# Internal setup guides, drafts, and planning docs. Keep README.md PUBLIC.
+EMAIL_SETUP.md
+SETUP.md
+PROJECT_STORY.md
+SUBSTACK_POST.md
+SUBSTACK_POST_*.md
+NOTES.md
+TODO.md
+SCRATCH.md
+DRAFT*.md
+*.private.md
+.env*.local
+.env.production
+.env.preview
+# Internal planning / spec folder — recruiters / public should not see
+docs/
+
