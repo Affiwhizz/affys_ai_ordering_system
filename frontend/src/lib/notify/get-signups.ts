@@ -1,13 +1,12 @@
 import "server-only";
 import { createServerSupabase } from "@/lib/supabase/server";
+import type { NotifySignup } from "./types";
 
-export interface NotifySignup {
-  id: string;
-  email: string | null;
-  phone: string | null;
-  source: string;
-  createdAt: string;
-}
+// Re-export the client-safe pieces from here too, so callers don't have to
+// know which file to import from — but client components should still pull
+// from "./types" directly (importing this file pulls in supabase/server).
+export type { NotifySignup } from "./types";
+export { labelForSource, toneForSource } from "./types";
 
 interface Row {
   id: string;
@@ -15,21 +14,6 @@ interface Row {
   phone: string | null;
   source: string | null;
   created_at: string;
-}
-
-const SOURCE_LABELS: Record<string, { label: string; tone: string }> = {
-  "portimao-offseason": { label: "Portimão pop-up alerts", tone: "bg-red/10 text-red border-red" },
-  "portimao-waitlist":  { label: "Portimão sold-out waitlist", tone: "bg-gold/10 text-espresso border-gold" },
-  "daily-pause":        { label: "Daily ordering resume", tone: "bg-forest/10 text-forest border-forest" },
-  general:              { label: "General", tone: "bg-cream-deep text-foreground-muted border-foreground-muted" },
-};
-
-export function labelForSource(source: string): string {
-  return SOURCE_LABELS[source]?.label ?? source;
-}
-
-export function toneForSource(source: string): string {
-  return SOURCE_LABELS[source]?.tone ?? SOURCE_LABELS.general.tone;
 }
 
 /**

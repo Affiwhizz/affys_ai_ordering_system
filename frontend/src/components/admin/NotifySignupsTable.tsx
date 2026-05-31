@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Mail, Phone } from "lucide-react";
-import { labelForSource, toneForSource, type NotifySignup } from "@/lib/notify/get-signups";
+import { labelForSource, toneForSource, type NotifySignup } from "@/lib/notify/types";
 
 interface Props {
   signups: NotifySignup[];
