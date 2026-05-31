@@ -1,50 +1,46 @@
 -- =============================================================================
--- Affy's — Catering inquiries (run once)
+-- Affy's — Catering inquiries adaptations (run once, idempotent)
 -- =============================================================================
--- Captures catering quote requests from the public Catering form. Staff
--- triage them in /admin/catering and update status as they progress.
+-- The catering_inquiries table itself was created by db/schema.sql back in May.
+-- This file only ADAPTS that existing table to match the new public form:
+--   1. Loosen NOT NULL on fields that should be optional for casual inquiries
+--      (event_type / guest_count / event_date / location / customer_email).
+--   2. Add a `contacted_at` lifecycle stamp used by the admin status flow.
+--   3. Make sure the policies are in place (they were also defined in
+--      schema.sql, but re-declaring is safe).
 --
--- Additive + idempotent. Supabase → SQL Editor → New query → paste → Run.
+-- Safe to re-run any time. Supabase → SQL Editor → New query → paste → Run.
 -- =============================================================================
 
-create table if not exists catering_inquiries (
-  id uuid primary key default gen_random_uuid(),
+-- 1) Drop NOT NULL on optional-from-public-form columns. Each ALTER is wrapped
+-- in a DO block so it never errors if the column is already nullable.
+do $$
+declare cols text[] := array[
+  'customer_email', 'event_type', 'guest_count', 'event_date', 'location'
+];
+declare c text;
+begin
+  foreach c in array cols loop
+    execute format('alter table catering_inquiries alter column %I drop not null;', c);
+  end loop;
+exception when undefined_column then
+  -- Column missing — nothing to relax. Ignore.
+  null;
+end $$;
 
-  -- Customer
-  name text not null,
-  email citext,
-  phone text not null,
+-- 2) Add contacted_at if missing (used when staff moves an inquiry to
+-- "reviewing"). idempotent.
+alter table catering_inquiries
+  add column if not exists contacted_at timestamptz;
 
-  -- Event
-  event_type text,            -- Wedding | Birthday | Corporate | Pop-up | Other (free text)
-  event_date date,            -- when the event is (may be null if undecided)
-  guest_count int,            -- estimated headcount
-  location text,              -- venue / area / municipality
-  budget text,                -- free-text budget hint, e.g. "around €1500"
+-- 3) Index by submitted_at for newest-first listing (already exists in
+-- schema.sql, idempotent).
+create index if not exists idx_catering_submitted on catering_inquiries(submitted_at desc);
 
-  -- Brief
-  notes text,                 -- "tell us about your event"
-
-  -- Pipeline
-  status text not null default 'new',  -- new | reviewing | quoted | confirmed | declined
-  quote_amount numeric(12,2),           -- staff fills in once quoted
-  staff_notes text,                     -- internal-only notes (staff write)
-
-  -- Lifecycle stamps
-  created_at  timestamptz not null default now(),
-  contacted_at timestamptz,
-  quoted_at    timestamptz,
-  confirmed_at timestamptz,
-  declined_at  timestamptz
-);
-
-create index if not exists idx_catering_status  on catering_inquiries(status);
-create index if not exists idx_catering_created on catering_inquiries(created_at desc);
-create index if not exists idx_catering_date    on catering_inquiries(event_date);
-
+-- 4) RLS + policies — re-declare safely so this file stands alone for
+-- a fresh project or for fixing a clobbered policy.
 alter table catering_inquiries enable row level security;
 
--- Public can submit; staff can read/manage in admin.
 drop policy if exists catering_anon_insert on catering_inquiries;
 create policy catering_anon_insert on catering_inquiries
   for insert with check (true);

@@ -8,6 +8,7 @@ import Logo from "./Logo";
 import CartIcon from "@/components/cart/CartIcon";
 import { fetchStoreFlags } from "@/lib/store/actions";
 import type { PortimaoStatus } from "@/lib/store/types";
+import { useCateringModal } from "./modals/CateringModalProvider";
 
 interface NavLink {
   href: string;
@@ -26,6 +27,8 @@ function buildNav(status: PortimaoStatus): { primary: NavLink[]; actions: NavLin
 
   const primary: NavLink[] = [
     { href: "/menu", label: "Menu" },
+    // Catering opens the modal directly (handled by the click handler in render);
+    // the href stays as a sensible fallback for non-JS / right-click contexts.
     { href: "/#catering", label: "Catering" },
     ...(showPortimao
       ? [{ href: "/portimao", label: "Portimão", hot: isLive }]
@@ -42,6 +45,7 @@ function buildNav(status: PortimaoStatus): { primary: NavLink[]; actions: NavLin
       : status === "sold-out"
       ? [{ href: "/portimao", label: "Join Portimão waitlist" }]
       : []),
+    // Same: clicking "Request catering quote" opens the modal.
     { href: "/#catering", label: "Request catering quote" },
   ];
 
@@ -79,6 +83,7 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   // Default to off-season — safer than showing a "live" pulse before flags load.
   const [portimaoStatus, setPortimaoStatus] = useState<PortimaoStatus>("off-season");
+  const { open: openCateringModal } = useCateringModal();
 
   // Pull live Portimão status (admin-controlled) once on mount.
   useEffect(() => {
@@ -178,7 +183,15 @@ export default function Header() {
                     >
                       <Link
                         href={link.href}
-                        onClick={() => setOpen(false)}
+                        onClick={(e) => {
+                          // If this nav item is "Catering" or "Request catering
+                          // quote", open the modal instead of scrolling the page.
+                          if (/catering/i.test(link.label)) {
+                            e.preventDefault();
+                            openCateringModal();
+                          }
+                          setOpen(false);
+                        }}
                         className="group flex items-center justify-between border-b border-border py-4 font-display text-2xl font-medium text-espresso transition-colors hover:text-red"
                       >
                         <span className="flex items-center gap-3">
@@ -214,7 +227,13 @@ export default function Header() {
                       >
                         <Link
                           href={action.href}
-                          onClick={() => setOpen(false)}
+                          onClick={(e) => {
+                            if (/catering/i.test(action.label)) {
+                              e.preventDefault();
+                              openCateringModal();
+                            }
+                            setOpen(false);
+                          }}
                           className="flex items-center justify-between rounded-2xl border border-border bg-cream px-5 py-4 text-sm font-semibold text-espresso transition-all hover:border-gold hover:bg-gold/10"
                         >
                           <span>{action.label}</span>

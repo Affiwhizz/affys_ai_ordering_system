@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AzulejoTile } from "./Azulejo";
 import { FadeIn, MotionCard, RevealHeading } from "@/components/motion";
-import CateringInquiryModal from "./modals/CateringInquiryModal";
+import { useCateringModal } from "./modals/CateringModalProvider";
 
 /**
  * Image that gracefully hides itself when the file isn't there.
@@ -88,24 +88,13 @@ const OCCASIONS = [
 ];
 
 export default function Catering() {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [defaultEventType, setDefaultEventType] = useState<string | undefined>();
-
-  const openModal = (eventType?: string) => {
-    setDefaultEventType(eventType);
-    setModalOpen(true);
-  };
+  const { open: openModal } = useCateringModal();
 
   return (
     <section
       id="catering"
       className="relative py-24 md:py-32 bg-surface-warm border-y border-border"
     >
-      <CateringInquiryModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        defaultEventType={defaultEventType}
-      />
       <div className="container-x">
         <div className="grid items-start gap-14 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
           {/* Showpiece */}

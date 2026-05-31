@@ -4,6 +4,7 @@ import CookieBanner from "@/components/legal/CookieBanner";
 import { CartProvider } from "@/components/cart/CartContext";
 import CartDrawer from "@/components/cart/CartDrawer";
 import CheckoutModal from "@/components/cart/CheckoutModal";
+import { CateringModalProvider } from "@/components/landing/modals/CateringModalProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -66,9 +67,11 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <CartProvider>
-          {children}
-          <CartDrawer />
-          <CheckoutModal />
+          <CateringModalProvider>
+            {children}
+            <CartDrawer />
+            <CheckoutModal />
+          </CateringModalProvider>
         </CartProvider>
         <CookieBanner />
       </body>

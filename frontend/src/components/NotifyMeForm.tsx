@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check } from "lucide-react";
 import { submitNotifySignup } from "@/lib/notify/actions";
+import PhoneInput from "@/components/PhoneInput";
 
 interface NotifyMeFormProps {
   source: string;
@@ -70,18 +71,12 @@ export default function NotifyMeForm({
           </div>
         )}
         {fields !== "email" && (
-          <div className={compact ? "min-w-[160px] flex-1" : ""}>
-            {!compact && (
-              <label className="text-[11px] uppercase tracking-[0.18em] text-foreground-subtle">
-                Phone
-              </label>
-            )}
-            <input
-              type="tel"
+          <div className={compact ? "min-w-[220px] flex-1" : ""}>
+            <PhoneInput
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="+351 9·· ··· ···"
-              className={inputCls}
+              onChange={setPhone}
+              withLabel={!compact}
+              variant="cream"
             />
           </div>
         )}

@@ -37,12 +37,16 @@ export async function submitCateringInquiry(
 
   try {
     const admin = createAdminSupabase();
+    // Column names below match db/schema.sql's catering_inquiries table:
+    // customer_name / customer_phone_e164 / customer_email / internal_notes /
+    // submitted_at. The TS-facing input keeps clean camelCase keys; the
+    // mapping happens here so the rest of the codebase doesn't have to know.
     const { data, error } = await admin
       .from("catering_inquiries")
       .insert({
-        name,
-        email,
-        phone,
+        customer_name: name,
+        customer_email: email,
+        customer_phone_e164: phone,
         event_type: input.eventType?.trim() || null,
         event_date: input.eventDate || null,
         guest_count: guestCount,

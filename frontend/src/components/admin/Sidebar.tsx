@@ -16,6 +16,7 @@ import {
   Users,
   PenSquare,
   BarChart3,
+  BellRing,
   LogOut,
   ExternalLink,
 } from "lucide-react";
@@ -31,6 +32,7 @@ const NAV = [
   { href: "/admin/delivery", label: "Delivery & Pay", icon: Truck },
   { href: "/admin/promos", label: "Promo codes", icon: Ticket },
   { href: "/admin/customers", label: "Customers", icon: Users },
+  { href: "/admin/notify", label: "Waitlist", icon: BellRing },
   { href: "/admin/content", label: "Content", icon: PenSquare },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
 ];

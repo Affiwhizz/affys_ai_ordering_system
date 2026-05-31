@@ -11,8 +11,9 @@ interface UpdateResult {
 
 /**
  * Update the status of a catering inquiry. Lifecycle stamps mirror the
- * orders flow (contacted_at / quoted_at / confirmed_at / declined_at).
- * Uses the SSR client so staff RLS gates writes.
+ * orders flow. Column names match db/schema.sql: contacted_at (added by
+ * db/catering_inquiries.sql), quote_sent_at, confirmed_at. Declined uses
+ * declined_reason as a marker since the existing schema has no declined_at.
  */
 export async function setCateringStatus(
   id: string,
@@ -24,9 +25,9 @@ export async function setCateringStatus(
     const now = new Date().toISOString();
     const patch: Record<string, unknown> = { status };
     if (status === "reviewing") patch.contacted_at = now;
-    if (status === "quoted")    patch.quoted_at = now;
+    if (status === "quoted")    patch.quote_sent_at = now;
     if (status === "confirmed") patch.confirmed_at = now;
-    if (status === "declined")  patch.declined_at = now;
+    if (status === "declined")  patch.declined_reason = patch.declined_reason ?? "(no reason given)";
 
     const { error } = await supabase
       .from("catering_inquiries")
@@ -54,7 +55,9 @@ export async function setCateringQuote(
       .from("catering_inquiries")
       .update({
         quote_amount: quoteAmount,
-        staff_notes: staffNotes,
+        // Existing schema column is internal_notes; we expose it as
+        // staffNotes in TS for clarity at call sites.
+        internal_notes: staffNotes,
       } as never)
       .eq("id", id);
     if (error) return { ok: false, error: error.message };

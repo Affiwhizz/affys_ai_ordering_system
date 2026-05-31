@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, Loader2, CheckCircle2 } from "lucide-react";
 import { submitCateringInquiry } from "@/lib/catering/actions";
+import PhoneInput from "@/components/PhoneInput";
 
 interface Props {
   open: boolean;
@@ -188,28 +189,23 @@ export default function CateringInquiryModal({ open, onClose, defaultEventType }
                     prepare a sharper quote.
                   </p>
 
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <Field label="Your name *">
-                      <input
-                        type="text"
-                        required
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="input"
-                        placeholder="e.g. Tomi A."
-                      />
-                    </Field>
-                    <Field label="Phone *">
-                      <input
-                        type="tel"
-                        required
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="input"
-                        placeholder="+351 9·· ··· ···"
-                      />
-                    </Field>
-                  </div>
+                  <Field label="Your name *">
+                    <input
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="input"
+                      placeholder="e.g. Tomi A."
+                    />
+                  </Field>
+
+                  <PhoneInput
+                    value={phone}
+                    onChange={setPhone}
+                    required
+                    label="Phone"
+                  />
 
                   <Field label="Email (optional)">
                     <input
