@@ -2,34 +2,38 @@ import Link from "next/link";
 import Logo from "./Logo";
 import { AzulejoStrip } from "./Azulejo";
 import FooterLegal from "@/components/legal/FooterLegal";
+import LegalLink from "@/components/legal/LegalLink";
+import type { LegalTopic } from "@/components/legal/legal-content";
 
-const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
+// Footer link can be either a plain href or a legal-modal trigger.
+type FooterLink =
+  | { label: string; href: string }
+  | { label: string; legal: LegalTopic };
+
+const COLUMNS: { title: string; links: FooterLink[] }[] = [
   {
     title: "Order",
     links: [
-      { label: "Menu", href: "#menu" },
-      { label: "Ask Udia", href: "#udia" },
-      { label: "Quick form", href: "#order" },
-      { label: "Portimão preorder", href: "#portimao" },
-      { label: "Catering quote", href: "#catering" },
+      { label: "Menu", href: "/menu" },
+      { label: "Ask Udia", href: "/#udia" },
+      { label: "Portimão preorder", href: "/portimao" },
+      { label: "Catering quote", href: "/#catering" },
     ],
   },
   {
     title: "Affy's",
     links: [
-      { label: "Our story", href: "#story" },
-      { label: "Pop-ups", href: "#catering" },
-      { label: "Blog", href: "#" },
+      { label: "Our story", href: "/#story" },
+      { label: "Pop-ups", href: "/#catering" },
     ],
   },
   {
     title: "Help",
     links: [
       { label: "Contact us", href: "mailto:hello@atasteofaffys.com" },
-      // These two open the LegalModal via a hash convention picked up
-      // by FooterLegal.tsx — keeps the Footer itself a server component.
-      { label: "Allergy notice", href: "#legal-allergy" },
-      { label: "Refund policy", href: "#legal-refunds" },
+      // These open the LegalModal directly via the provider — no scroll-to-top.
+      { label: "Allergy notice", legal: "allergy" },
+      { label: "Refund policy", legal: "refunds" },
     ],
   },
 ];
@@ -130,12 +134,16 @@ export default function Footer() {
                 <ul className="mt-4 space-y-2.5">
                   {col.links.map((l) => (
                     <li key={l.label}>
-                      <Link
-                        href={l.href}
-                        className="text-sm text-ivory/75 transition-colors hover:text-ivory"
-                      >
-                        {l.label}
-                      </Link>
+                      {"legal" in l ? (
+                        <LegalLink topic={l.legal} label={l.label} />
+                      ) : (
+                        <Link
+                          href={l.href}
+                          className="text-sm text-ivory/75 transition-colors hover:text-ivory"
+                        >
+                          {l.label}
+                        </Link>
+                      )}
                     </li>
                   ))}
                 </ul>

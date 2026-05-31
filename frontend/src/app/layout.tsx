@@ -5,6 +5,7 @@ import { CartProvider } from "@/components/cart/CartContext";
 import CartDrawer from "@/components/cart/CartDrawer";
 import CheckoutModal from "@/components/cart/CheckoutModal";
 import { CateringModalProvider } from "@/components/landing/modals/CateringModalProvider";
+import { LegalModalProvider } from "@/components/legal/LegalModalProvider";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
@@ -70,9 +71,11 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <CartProvider>
           <CateringModalProvider>
-            {children}
-            <CartDrawer />
-            <CheckoutModal />
+            <LegalModalProvider>
+              {children}
+              <CartDrawer />
+              <CheckoutModal />
+            </LegalModalProvider>
           </CateringModalProvider>
         </CartProvider>
         {/* Vercel-hosted analytics + Web Vitals. Free on the Hobby plan;
