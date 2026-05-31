@@ -1,8 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LegalModal from "./LegalModal";
 import type { LegalTopic } from "./legal-content";
+
+/**
+ * Hash convention shared with Footer.tsx's Help column. Clicking those links
+ * sets the URL hash; this component watches for it and opens the matching
+ * legal modal.
+ */
+const HASH_TO_TOPIC: Record<string, LegalTopic> = {
+  "#legal-privacy": "privacy",
+  "#legal-terms": "terms",
+  "#legal-cookies": "cookies",
+  "#legal-accessibility": "accessibility",
+  "#legal-refunds": "refunds",
+  "#legal-allergy": "allergy",
+};
 
 /**
  * The bottom-of-footer legal-links row. Also exposes the trigger for
@@ -19,6 +33,23 @@ export default function FooterLegal() {
     e.preventDefault();
     setTopic(t);
   };
+
+  // Pick up the Help-column links (Allergy notice, Refund policy) which set
+  // the URL hash. When matched, open the matching legal modal and clear the
+  // hash so refresh doesn't re-open it unexpectedly.
+  useEffect(() => {
+    const handleHash = () => {
+      const h = window.location.hash;
+      const t = HASH_TO_TOPIC[h];
+      if (t) {
+        setTopic(t);
+        history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
+    };
+    handleHash();
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
 
   return (
     <>

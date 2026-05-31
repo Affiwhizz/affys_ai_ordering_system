@@ -30,9 +30,22 @@ export async function createOrder(input: NewOrderInput): Promise<CreateOrderResu
   try {
     const admin = createAdminSupabase();
 
+    // Resolve (or create) the customers row tied to this order so admin can
+    // see repeat customers and lifetime stats. Match by phone first (unique +
+    // always present), then by email as a fallback for the rare case where
+    // the same person used a different number. NEVER blocks the order.
+    const customerId = await upsertCustomer(admin, {
+      name: input.customerName.trim(),
+      phone: input.customerPhone.trim(),
+      email: input.customerEmail?.trim() || null,
+      region: input.deliveryRegion || null,
+      municipalityKey: input.deliveryMunicipalityKey || null,
+    });
+
     const { data, error } = await admin
       .from("orders")
       .insert({
+        customer_id: customerId,
         customer_name: input.customerName.trim(),
         customer_phone_e164: input.customerPhone.trim(),
         customer_email: input.customerEmail?.trim() || null,
@@ -152,5 +165,99 @@ export async function createOrder(input: NewOrderInput): Promise<CreateOrderResu
     return { ok: true, shortCode: order.short_code, publicToken: order.public_token };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "Unknown error" };
+  }
+}
+
+// =============================================================================
+// Customer upsert
+// =============================================================================
+
+interface UpsertCustomerInput {
+  name: string;
+  phone: string;
+  email: string | null;
+  region: string | null;
+  municipalityKey: string | null;
+}
+
+interface CustomerRow {
+  id: string;
+  orders_count: number;
+}
+
+/**
+ * Find or create a customers row tied to this checkout, returning its id so
+ * the order can be linked. Match priority: phone (unique + always present),
+ * then email. NEVER throws — if anything goes wrong we return null and the
+ * order falls back to customer_id = null (the prior behaviour), so this is
+ * strictly additive.
+ *
+ * Also bumps orders_count and updates preferred region/municipality if the
+ * customer already existed.
+ */
+async function upsertCustomer(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  admin: any,
+  input: UpsertCustomerInput,
+): Promise<string | null> {
+  try {
+    // 1) Match by phone (most reliable — checkout always captures it).
+    let existing: CustomerRow | null = null;
+
+    const byPhone = await admin
+      .from("customers")
+      .select("id, orders_count")
+      .eq("phone_e164", input.phone)
+      .maybeSingle();
+    if (byPhone.data) existing = byPhone.data as CustomerRow;
+
+    // 2) Fallback: match by email if we have one.
+    if (!existing && input.email) {
+      const byEmail = await admin
+        .from("customers")
+        .select("id, orders_count")
+        .eq("email", input.email)
+        .maybeSingle();
+      if (byEmail.data) existing = byEmail.data as CustomerRow;
+    }
+
+    if (existing) {
+      // Update: bump the orders counter + sync the freshest preferences.
+      const patch: Record<string, unknown> = {
+        name: input.name, // keep latest spelling
+        orders_count: (existing.orders_count ?? 0) + 1,
+        last_order_at: new Date().toISOString(),
+      };
+      if (input.email) patch.email = input.email;
+      if (input.region) patch.preferred_region = input.region;
+      if (input.municipalityKey) patch.preferred_municipality_key = input.municipalityKey;
+
+      await admin
+        .from("customers")
+        .update(patch as never)
+        .eq("id", existing.id);
+
+      return existing.id;
+    }
+
+    // 3) Create a new customer row.
+    const insertRes = await admin
+      .from("customers")
+      .insert({
+        name: input.name,
+        phone_e164: input.phone,
+        email: input.email,
+        preferred_region: input.region,
+        preferred_municipality_key: input.municipalityKey,
+        orders_count: 1,
+        last_order_at: new Date().toISOString(),
+      } as never)
+      .select("id")
+      .single();
+
+    return (insertRes.data as { id: string } | null)?.id ?? null;
+  } catch {
+    // Strict additive: the order itself succeeds even if the customer link fails.
+    return null;
   }
 }

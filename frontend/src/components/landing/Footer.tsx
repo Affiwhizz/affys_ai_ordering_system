@@ -25,11 +25,11 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
     title: "Help",
     links: [
-      { label: "FAQ", href: "#" },
       { label: "Contact us", href: "mailto:hello@atasteofaffys.com" },
-      { label: "Order status", href: "#" },
-      { label: "Allergy notice", href: "#" },
-      { label: "Refund policy", href: "#" },
+      // These two open the LegalModal via a hash convention picked up
+      // by FooterLegal.tsx — keeps the Footer itself a server component.
+      { label: "Allergy notice", href: "#legal-allergy" },
+      { label: "Refund policy", href: "#legal-refunds" },
     ],
   },
 ];

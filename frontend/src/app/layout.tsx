@@ -5,6 +5,8 @@ import { CartProvider } from "@/components/cart/CartContext";
 import CartDrawer from "@/components/cart/CartDrawer";
 import CheckoutModal from "@/components/cart/CheckoutModal";
 import { CateringModalProvider } from "@/components/landing/modals/CateringModalProvider";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -73,6 +75,11 @@ export default function RootLayout({
             <CheckoutModal />
           </CateringModalProvider>
         </CartProvider>
+        {/* Vercel-hosted analytics + Web Vitals. Free on the Hobby plan;
+            no PII collected. Enable per-project in the Vercel dashboard
+            ("Analytics" + "Speed Insights" tabs). */}
+        <Analytics />
+        <SpeedInsights />
         <CookieBanner />
       </body>
     </html>
