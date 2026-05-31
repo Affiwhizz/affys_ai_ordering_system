@@ -2,15 +2,12 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { Instagram, Facebook, MessageCircle, Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Logo from "./Logo";
 import CartIcon from "@/components/cart/CartIcon";
-
-/**
- * Toggle the live Portimão campaign here. Wire to admin later.
- */
-const PORTIMAO_ACTIVE = true;
+import { fetchStoreFlags } from "@/lib/store/actions";
+import type { PortimaoStatus } from "@/lib/store/types";
 
 interface NavLink {
   href: string;
@@ -18,20 +15,38 @@ interface NavLink {
   hot?: boolean;
 }
 
-const NAV_PRIMARY: NavLink[] = [
-  { href: "/menu", label: "Menu" },
-  { href: "/#catering", label: "Catering" },
-  { href: "/portimao", label: "Portimão", hot: PORTIMAO_ACTIVE },
-  { href: "/#story", label: "Our story" },
-  { href: "/#udia", label: "Ask Udia" },
-  { href: "/#blog", label: "From the kitchen" },
-];
+/**
+ * Build nav + actions from the live Portimão status. When off-season we hide
+ * the Portimão items entirely; when sold-out we keep the link (waitlist still
+ * useful) but drop the "hot" pulse and rename the action.
+ */
+function buildNav(status: PortimaoStatus): { primary: NavLink[]; actions: NavLink[] } {
+  const isLive = status === "live";
+  const showPortimao = status !== "off-season";
 
-const NAV_ACTIONS: NavLink[] = [
-  { href: "/#order", label: "Start an order" },
-  { href: "/portimao", label: "Pre-order Portimão" },
-  { href: "/#catering", label: "Request catering quote" },
-];
+  const primary: NavLink[] = [
+    { href: "/menu", label: "Menu" },
+    { href: "/#catering", label: "Catering" },
+    ...(showPortimao
+      ? [{ href: "/portimao", label: "Portimão", hot: isLive }]
+      : []),
+    { href: "/#story", label: "Our story" },
+    { href: "/#udia", label: "Ask Udia" },
+    { href: "/#blog", label: "From the kitchen" },
+  ];
+
+  const actions: NavLink[] = [
+    { href: "/menu", label: "Start an order" },
+    ...(isLive
+      ? [{ href: "/portimao", label: "Pre-order Portimão" }]
+      : status === "sold-out"
+      ? [{ href: "/portimao", label: "Join Portimão waitlist" }]
+      : []),
+    { href: "/#catering", label: "Request catering quote" },
+  ];
+
+  return { primary, actions };
+}
 
 const NAV_EMAIL = {
   href: "mailto:hello@atasteofaffys.com",
@@ -62,6 +77,26 @@ function TikTokIcon({ size = 18, className }: { size?: number; className?: strin
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  // Default to off-season — safer than showing a "live" pulse before flags load.
+  const [portimaoStatus, setPortimaoStatus] = useState<PortimaoStatus>("off-season");
+
+  // Pull live Portimão status (admin-controlled) once on mount.
+  useEffect(() => {
+    let active = true;
+    fetchStoreFlags()
+      .then((f) => active && setPortimaoStatus(f.portimaoStatus))
+      .catch(() => {
+        /* keep default — Portimão hidden from the nav */
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const { primary: NAV_PRIMARY, actions: NAV_ACTIONS } = useMemo(
+    () => buildNav(portimaoStatus),
+    [portimaoStatus],
+  );
 
   // Lock body scroll when menu open
   useEffect(() => {

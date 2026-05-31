@@ -153,6 +153,27 @@ html {
   margin-left: 12px;
 }
 
+/* ---------- Forms ---------- */
+.input {
+  width: 100%;
+  border: 1px solid var(--border, #E7E0D6);
+  border-radius: 0.625rem;
+  background: var(--surface, #FFFFFF);
+  padding: 0.625rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--espresso, #1E1A17);
+  line-height: 1.4;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.input::placeholder {
+  color: #A39A8E;
+}
+.input:focus {
+  outline: none;
+  border-color: var(--gold, #D4AF37);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.18);
+}
+
 /* ---------- Layout ---------- */
 .container-x {
   width: 100%;

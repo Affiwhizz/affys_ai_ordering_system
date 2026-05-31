@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ShoppingBag, Sparkles, MapPin, MessageCircle } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { fetchStoreFlags } from "@/lib/store/actions";
+import type { PortimaoStatus } from "@/lib/store/types";
 
 /**
  * Mobile sticky bottom dock.
@@ -11,10 +14,8 @@ import { ShoppingBag, Sparkles, MapPin, MessageCircle } from "lucide-react";
  * access to the four most important actions: Order, Ask Udia, Portimão
  * (when the campaign is live), and WhatsApp contact.
  *
- * Toggle the Portimão item visibility with PORTIMAO_ACTIVE — wire this to
- * the same admin flag the Header uses when the backend is hooked up.
+ * Portimão visibility is driven by the live store_flags (admin /admin/portimao).
  */
-const PORTIMAO_ACTIVE = true;
 const WHATSAPP_HREF = "https://wa.me/351914145519";
 
 interface DockItem {
@@ -29,16 +30,38 @@ interface DockItem {
   external?: boolean;
 }
 
-const ITEMS: DockItem[] = [
-  { href: "#order", label: "Order", icon: ShoppingBag, highlight: true },
-  { href: "#udia", label: "Udia", icon: Sparkles },
-  ...(PORTIMAO_ACTIVE
-    ? [{ href: "#portimao", label: "Portimão", icon: MapPin, hot: true } satisfies DockItem]
-    : []),
-  { href: WHATSAPP_HREF, label: "WhatsApp", icon: MessageCircle, external: true },
-];
+function buildItems(status: PortimaoStatus): DockItem[] {
+  const isLive = status === "live";
+  const showPortimao = status !== "off-season";
+  return [
+    // "Order" now points to the real menu (where the cart lives) instead of
+    // an in-page anchor that doesn't actually start an order.
+    { href: "/menu", label: "Order", icon: ShoppingBag, highlight: true },
+    { href: "/#udia", label: "Udia", icon: Sparkles },
+    ...(showPortimao
+      ? [{ href: "/portimao", label: "Portimão", icon: MapPin, hot: isLive } satisfies DockItem]
+      : []),
+    { href: WHATSAPP_HREF, label: "WhatsApp", icon: MessageCircle, external: true },
+  ];
+}
 
 export default function MobileDock() {
+  const [portimaoStatus, setPortimaoStatus] = useState<PortimaoStatus>("off-season");
+
+  useEffect(() => {
+    let active = true;
+    fetchStoreFlags()
+      .then((f) => active && setPortimaoStatus(f.portimaoStatus))
+      .catch(() => {
+        /* keep default — Portimão hidden from the dock */
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const ITEMS = useMemo(() => buildItems(portimaoStatus), [portimaoStatus]);
+
   return (
     <nav
       aria-label="Quick actions"

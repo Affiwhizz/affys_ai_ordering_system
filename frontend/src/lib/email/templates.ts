@@ -155,3 +155,96 @@ export function ownerNewOrderEmail(order: EmailOrder): { subject: string; html: 
     ),
   };
 }
+
+// =============================================================================
+// Catering — inquiry acknowledgement + owner alert
+// =============================================================================
+
+export interface CateringEmailPayload {
+  reference: string;
+  name: string;
+  email: string;
+  phone: string;
+  eventType: string;
+  eventDate: string; // "YYYY-MM-DD"
+  guestCount: number;
+  location: string;
+  budget: string;
+  notes: string;
+}
+
+function cateringShell(
+  heading: string,
+  intro: string,
+  payload: CateringEmailPayload,
+  footer: string,
+): string {
+  const row = (label: string, value: string) =>
+    value
+      ? `<tr><td style="padding:4px 0;color:${MUTED};font-size:13px;width:120px;">${label}</td><td style="padding:4px 0;color:${ESPRESSO};font-size:14px;">${value}</td></tr>`
+      : "";
+
+  return `
+  <div style="background:#FAFAF7;padding:32px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+    <div style="max-width:560px;margin:0 auto;background:#FFFFFF;border:1px solid #E7E0D6;border-radius:16px;overflow:hidden;">
+      <div style="background:${ESPRESSO};padding:18px 24px;">
+        <span style="color:${GOLD};font-size:11px;letter-spacing:0.18em;text-transform:uppercase;">Affy&rsquo;s &middot; Catering</span>
+      </div>
+      <div style="padding:28px 28px 24px;">
+        <h1 style="margin:0;color:${ESPRESSO};font-size:22px;font-weight:600;line-height:1.25;">${heading}</h1>
+        <p style="margin:10px 0 18px;color:${MUTED};font-size:14px;line-height:1.6;">${intro}</p>
+
+        <div style="background:#FAFAF7;border:1px solid #E7E0D6;border-radius:12px;padding:14px 16px;">
+          <table style="width:100%;border-collapse:collapse;">
+            ${row("Reference", payload.reference)}
+            ${row("Name", payload.name)}
+            ${row("Phone", payload.phone)}
+            ${row("Email", payload.email)}
+            ${row("Event", payload.eventType)}
+            ${row("Date", payload.eventDate ? fmtDate(payload.eventDate) : "")}
+            ${row("Guests", payload.guestCount ? String(payload.guestCount) : "")}
+            ${row("Location", payload.location)}
+            ${row("Budget", payload.budget)}
+          </table>
+        </div>
+
+        ${payload.notes ? `<p style="margin:16px 0 0;color:${MUTED};font-size:13px;font-style:italic;">&ldquo;${payload.notes}&rdquo;</p>` : ""}
+
+        <p style="margin:22px 0 0;color:${MUTED};font-size:13px;line-height:1.6;">${footer}</p>
+      </div>
+    </div>
+    <p style="max-width:560px;margin:14px auto 0;color:#A39A8E;font-size:11px;text-align:center;">
+      Affy&rsquo;s &middot; Modern Nigerian food, Lisbon &middot; atasteofaffys.com
+    </p>
+  </div>`;
+}
+
+export function cateringCustomerAckEmail(
+  payload: CateringEmailPayload,
+): { subject: string; html: string } {
+  const first = payload.name.split(" ")[0] || payload.name;
+  return {
+    subject: `Got it, ${first} — we'll be in touch · ${payload.reference}`,
+    html: cateringShell(
+      `Thanks ${first} — your catering request is in.`,
+      "We've received the details below and will come back to you with a tailored menu and a real number. Most replies go out within one working day.",
+      payload,
+      "Reply to this email if anything needs updating, or share more context about your event.",
+    ),
+  };
+}
+
+export function cateringOwnerAlertEmail(
+  payload: CateringEmailPayload,
+): { subject: string; html: string } {
+  const guestStr = payload.guestCount ? ` · ${payload.guestCount} guests` : "";
+  return {
+    subject: `🔔 New catering inquiry · ${payload.reference}${guestStr}`,
+    html: cateringShell(
+      `New catering inquiry: ${payload.reference}`,
+      `${payload.name} just submitted a catering request${payload.eventType ? ` (${payload.eventType})` : ""}. Triage it in your admin Catering board.`,
+      payload,
+      "Manage this in your admin Catering page.",
+    ),
+  };
+}

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { AzulejoTile } from "./Azulejo";
 import { FadeIn, MotionCard, RevealHeading } from "@/components/motion";
+import CateringInquiryModal from "./modals/CateringInquiryModal";
 
 /**
  * Image that gracefully hides itself when the file isn't there.
@@ -88,11 +88,24 @@ const OCCASIONS = [
 ];
 
 export default function Catering() {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [defaultEventType, setDefaultEventType] = useState<string | undefined>();
+
+  const openModal = (eventType?: string) => {
+    setDefaultEventType(eventType);
+    setModalOpen(true);
+  };
+
   return (
     <section
       id="catering"
       className="relative py-24 md:py-32 bg-surface-warm border-y border-border"
     >
+      <CateringInquiryModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        defaultEventType={defaultEventType}
+      />
       <div className="container-x">
         <div className="grid items-start gap-14 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
           {/* Showpiece */}
@@ -141,15 +154,16 @@ export default function Catering() {
                   </div>
                 </dl>
 
-                <Link
-                  href="#order"
+                <button
+                  type="button"
+                  onClick={() => openModal()}
                   className="mt-9 inline-flex h-12 items-center rounded-full bg-gold px-7 text-sm font-semibold text-espresso transition-all hover:bg-gold-soft active:scale-[0.98]"
                 >
                   Request catering quote
                   <svg className="ml-2" width="14" height="14" viewBox="0 0 24 24" fill="none">
                     <path d="M5 12h14m0 0-5-5m5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
-                </Link>
+                </button>
               </div>
             </div>
           </FadeIn>
@@ -175,7 +189,17 @@ export default function Catering() {
                 <FadeIn key={o.title} delay={0.5 + i * 0.1} y={16}>
                   <MotionCard
                     lift={-4}
-                    className="group relative h-full overflow-hidden rounded-2xl border border-border bg-surface transition-colors hover:border-gold/60 hover:shadow-luxe"
+                    onClick={() => openModal(o.title)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e: React.KeyboardEvent) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        openModal(o.title);
+                      }
+                    }}
+                    aria-label={`Request a catering quote for ${o.title}`}
+                    className="group relative h-full overflow-hidden rounded-2xl border border-border bg-surface transition-colors hover:border-gold/60 hover:shadow-luxe cursor-pointer focus:outline-none focus:ring-2 focus:ring-gold/60"
                   >
                     {/* Image header — falls back to gradient + monogram if file missing */}
                     <div className={`relative h-32 overflow-hidden bg-gradient-to-br ${o.gradient}`}>
@@ -210,9 +234,13 @@ export default function Catering() {
             <FadeIn delay={1.05}>
               <p className="mt-8 text-sm text-foreground-muted">
                 Got an event Udia hasn&rsquo;t seen before?{" "}
-                <Link href="#order" className="font-semibold text-espresso underline decoration-gold underline-offset-4 hover:text-red">
+                <button
+                  type="button"
+                  onClick={() => openModal()}
+                  className="font-semibold text-espresso underline decoration-gold underline-offset-4 hover:text-red"
+                >
                   Request a catering quote
-                </Link>{" "}
+                </button>{" "}
                 — we&rsquo;ll come back with a tailored menu and a real number.
               </p>
             </FadeIn>
