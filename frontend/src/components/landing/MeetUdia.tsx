@@ -126,7 +126,7 @@ export default function MeetUdia() {
             <FadeIn delay={1.5}>
               <div className="mt-10 flex flex-wrap items-center gap-4">
                 <Link
-                  href="#order"
+                  href="/menu"
                   className="inline-flex h-12 items-center rounded-full bg-gold px-7 text-sm font-semibold text-espresso shadow-luxe transition-all hover:bg-gold-soft hover:-translate-y-0.5 active:scale-[0.98]"
                 >
                   Try Udia now
@@ -135,7 +135,7 @@ export default function MeetUdia() {
                   </svg>
                 </Link>
                 <Link
-                  href="#order"
+                  href="/menu"
                   className="inline-flex h-12 items-center rounded-full border border-ivory/30 px-7 text-sm font-semibold text-ivory transition-colors hover:bg-ivory/10"
                 >
                   Use the form instead

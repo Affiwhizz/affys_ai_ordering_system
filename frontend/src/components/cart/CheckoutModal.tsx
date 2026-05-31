@@ -18,6 +18,7 @@ import {
 import Link from "next/link";
 import { Modal } from "@/components/motion";
 import { useCart } from "./CartContext";
+import { useLegalModal } from "@/components/legal/LegalModalProvider";
 import PhoneInput, { composeE164 } from "./PhoneInput";
 import OrderDatePicker from "./OrderDatePicker";
 import { AML, OUTSIDE_AML, getMunicipality } from "./aml-data";
@@ -69,6 +70,8 @@ type PaymentMethod = "bank" | "stripe";
 export default function CheckoutModal() {
   const { items, subtotal, checkoutOpen, closeCheckout, clear, orderingPaused, resumeDate } =
     useCart();
+  // Open the legal modal in place for the inline terms / privacy links below.
+  const { open: openLegal } = useLegalModal();
   const isPortimao = items.some((it) => it.channel === "portimao");
   // Regular Lisbon ordering paused by the operator (Portimão preorders are exempt).
   const dailyPaused = orderingPaused && !isPortimao;
@@ -1001,13 +1004,21 @@ export default function CheckoutModal() {
 
               <p className="mt-4 text-center text-[11px] text-foreground-subtle">
                 By submitting you agree to our{" "}
-                <Link href="#" className="underline decoration-gold underline-offset-2 hover:text-espresso">
+                <button
+                  type="button"
+                  onClick={() => openLegal("terms")}
+                  className="underline decoration-gold underline-offset-2 hover:text-espresso cursor-pointer"
+                >
                   terms
-                </Link>{" "}
+                </button>{" "}
                 and{" "}
-                <Link href="#" className="underline decoration-gold underline-offset-2 hover:text-espresso">
+                <button
+                  type="button"
+                  onClick={() => openLegal("privacy")}
+                  className="underline decoration-gold underline-offset-2 hover:text-espresso cursor-pointer"
+                >
                   privacy policy
-                </Link>
+                </button>
                 .
               </p>
             </>

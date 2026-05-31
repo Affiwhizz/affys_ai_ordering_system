@@ -1,7 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { AzulejoStrip } from "./Azulejo";
+import { useCateringModal } from "./modals/CateringModalProvider";
 
 export default function CTA() {
+  const { open: openCateringModal } = useCateringModal();
   return (
     <section className="relative py-20 md:py-28">
       <div className="container-x">
@@ -31,12 +35,14 @@ export default function CTA() {
               </p>
 
               <div className="mt-8 flex flex-wrap gap-3">
+                {/* Direct path: take them straight to the menu. */}
                 <Link
-                  href="#order"
+                  href="/menu"
                   className="inline-flex h-12 items-center justify-center rounded-full bg-gold px-6 text-sm font-semibold text-espresso shadow-luxe transition-all hover:bg-gold-soft active:scale-[0.98]"
                 >
                   Start an order
                 </Link>
+                {/* Scrolls to the MeetUdia section which explains coming-soon. */}
                 <Link
                   href="#udia"
                   className="inline-flex h-12 items-center justify-center rounded-full border border-ivory/30 px-6 text-sm font-semibold text-ivory transition-colors hover:bg-ivory/10"
@@ -47,18 +53,21 @@ export default function CTA() {
                   </span>
                   Ask Udia
                 </Link>
+                {/* Real Portimão page (not the homepage section). */}
                 <Link
-                  href="#portimao"
+                  href="/portimao"
                   className="inline-flex h-12 items-center justify-center rounded-full border border-gold/40 bg-espresso/30 px-6 text-sm font-semibold text-ivory backdrop-blur transition-colors hover:border-gold hover:bg-espresso/50"
                 >
                   Preorder for Portim&atilde;o
                 </Link>
-                <Link
-                  href="#catering"
+                {/* Opens the catering modal in place, no scroll. */}
+                <button
+                  type="button"
+                  onClick={() => openCateringModal()}
                   className="inline-flex h-12 items-center justify-center rounded-full border border-ivory/20 px-6 text-sm font-semibold text-ivory/90 transition-colors hover:bg-ivory/10 hover:text-ivory"
                 >
                   Request catering quote
-                </Link>
+                </button>
               </div>
             </div>
 

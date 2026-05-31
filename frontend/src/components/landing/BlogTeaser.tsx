@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { FadeIn, MotionCard, RevealHeading } from "@/components/motion";
 
 /**
@@ -87,17 +86,12 @@ export default function BlogTeaser() {
             />
           </div>
           <FadeIn delay={0.4}>
-            <Link
-              href="#"
-              className="group inline-flex items-center gap-3 text-sm font-semibold text-espresso transition-colors hover:text-red"
-            >
-              Read all posts
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gold/60 bg-surface transition-all group-hover:bg-gold group-hover:border-gold">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                  <path d="M5 12h14m0 0-5-5m5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </span>
-            </Link>
+            {/* Blog system is on the roadmap. Show a non-link label here
+                so the section doesn't have a dead button. Swap back to a
+                <Link href="/blog"> once the blog routes ship. */}
+            <span className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold/10 px-4 py-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-espresso">
+              Blog launching soon
+            </span>
           </FadeIn>
         </div>
 
@@ -109,7 +103,9 @@ export default function BlogTeaser() {
                 lift={-6}
                 className="group h-full overflow-hidden rounded-3xl border border-border bg-surface transition-colors hover:border-gold/50 hover:shadow-luxe"
               >
-                <Link href={`#`} className="flex h-full flex-col" aria-label={p.title}>
+                {/* Cards are visual previews until the blog routes ship; no
+                    Link wrapper so they don't navigate to a dead URL. */}
+                <div className="flex h-full flex-col">
                   {/* Cover */}
                   <div
                     className={`relative h-48 overflow-hidden bg-gradient-to-br ${p.bg}`}
@@ -129,21 +125,18 @@ export default function BlogTeaser() {
                       <span aria-hidden>·</span>
                       <span>{p.readMinutes} min read</span>
                     </div>
-                    <h3 className="mt-3 font-display text-xl font-semibold leading-tight tracking-tight text-espresso group-hover:text-red transition-colors">
+                    <h3 className="mt-3 font-display text-xl font-semibold leading-tight tracking-tight text-espresso">
                       {p.title}
                     </h3>
                     <p className="mt-2 flex-1 text-sm leading-relaxed text-foreground-muted">
                       {p.excerpt}
                     </p>
 
-                    <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-espresso group-hover:text-red transition-colors">
-                      Read more
-                      <span className="inline-block transition-transform group-hover:translate-x-1" aria-hidden>
-                        →
-                      </span>
+                    <span className="mt-5 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground-subtle">
+                      Coming soon
                     </span>
                   </div>
-                </Link>
+                </div>
               </MotionCard>
             </FadeIn>
           ))}

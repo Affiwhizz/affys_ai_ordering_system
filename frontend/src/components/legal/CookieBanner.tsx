@@ -2,8 +2,8 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { Modal } from "@/components/motion";
+import { useLegalModal } from "./LegalModalProvider";
 
 /**
  * GDPR cookie banner.
@@ -65,6 +65,8 @@ export default function CookieBanner() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [analytics, setAnalytics] = useState(false);
   const [marketing, setMarketing] = useState(false);
+  // Inline "cookie policy" link opens the full policy modal in place.
+  const { open: openLegal } = useLegalModal();
 
   // Decide whether to show on mount.
   // If existing consent is present, we don't show the banner, and we defer
@@ -140,12 +142,13 @@ export default function CookieBanner() {
                     and (with your permission) some analytics and marketing
                     cookies to understand what&rsquo;s helpful and tell our
                     story. You can change your choice anytime in our{" "}
-                    <Link
-                      href="#cookies"
-                      className="font-semibold text-ivory underline decoration-gold underline-offset-4 hover:text-gold"
+                    <button
+                      type="button"
+                      onClick={() => openLegal("cookies")}
+                      className="font-semibold text-ivory underline decoration-gold underline-offset-4 hover:text-gold cursor-pointer"
                     >
                       cookie policy
-                    </Link>
+                    </button>
                     .
                   </p>
                 </div>

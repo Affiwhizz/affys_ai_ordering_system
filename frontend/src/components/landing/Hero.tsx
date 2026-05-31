@@ -80,7 +80,7 @@ export default function Hero() {
             <FadeIn delay={0.7} className="mt-9">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
                 <Link
-                  href="#order"
+                  href="/menu"
                   className="inline-flex h-12 items-center justify-center rounded-full bg-gold px-7 text-sm font-semibold text-espresso shadow-luxe transition-all hover:bg-gold-soft hover:-translate-y-0.5 active:scale-[0.98]"
                 >
                   <span>Start an order</span>

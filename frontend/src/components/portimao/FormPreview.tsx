@@ -86,7 +86,7 @@ export default function PortimaoFormPreview() {
             <FadeIn delay={0.7}>
               <div className="mt-9 flex flex-wrap items-center gap-4">
                 <Link
-                  href="#"
+                  href="/menu"
                   className="inline-flex h-12 items-center rounded-full bg-espresso px-7 text-sm font-semibold text-ivory shadow-luxe transition-all hover:bg-gold hover:text-espresso hover:-translate-y-0.5 active:scale-[0.98] border border-gold-deep"
                 >
                   Open the full form
