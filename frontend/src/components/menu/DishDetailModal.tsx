@@ -98,6 +98,9 @@ export default function DishDetailModal({
                 <img
                   src={images[imgIndex]?.url}
                   alt={images[imgIndex]?.alt ?? item.name}
+                  loading="eager"
+                  decoding="async"
+                  fetchPriority="high"
                   className="h-full w-full object-cover"
                 />
                 {images.length > 1 && (

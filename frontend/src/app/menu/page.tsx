@@ -12,9 +12,12 @@ export const metadata: Metadata = {
 };
 
 // Always render fresh from the database so admin edits (prices, names,
-// availability) show up immediately. One small query per visit, fine for a
-// menu, and removes any caching ambiguity.
+// availability, photos) show up immediately. fetchCache=force-no-store +
+// revalidate=0 also prevent browser HTML caching, which fixes the "Safari
+// shows yesterday's menu" issue on mobile after a fresh photo upload.
 export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+export const revalidate = 0;
 
 export default async function MenuPage() {
   const [items, categories] = await Promise.all([

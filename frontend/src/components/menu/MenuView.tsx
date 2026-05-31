@@ -97,18 +97,18 @@ export default function MenuView({
     <>
       {/* Hero band + search */}
       <section className="relative overflow-hidden border-b border-border bg-cream">
-        <div className="container-x relative py-12 md:py-16">
+        <div className="container-x relative py-6 md:py-12 lg:py-16">
           <span className="eyebrow inline-flex items-center">
             <span className="gold-rule" />
             Daily ordering · Full menu
             <span className="gold-rule-after" />
           </span>
-          <h1 className="mt-4 font-display text-4xl font-medium leading-[1.05] tracking-tight text-espresso sm:text-5xl lg:text-6xl">
+          <h1 className="mt-3 font-display text-2xl font-medium leading-[1.1] tracking-tight text-espresso sm:text-4xl md:text-5xl lg:text-6xl">
             Every dish, every portion.
           </h1>
-          <p className="mt-4 max-w-2xl text-base leading-relaxed text-foreground-muted sm:text-lg">
-            Rice dishes, stews, soups, traditional plates, sides and small chops , 
-            in 2-3 and 4 litres (or by the piece, depending on the dish). Tap any
+          <p className="mt-3 hidden max-w-2xl text-base leading-relaxed text-foreground-muted sm:block sm:text-lg">
+            Rice dishes, stews, soups, traditional plates, sides and small chops,
+            in 2, 3 and 4 litres (or by the piece, depending on the dish). Tap any
             dish to see its photos, ingredients and spice options, and add it to
             your order.
           </p>
@@ -205,7 +205,7 @@ export default function MenuView({
               everything.
             </p>
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {searchResults.map((it) => (
                 <DishTile key={it.id} item={it} onOpen={() => setOpenItem(it)} />
               ))}
@@ -252,18 +252,18 @@ export default function MenuView({
           </nav>
 
           {/* Sections */}
-          <div className="container-x py-12 md:py-16">
+          <div className="container-x py-6 md:py-12 lg:py-16">
             {orderedCategories.map((c) => {
               const catItems = itemsByCategory.get(c) ?? [];
               if (catItems.length === 0) return null;
               return (
-                <section key={c} id={`cat-${slug(c)}`} className="mb-14 scroll-mt-[160px]">
-                  <div className="mb-6">
-                    <h2 className="font-display text-3xl font-medium tracking-tight text-espresso sm:text-4xl">
+                <section key={c} id={`cat-${slug(c)}`} className="mb-8 scroll-mt-[140px] md:mb-14 md:scroll-mt-[160px]">
+                  <div className="mb-4 md:mb-6">
+                    <h2 className="font-display text-xl font-medium tracking-tight text-espresso sm:text-3xl md:text-4xl">
                       {c}
                     </h2>
                   </div>
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {catItems.map((it) => (
                       <DishTile key={it.id} item={it} onOpen={() => setOpenItem(it)} />
                     ))}
@@ -323,7 +323,7 @@ function DishTile({ item, onOpen }: { item: MenuItem; onOpen: () => void }) {
     <button
       type="button"
       onClick={onOpen}
-      className="group relative block aspect-[4/5] w-full overflow-hidden rounded-2xl border border-border bg-cream-deep text-left transition-shadow hover:shadow-luxe sm:aspect-[4/3]"
+      className="group relative block aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border bg-cream-deep text-left transition-shadow hover:shadow-luxe"
     >
       {/* Media */}
       {video ? (
@@ -342,6 +342,9 @@ function DishTile({ item, onOpen }: { item: MenuItem; onOpen: () => void }) {
         <img
           src={img.url}
           alt={img.alt ?? item.name}
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
           className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
       ) : (
@@ -357,19 +360,21 @@ function DishTile({ item, onOpen }: { item: MenuItem; onOpen: () => void }) {
       <div className="absolute inset-0 bg-gradient-to-t from-espresso/90 via-espresso/25 to-transparent" />
 
       {/* Text */}
-      <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
-        <h3 className="font-display text-xl font-semibold leading-tight text-ivory drop-shadow-sm sm:text-2xl">
+      <div className="absolute inset-x-0 bottom-0 p-3 sm:p-5">
+        <h3 className="font-display text-sm font-semibold leading-tight text-ivory drop-shadow-sm sm:text-2xl">
           {item.name}
         </h3>
         {item.namePt && (
-          <p className="text-[11px] italic text-ivory/75">{item.namePt}</p>
+          <p className="hidden text-[11px] italic text-ivory/75 sm:block">{item.namePt}</p>
         )}
         {lowest !== null && (
-          <p className="mt-1 text-sm font-medium text-gold">
-            Starts from {fmt(lowest)}
+          <p className="mt-0.5 text-xs font-medium text-gold sm:mt-1 sm:text-sm">
+            From {fmt(lowest)}
           </p>
         )}
-        <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-gold px-3.5 py-1.5 text-xs font-semibold text-espresso opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
+        {/* The "View & order" pill is hidden on mobile (the whole tile is
+            tap-to-open already) and only appears on hover on larger screens. */}
+        <span className="mt-3 hidden items-center gap-1.5 rounded-full bg-gold px-3.5 py-1.5 text-xs font-semibold text-espresso opacity-0 transition-opacity sm:inline-flex sm:group-hover:opacity-100">
           View &amp; order →
         </span>
       </div>
