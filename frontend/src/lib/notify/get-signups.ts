@@ -3,7 +3,7 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import type { NotifySignup } from "./types";
 
 // Re-export the client-safe pieces from here too, so callers don't have to
-// know which file to import from — but client components should still pull
+// know which file to import from, but client components should still pull
 // from "./types" directly (importing this file pulls in supabase/server).
 export type { NotifySignup } from "./types";
 export { labelForSource, toneForSource } from "./types";

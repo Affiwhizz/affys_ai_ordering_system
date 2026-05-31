@@ -7,7 +7,7 @@ import type { LegalTopic } from "./legal-content";
 /**
  * The bottom-of-footer legal-links row. Also exposes the trigger for
  * Allergy notice and Refund policy from the Help column up above (via the
- * legal-link hash convention — see Footer.tsx).
+ * legal-link hash convention, see Footer.tsx).
  *
  * Kept as a client component so the Footer itself can stay a server
  * component.

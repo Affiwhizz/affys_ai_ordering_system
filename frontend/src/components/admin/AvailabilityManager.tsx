@@ -72,7 +72,7 @@ export default function AvailabilityManager({ initial }: { initial: Availability
   // Build the month grid
   const monthStart = new Date(view.year, view.month, 1);
   const leading = monthStart.getDay(); // 0..6
-  const daysInMonth = new Date(view.year, view.month + 1, 0).getDate();
+  const daysInMonth = new Date(view.year, view.month + 1-0).getDate();
   const cells: (Date | null)[] = [];
   for (let i = 0; i < leading; i++) cells.push(null);
   for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(view.year, view.month, d));
@@ -135,10 +135,10 @@ export default function AvailabilityManager({ initial }: { initial: Availability
                 onClick={() => toggleDate(iso)}
                 title={
                   isBlocked
-                    ? "Closed — click to reopen"
+                    ? "Closed, click to reopen"
                     : closedWeekday
-                      ? "Weekday is off (set on the right) — click to also block this date"
-                      : "Open — click to close this date"
+                      ? "Weekday is off (set on the right), click to also block this date"
+                      : "Open, click to close this date"
                 }
                 className={`flex h-11 items-center justify-center rounded-lg text-sm transition-colors ${
                   disabled

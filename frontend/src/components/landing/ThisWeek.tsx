@@ -8,13 +8,13 @@ import DishDetailModal from "@/components/menu/DishDetailModal";
 import type { MenuItem } from "@/components/menu/menu-data";
 
 /**
- * "This week at Affy's" — features ONE weekly special (the first one flagged in
+ * "This week at Affy's", features ONE weekly special (the first one flagged in
  * admin) in the hero spot, with a modal listing the rest. Each special opens
  * the full dish detail so visitors can order it. If nothing is flagged, shows
  * sensible default copy so the section never looks empty.
  */
 
-const PICKUP_WINDOW = "Mon — Sat · Lisbon";
+const PICKUP_WINDOW = "Mon to Sat · Lisbon";
 const DEADLINE = "Preorders close every Friday · 18:00 WET";
 
 export default function ThisWeek({ specials }: { specials: MenuItem[] }) {
@@ -29,7 +29,7 @@ export default function ThisWeek({ specials }: { specials: MenuItem[] }) {
 
   const headline = featured
     ? featured.name
-    : "Bold, comforting Nigerian plates — fresh every week.";
+    : "Bold, comforting Nigerian plates, fresh every week.";
   const sub = featured
     ? rest.length > 0
       ? `Also this week: ${rest.map((d) => d.name).join(", ")}.`

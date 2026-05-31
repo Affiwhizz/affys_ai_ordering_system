@@ -2,7 +2,7 @@
  * Stable per-browser device ID used for promo single-use enforcement.
  *
  * Stored in localStorage so the same browser keeps the same ID across visits.
- * Best-effort only (a customer can clear storage or switch device) — it's one
+ * Best-effort only (a customer can clear storage or switch device), it's one
  * of three signals (phone + email + device) used together.
  */
 const KEY = "affys_device_id";

@@ -65,8 +65,8 @@ export default function AddToCartButton({
         disabled
         title={
           resume
-            ? `Ordering paused — we're back ${resume}`
-            : "Ordering paused — back soon"
+            ? `Ordering paused, we're back ${resume}`
+            : "Ordering paused, back soon"
         }
         className={`inline-flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-full border border-border bg-cream/60 font-semibold text-foreground-muted ${base} ${className}`}
       >

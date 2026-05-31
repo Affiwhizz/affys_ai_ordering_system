@@ -38,7 +38,7 @@ export default function AdminUserPill() {
           });
         }
       } catch {
-        // Supabase not configured yet — leave the placeholder.
+        // Supabase not configured yet, leave the placeholder.
       }
     })();
     return () => {
@@ -50,7 +50,7 @@ export default function AdminUserPill() {
     ? staff.displayName
         .split(" ")
         .map((p) => p[0])
-        .slice(0, 2)
+        .slice(0-2)
         .join("")
         .toUpperCase()
     : "A";
@@ -65,7 +65,7 @@ export default function AdminUserPill() {
           {staff?.displayName ?? "Sign in"}
         </span>
         <span className="text-[10px] uppercase tracking-wider text-foreground-subtle">
-          {staff?.role ?? "—"}
+          {staff?.role ?? ", "}
         </span>
       </div>
     </div>

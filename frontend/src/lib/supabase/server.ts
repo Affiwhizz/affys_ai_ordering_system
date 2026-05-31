@@ -7,7 +7,7 @@ import type { Database } from "./types";
  * Route Handlers). Reads/writes the auth cookie so the user's session is
  * available on the server.
  *
- * Uses the browser-safe publishable/anon key — RLS in the database protects
+ * Uses the browser-safe publishable/anon key, RLS in the database protects
  * sensitive data. For privileged server-only operations (writing to
  * admin_actions, bypassing RLS), use lib/supabase/admin.ts.
  */
@@ -29,7 +29,7 @@ export async function createServerSupabase() {
               cookieStore.set(name, value, options),
             );
           } catch {
-            // Called from a Server Component — that's fine; the middleware
+            // Called from a Server Component, that's fine; the middleware
             // handles refreshing the session cookies.
           }
         },

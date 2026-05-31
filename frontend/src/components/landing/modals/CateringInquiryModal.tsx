@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, Loader2, CheckCircle2 } from "lucide-react";
 import { submitCateringInquiry } from "@/lib/catering/actions";
-import PhoneInput from "@/components/PhoneInput";
 
 interface Props {
   open: boolean;
@@ -84,16 +83,21 @@ export default function CateringInquiryModal({ open, onClose, defaultEventType }
     setSubmitting(true);
     setErrorMsg(null);
 
-    const guests = Number(guestCount);
+    const guests = parseInt(guestCount, 10);
+    const trimmedBudget = budget.trim();
     const res = await submitCateringInquiry({
       name: name.trim(),
       email: email.trim() || undefined,
-      phone: phone.trim(),
+      // Always send the phone with a leading + so admin / WhatsApp deep links
+      // resolve cleanly. Users typed only digits per the catering-specific UX.
+      phone: phone.trim() ? `+${phone.trim()}` : "",
       eventType: eventType.trim() || undefined,
       eventDate: eventDate || undefined,
       guestCount: Number.isFinite(guests) && guests > 0 ? guests : undefined,
       location: location.trim() || undefined,
-      budget: budget.trim() || undefined,
+      // The € symbol is rendered next to the input; prepend it before storing
+      // so the admin board + email always show "€1500" not "1500".
+      budget: trimmedBudget ? `€${trimmedBudget}` : undefined,
       notes: notes.trim() || undefined,
     });
 
@@ -170,7 +174,7 @@ export default function CateringInquiryModal({ open, onClose, defaultEventType }
                     <p className="mt-2 text-sm text-foreground-muted">
                       Your catering inquiry is in. Reference{" "}
                       <span className="font-mono font-semibold text-espresso">{reference}</span>.
-                      We&rsquo;ll come back to you with a tailored menu and quote — usually within
+                      We&rsquo;ll come back to you with a tailored menu and quote, usually within
                       one working day.
                     </p>
                   </div>
@@ -185,7 +189,7 @@ export default function CateringInquiryModal({ open, onClose, defaultEventType }
               ) : (
                 <form onSubmit={onSubmit} className="space-y-4">
                   <p className="text-sm text-foreground-muted">
-                    Tell us about your event. Name and phone are required — anything else helps us
+                    Tell us about your event. Name and phone are required, anything else helps us
                     prepare a sharper quote.
                   </p>
 
@@ -200,12 +204,18 @@ export default function CateringInquiryModal({ open, onClose, defaultEventType }
                     />
                   </Field>
 
-                  <PhoneInput
-                    value={phone}
-                    onChange={setPhone}
-                    required
-                    label="Phone"
-                  />
+                  <Field label="Phone *">
+                    <input
+                      type="tel"
+                      required
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+                      className="input"
+                      inputMode="numeric"
+                      autoComplete="tel"
+                      placeholder="e.g. 351914145519"
+                    />
+                  </Field>
 
                   <Field label="Email (optional)">
                     <input
@@ -247,9 +257,13 @@ export default function CateringInquiryModal({ open, onClose, defaultEventType }
                       <input
                         type="number"
                         min={1}
+                        step={1}
+                        // Strip anything but whole digits, numeric input on
+                        // mobile, integer-only validation on submit.
                         value={guestCount}
-                        onChange={(e) => setGuestCount(e.target.value)}
+                        onChange={(e) => setGuestCount(e.target.value.replace(/\D/g, ""))}
                         className="input"
+                        inputMode="numeric"
                         placeholder="e.g. 80"
                       />
                     </Field>
@@ -259,19 +273,35 @@ export default function CateringInquiryModal({ open, onClose, defaultEventType }
                         value={location}
                         onChange={(e) => setLocation(e.target.value)}
                         className="input"
-                        placeholder="Lisboa · venue or municipality"
+                        placeholder="Lisboa, venue or municipality"
                       />
                     </Field>
                   </div>
 
                   <Field label="Budget (optional)">
-                    <input
-                      type="text"
-                      value={budget}
-                      onChange={(e) => setBudget(e.target.value)}
-                      className="input"
-                      placeholder='e.g. "around €1500"'
-                    />
+                    <div className="relative">
+                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-foreground-muted">
+                        €
+                      </span>
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        value={budget}
+                        // Only digits + a single decimal point allowed; the €
+                        // glyph is rendered separately above so the value is
+                        // a clean number string.
+                        onChange={(e) =>
+                          setBudget(
+                            e.target.value
+                              .replace(/[^0-9.,]/g, "")
+                              .replace(/(,.*?),/g, "$1")
+                              .replace(/(\..*?)\./g, "$1"),
+                          )
+                        }
+                        className="input pl-7"
+                        placeholder="e.g. 1500"
+                      />
+                    </div>
                   </Field>
 
                   <Field label="Tell us about your event">

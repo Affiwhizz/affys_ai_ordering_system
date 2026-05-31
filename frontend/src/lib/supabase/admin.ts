@@ -2,7 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
 
 /**
- * Admin (service-role) Supabase client — bypasses Row Level Security.
+ * Admin (service-role) Supabase client, bypasses Row Level Security.
  *
  * SERVER-ONLY. Never import this from a "use client" file.
  *
@@ -12,7 +12,7 @@ import type { Database } from "./types";
  *   - Server-side data jobs (e.g. sending reminder emails)
  *   - Anything that needs to read/write across users
  *
- * The service role key MUST stay private — it's set as SUPABASE_SERVICE_ROLE_KEY
+ * The service role key MUST stay private, it's set as SUPABASE_SERVICE_ROLE_KEY
  * in Vercel env vars and is NOT prefixed with NEXT_PUBLIC_.
  */
 export function createAdminSupabase() {

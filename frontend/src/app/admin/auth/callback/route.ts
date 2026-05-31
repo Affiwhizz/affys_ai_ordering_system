@@ -6,11 +6,11 @@ import { createServerClient } from "@supabase/ssr";
  *
  * Supabase redirects here after a user clicks the sign-in link in their
  * email, with a `code` query param. We exchange that code for a session and
- * — crucially — write the resulting auth cookies directly onto the redirect
+ *, crucially, write the resulting auth cookies directly onto the redirect
  * response we return, so the session survives the redirect to /admin.
  *
  * (An earlier version set cookies via next/headers, which didn't reliably
- * attach them to the redirect — causing an endless bounce back to /login.)
+ * attach them to the redirect, causing an endless bounce back to /login.)
  *
  * The proxy then verifies the user has an active staff_users row before any
  * admin page renders.
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
 
   if (!supabaseUrl || !supabaseKey) return fail();
 
-  // The response we'll return on success — auth cookies get written onto it.
+  // The response we'll return on success, auth cookies get written onto it.
   const response = NextResponse.redirect(new URL(next, url.origin));
 
   const supabase = createServerClient(supabaseUrl, supabaseKey, {

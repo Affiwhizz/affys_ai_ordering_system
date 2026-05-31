@@ -15,7 +15,7 @@ export default function Hero() {
     <section className="relative py-8 md:py-12 lg:py-16">
       <div className="container-x">
         <div className="relative overflow-hidden rounded-[1.8rem] border border-gold/30 shadow-luxe">
-          {/* Background — video or warm fallback */}
+          {/* Background, video or warm fallback */}
           {HERO_VIDEO_SRC ? (
             <video
               className="absolute inset-0 h-full w-full object-cover"
@@ -45,7 +45,7 @@ export default function Hero() {
             </div>
           )}
 
-          {/* Dimming overlay — keeps copy readable over any video */}
+          {/* Dimming overlay, keeps copy readable over any video */}
           <div
             className="absolute inset-0 bg-gradient-to-r from-espresso/85 via-espresso/60 to-espresso/35"
             aria-hidden
@@ -71,7 +71,7 @@ export default function Hero() {
 
             <FadeIn delay={0.5}>
               <p className="mt-6 max-w-xl text-lg leading-relaxed text-ivory/85">
-                Bold, comforting, home-style Nigerian meals — preordered,
+                Bold, comforting, home-style Nigerian meals, preordered,
                 delivered, catered, and brought to life at pop-ups across
                 Portugal. Slow-cooked the way it should be.
               </p>

@@ -6,10 +6,10 @@ interface LogoProps {
 }
 
 /**
- * Logo — brand image only.
+ * Logo, brand image only.
  *
  * The "A taste of home" tagline is now baked into the logo PNG itself,
- * so the component just renders the image — no separate text.
+ * so the component just renders the image, no separate text.
  *
  * Expects the logo at /logo.png (i.e. frontend/public/logo.png).
  * alt is intentionally empty; the parent Link's aria-label carries the
@@ -19,7 +19,7 @@ export default function Logo({ className = "" }: LogoProps) {
   return (
     <Link
       href="/"
-      aria-label="Affy's — home"
+      aria-label="Affy's, home"
       className={`group inline-flex items-center ${className}`}
     >
       <Image

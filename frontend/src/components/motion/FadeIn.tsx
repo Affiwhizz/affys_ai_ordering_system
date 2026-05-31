@@ -17,7 +17,7 @@ interface FadeInProps extends Omit<HTMLMotionProps<"div">, "initial" | "animate"
 
 /**
  * Wrap any block to give it a soft fade-up reveal when it scrolls into view.
- * Use this everywhere — paragraphs, cards, buttons, badges. Cheap and elegant.
+ * Use this everywhere, paragraphs, cards, buttons, badges. Cheap and elegant.
  */
 export default function FadeIn({
   children,

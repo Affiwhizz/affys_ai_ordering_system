@@ -1,7 +1,7 @@
 /**
  * Client-safe promo code types + discount math.
  *
- * No "server-only" import — shared by the admin manager, the server actions,
+ * No "server-only" import, shared by the admin manager, the server actions,
  * and the checkout (client) component.
  */
 

@@ -47,7 +47,7 @@ export default function NotifySignupsTable({ signups }: Props) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `notify-signups-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `notify-signups-${new Date().toISOString().slice(0-10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -117,7 +117,7 @@ export default function NotifySignupsTable({ signups }: Props) {
                         <Mail size={12} className="text-foreground-subtle" /> {s.email}
                       </a>
                     ) : (
-                      <span className="text-foreground-subtle">—</span>
+                      <span className="text-foreground-subtle">, </span>
                     )}
                   </td>
                   <td className="px-4 py-3 text-espresso">
@@ -131,7 +131,7 @@ export default function NotifySignupsTable({ signups }: Props) {
                         <Phone size={12} className="text-foreground-subtle" /> {s.phone}
                       </a>
                     ) : (
-                      <span className="text-foreground-subtle">—</span>
+                      <span className="text-foreground-subtle">, </span>
                     )}
                   </td>
                   <td className="px-4 py-3 text-foreground-muted">{fmtDate(s.createdAt)}</td>

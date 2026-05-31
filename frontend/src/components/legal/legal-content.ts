@@ -1,6 +1,6 @@
 /**
  * Placeholder legal content for the website's Privacy / Terms / Cookies
- * modals. This is a first-draft, GDPR-mindful baseline — review and tailor
+ * modals. This is a first-draft, GDPR-mindful baseline, review and tailor
  * with a lawyer before launch, especially around data retention, transfers,
  * and any specifics about payment processors and third parties used.
  */
@@ -42,7 +42,7 @@ export const LEGAL_DOCS: Record<LegalTopic, LegalDocument> = {
         heading: "What we collect",
         body: [
           "When you place an order: your name, phone, email, pickup or delivery address, and what you ordered. When you contact us: the message you send and the channel you used (email, WhatsApp, Instagram). When you visit the site: standard request logs (IP, browser, page) and the cookies you've consented to.",
-          "We don't ask for or store anything sensitive — no health data, no payment card details (Stripe handles payment, not us).",
+          "We don't ask for or store anything sensitive, no health data, no payment card details (Stripe handles payment, not us).",
         ],
       },
       {
@@ -54,7 +54,7 @@ export const LEGAL_DOCS: Record<LegalTopic, LegalDocument> = {
       {
         heading: "How long we keep it",
         body: [
-          "Order records — 7 years (Portuguese accounting requirement). Customer contact details — until you ask us to delete them or 3 years after your last order, whichever is sooner. Cookies — see the cookie policy.",
+          "Order records, 7 years (Portuguese accounting requirement). Customer contact details, until you ask us to delete them or 3 years after your last order, whichever is sooner. Cookies, see the cookie policy.",
         ],
       },
       {
@@ -81,7 +81,7 @@ export const LEGAL_DOCS: Record<LegalTopic, LegalDocument> = {
       {
         heading: "Placing an order",
         body: [
-          "You can preorder through this site (Ask Udia or the quick form), through our Uber Eats store during festival windows, or at our pop-ups. A submitted preorder is a request — your slot is locked once we confirm details and you pay via the Stripe link we send.",
+          "You can preorder through this site (Ask Udia or the quick form), through our Uber Eats store during festival windows, or at our pop-ups. A submitted preorder is a request, your slot is locked once we confirm details and you pay via the Stripe link we send.",
         ],
       },
       {
@@ -93,25 +93,25 @@ export const LEGAL_DOCS: Record<LegalTopic, LegalDocument> = {
       {
         heading: "Pickup & delivery",
         body: [
-          "Direct preorders through this site are pickup-only at the address we confirm. Delivery is available in selected zones via Uber/Bolt courier (Lisbon) or Rodomail (rest of Portugal) — fees and lead times depend on your area and are quoted before payment.",
+          "Direct preorders through this site are pickup-only at the address we confirm. Delivery is available in selected zones via Uber/Bolt courier (Lisbon) or Rodomail (rest of Portugal), fees and lead times depend on your area and are quoted before payment.",
         ],
       },
       {
         heading: "Allergies & dietary needs",
         body: [
-          "Tell us about allergies and dietary requirements in your order. Our kitchen handles common allergens (gluten, peanut, soy, dairy, shellfish) — we can't guarantee a zero-trace environment but we'll do our best to accommodate.",
+          "Tell us about allergies and dietary requirements in your order. Our kitchen handles common allergens (gluten, peanut, soy, dairy, shellfish), we can't guarantee a zero-trace environment but we'll do our best to accommodate.",
         ],
       },
       {
         heading: "Cancellations & refunds",
         body: [
-          "Cancel 24h before your pickup window for a full refund. Within 24h, we'll do our best to reschedule — full refunds aren't possible because the food is already prepped.",
+          "Cancel 24h before your pickup window for a full refund. Within 24h, we'll do our best to reschedule, full refunds aren't possible because the food is already prepped.",
         ],
       },
       {
         heading: "Catering",
         body: [
-          "Catering orders are confirmed in writing (email or WhatsApp). A 50% deposit secures the booking; the balance is due 7 days before the event. Cancellations 14+ days out are fully refundable; 7–14 days, the deposit is retained; under 7 days, the full amount stands.",
+          "Catering orders are confirmed in writing (email or WhatsApp). A 50% deposit secures the booking; the balance is due 7 days before the event. Cancellations 14+ days out are fully refundable; 7-14 days, the deposit is retained; under 7 days, the full amount stands.",
         ],
       },
     ],
@@ -132,13 +132,13 @@ export const LEGAL_DOCS: Record<LegalTopic, LegalDocument> = {
       {
         heading: "Analytics cookies",
         body: [
-          "Anonymous data on which pages and dishes are most useful — helps us improve. These only run if you accept analytics in the consent banner.",
+          "Anonymous data on which pages and dishes are most useful, helps us improve. These only run if you accept analytics in the consent banner.",
         ],
       },
       {
         heading: "Marketing cookies",
         body: [
-          "Used for personalized content and ads on platforms like Instagram and Facebook. Off by default — only run if you opt in.",
+          "Used for personalized content and ads on platforms like Instagram and Facebook. Off by default, only run if you opt in.",
         ],
       },
       {
@@ -177,7 +177,7 @@ export const LEGAL_DOCS: Record<LegalTopic, LegalDocument> = {
       {
         heading: "Tell us if something isn't working",
         body: [
-          "If you hit a barrier — anything from a button you can't reach by keyboard to text you can't read at your zoom level — please email hello@atasteofaffys.com with the page, the device/browser, and a quick description. We'll fix it.",
+          "If you hit a barrier, anything from a button you can't reach by keyboard to text you can't read at your zoom level, please email hello@atasteofaffys.com with the page, the device/browser, and a quick description. We'll fix it.",
         ],
       },
     ],
@@ -192,14 +192,14 @@ export const LEGAL_DOCS: Record<LegalTopic, LegalDocument> = {
       {
         heading: "Direct preorders (weekly menu)",
         body: [
-          "Cancel 24 hours or more before your pickup window for a full refund. Cancellations under 24 hours can't be fully refunded because the food is already shopped and prepped — but we'll try to reschedule the slot. Refunds are returned via the original payment method (Stripe or bank transfer) within 5 working days.",
+          "Cancel 24 hours or more before your pickup window for a full refund. Cancellations under 24 hours can't be fully refunded because the food is already shopped and prepped, but we'll try to reschedule the slot. Refunds are returned via the original payment method (Stripe or bank transfer) within 5 working days.",
         ],
       },
       {
         heading: "Catering orders",
         body: [
           "A 50% deposit secures the booking; the balance is due 7 days before the event.",
-          "Cancellations 14+ days out are fully refundable (deposit included). 7–14 days out, the deposit is retained and the balance is refunded. Under 7 days, the full amount stands — but we'll do our best to shift the booking to a new date if you'd like.",
+          "Cancellations 14+ days out are fully refundable (deposit included). 7-14 days out, the deposit is retained and the balance is refunded. Under 7 days, the full amount stands, but we'll do our best to shift the booking to a new date if you'd like.",
         ],
       },
       {
@@ -211,7 +211,7 @@ export const LEGAL_DOCS: Record<LegalTopic, LegalDocument> = {
       {
         heading: "If your order arrives wrong or late",
         body: [
-          "Tell us within 24 hours (hello@atasteofaffys.com or WhatsApp) with a photo if relevant. We'll either remake the order, deliver the missing item, or refund the affected portion — your choice.",
+          "Tell us within 24 hours (hello@atasteofaffys.com or WhatsApp) with a photo if relevant. We'll either remake the order, deliver the missing item, or refund the affected portion, your choice.",
         ],
       },
       {
@@ -233,7 +233,7 @@ export const LEGAL_DOCS: Record<LegalTopic, LegalDocument> = {
         heading: "Common allergens in our kitchen",
         body: [
           "Our cooking regularly involves: peanuts and groundnut oil (notably in suya and some stews), tree nuts, sesame (egusi), gluten (small chops, dodo coatings), egg (puff puff, batters), dairy (some sides and drinks), shellfish (occasional pepper soup), fish, and soy.",
-          "Many of our recipes use scotch bonnet and yaji spice blends. If you're sensitive to capsaicin, please tell us — we can lower the heat.",
+          "Many of our recipes use scotch bonnet and yaji spice blends. If you're sensitive to capsaicin, please tell us, we can lower the heat.",
         ],
       },
       {
@@ -246,13 +246,13 @@ export const LEGAL_DOCS: Record<LegalTopic, LegalDocument> = {
         heading: "How to flag your needs",
         body: [
           "Tell us about allergies and dietary needs in the order notes when you place an order, or message Udia about it (when available). For catering, share allergy info at the inquiry stage so we can plan the menu around it.",
-          "If you need a specific dish modified (no peanuts, no dairy, gluten-free, halal), say so — we'll let you know if we can do it safely.",
+          "If you need a specific dish modified (no peanuts, no dairy, gluten-free, halal), say so, we'll let you know if we can do it safely.",
         ],
       },
       {
         heading: "We're not a clinical kitchen",
         body: [
-          "Affy's cooks with care and disclosure, but we're a small kitchen and pop-up — not a medical-grade allergen-free environment. The final responsibility for an order being safe for severe allergies rests with the customer; please ask us anything you need before ordering.",
+          "Affy's cooks with care and disclosure, but we're a small kitchen and pop-up, not a medical-grade allergen-free environment. The final responsibility for an order being safe for severe allergies rests with the customer; please ask us anything you need before ordering.",
         ],
       },
     ],

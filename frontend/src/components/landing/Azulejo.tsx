@@ -1,5 +1,5 @@
 /**
- * Azulejo — custom Portuguese-Nigerian fusion tile pattern.
+ * Azulejo, custom Portuguese-Nigerian fusion tile pattern.
  * Rendered in Affy's brand palette (gold + forest + ivory).
  *
  * Three exports:
@@ -61,12 +61,12 @@ export function AzulejoTile({
         strokeWidth="1"
         strokeOpacity="0.55"
       />
-      {/* Quarter petals — fourfold symmetry */}
+      {/* Quarter petals, fourfold symmetry */}
       <g stroke={stroke} strokeWidth="1.2" fill="none" strokeLinecap="round">
-        <path d="M40 22 C 33 30, 33 36, 40 40 C 47 36, 47 30, 40 22 Z" />
-        <path d="M40 58 C 33 50, 33 44, 40 40 C 47 44, 47 50, 40 58 Z" />
-        <path d="M22 40 C 30 33, 36 33, 40 40 C 36 47, 30 47, 22 40 Z" />
-        <path d="M58 40 C 50 33, 44 33, 40 40 C 44 47, 50 47, 58 40 Z" />
+        <path d="M40 22 C 33 30-33 36-40 40 C 47 36-47 30-40 22 Z" />
+        <path d="M40 58 C 33 50-33 44-40 40 C 47 44-47 50-40 58 Z" />
+        <path d="M22 40 C 30 33-36 33-40 40 C 36 47-30 47-22 40 Z" />
+        <path d="M58 40 C 50 33-44 33-40 40 C 44 47-50 47-58 40 Z" />
       </g>
       {/* Central rosette */}
       <circle cx="40" cy="40" r="4" fill={dot} />
@@ -101,17 +101,17 @@ export function AzulejoStrip({
   const dot = tone === "forest" ? "%23F7F3EA" : "%23D4AF37";
   const accent = tone === "forest" ? "%23E8CC6E" : "%236A1F1B";
 
-  // Inline SVG tile encoded as data URL — same motif as AzulejoTile.
+  // Inline SVG tile encoded as data URL, same motif as AzulejoTile.
   const svg =
     `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80' width='80' height='80'>` +
     `<rect width='80' height='80' fill='${fill}'/>` +
     `<rect x='2' y='2' width='76' height='76' fill='none' stroke='${stroke}' stroke-opacity='0.18' stroke-width='1'/>` +
     `<path d='M40 6 L74 40 L40 74 L6 40 Z' fill='none' stroke='${stroke}' stroke-width='1' stroke-opacity='0.55'/>` +
     `<g stroke='${stroke}' stroke-width='1.2' fill='none' stroke-linecap='round'>` +
-    `<path d='M40 22 C 33 30, 33 36, 40 40 C 47 36, 47 30, 40 22 Z'/>` +
-    `<path d='M40 58 C 33 50, 33 44, 40 40 C 47 44, 47 50, 40 58 Z'/>` +
-    `<path d='M22 40 C 30 33, 36 33, 40 40 C 36 47, 30 47, 22 40 Z'/>` +
-    `<path d='M58 40 C 50 33, 44 33, 40 40 C 44 47, 50 47, 58 40 Z'/>` +
+    `<path d='M40 22 C 33 30-33 36-40 40 C 47 36-47 30-40 22 Z'/>` +
+    `<path d='M40 58 C 33 50-33 44-40 40 C 47 44-47 50-40 58 Z'/>` +
+    `<path d='M22 40 C 30 33-36 33-40 40 C 36 47-30 47-22 40 Z'/>` +
+    `<path d='M58 40 C 50 33-44 33-40 40 C 44 47-50 47-58 40 Z'/>` +
     `</g>` +
     `<circle cx='40' cy='40' r='4' fill='${dot}'/>` +
     `<circle cx='40' cy='40' r='7' fill='none' stroke='${accent}' stroke-width='0.8'/>` +

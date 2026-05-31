@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Search, ShoppingBag, Utensils, BellRing } from "lucide-react";
+import { Bell, ShoppingBag, Utensils, BellRing } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import AdminUserPill from "./AdminUserPill";
@@ -24,16 +24,30 @@ const ZERO_BELL: BellState = { newOrders: 0, newCatering: 0, recentSignups: 0 };
 export default function Topbar({ title, subtitle }: TopbarProps) {
   const [panel, setPanel] = useState(false);
   const [bell, setBell] = useState<BellState>(ZERO_BELL);
+  // ISO timestamp the operator last opened the bell panel, persisted in
+  // localStorage so it survives reloads + survives across tabs/sessions on
+  // the same device.
+  const SEEN_KEY = "affys_admin_bell_seen_at";
+  const [seenAt, setSeenAt] = useState<string | null>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
 
-  // Poll the counts every minute. Failures degrade silently to 0.
+  // Hydrate seenAt from localStorage once on mount.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSeenAt(window.localStorage.getItem(SEEN_KEY));
+  }, []);
+
+  // Poll the counts every minute, filtered by seenAt so the badge only
+  // reflects items that arrived AFTER the operator last opened the panel.
   useEffect(() => {
     let active = true;
+    const since = seenAt ?? undefined;
     const load = async () => {
       const [orders, catering, signups] = await Promise.all([
-        getNewOrdersCount().catch(() => 0),
-        getNewCateringCount().catch(() => 0),
-        getRecentNotifyCount().catch(() => 0),
+        getNewOrdersCount(since).catch(() => 0),
+        getNewCateringCount(since).catch(() => 0),
+        getRecentNotifyCount(since).catch(() => 0),
       ]);
       if (!active) return;
       setBell({ newOrders: orders, newCatering: catering, recentSignups: signups });
@@ -44,7 +58,7 @@ export default function Topbar({ title, subtitle }: TopbarProps) {
       active = false;
       clearInterval(t);
     };
-  }, []);
+  }, [seenAt]);
 
   // Close the panel on outside click / Escape.
   useEffect(() => {
@@ -63,6 +77,23 @@ export default function Topbar({ title, subtitle }: TopbarProps) {
     };
   }, [panel]);
 
+  // Open the panel + mark everything as seen at this moment.
+  const togglePanel = () => {
+    setPanel((open) => {
+      const willOpen = !open;
+      if (willOpen) {
+        const now = new Date().toISOString();
+        try {
+          window.localStorage.setItem(SEEN_KEY, now);
+        } catch {
+          /* private mode / quota, silently ignore */
+        }
+        setSeenAt(now);
+      }
+      return willOpen;
+    });
+  };
+
   const total = bell.newOrders + bell.newCatering + bell.recentSignups;
 
   return (
@@ -78,16 +109,8 @@ export default function Topbar({ title, subtitle }: TopbarProps) {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Search (placeholder) — single-line, ellipsis if too narrow */}
-          <div className="hidden h-10 items-center gap-2 rounded-full border border-border bg-cream px-3 text-sm text-foreground-subtle md:flex md:w-72 xl:w-80">
-            <Search size={14} className="shrink-0" />
-            <span className="truncate whitespace-nowrap">
-              Search orders, customers, dishes…
-            </span>
-            <span className="ml-auto shrink-0 rounded-md border border-border-strong bg-white px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-foreground-subtle">
-              ⌘K
-            </span>
-          </div>
+          {/* Search hidden until the actual search backend is wired, was a
+              non-functional placeholder that confused testers. */}
 
           {/* Bell + popover panel */}
           <div ref={wrapRef} className="relative">
@@ -95,7 +118,7 @@ export default function Topbar({ title, subtitle }: TopbarProps) {
               type="button"
               aria-label={`Notifications${total > 0 ? ` (${total} new)` : ""}`}
               aria-expanded={panel}
-              onClick={() => setPanel((v) => !v)}
+              onClick={togglePanel}
               className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-espresso transition-all hover:border-espresso"
             >
               <Bell size={16} strokeWidth={1.8} />
@@ -111,7 +134,7 @@ export default function Topbar({ title, subtitle }: TopbarProps) {
                 <div className="border-b border-border bg-espresso px-4 py-3 text-ivory">
                   <p className="text-[10px] uppercase tracking-[0.22em] text-gold">Inbox</p>
                   <p className="mt-0.5 text-sm font-semibold">
-                    {total === 0 ? "Nothing new — you're all caught up." : `${total} new ${total === 1 ? "item" : "items"}`}
+                    {total === 0 ? "Nothing new, you're all caught up." : `${total} new ${total === 1 ? "item" : "items"}`}
                   </p>
                 </div>
 

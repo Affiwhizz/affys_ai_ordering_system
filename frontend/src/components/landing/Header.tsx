@@ -70,7 +70,7 @@ const NAV_SOCIALS: SocialIcon[] = [
   { href: "https://wa.me/351914145519", label: "WhatsApp", icon: MessageCircle },
 ];
 
-/** Inline TikTok glyph — Lucide doesn't ship one. */
+/** Inline TikTok glyph, Lucide doesn't ship one. */
 function TikTokIcon({ size = 18, className }: { size?: number; className?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
@@ -81,7 +81,7 @@ function TikTokIcon({ size = 18, className }: { size?: number; className?: strin
 
 export default function Header() {
   const [open, setOpen] = useState(false);
-  // Default to off-season — safer than showing a "live" pulse before flags load.
+  // Default to off-season, safer than showing a "live" pulse before flags load.
   const [portimaoStatus, setPortimaoStatus] = useState<PortimaoStatus>("off-season");
   const { open: openCateringModal } = useCateringModal();
 
@@ -91,7 +91,7 @@ export default function Header() {
     fetchStoreFlags()
       .then((f) => active && setPortimaoStatus(f.portimaoStatus))
       .catch(() => {
-        /* keep default — Portimão hidden from the nav */
+        /* keep default, Portimão hidden from the nav */
       });
     return () => {
       active = false;

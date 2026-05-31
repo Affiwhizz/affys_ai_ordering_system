@@ -11,7 +11,7 @@ export type NotifyResult = { ok: boolean; error?: string };
  * required. Inserts via the service-role client (table also allows anon insert).
  *
  * If the customer left an email, send a source-specific welcome email so they
- * know they're on the list and what to expect — no more confusion with order
+ * know they're on the list and what to expect, no more confusion with order
  * confirmations. Email is best-effort and NEVER fails the signup.
  */
 export async function submitNotifySignup(input: {

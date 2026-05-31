@@ -1,7 +1,7 @@
 /**
- * Área Metropolitana de Lisboa (AML) — 18 municipalities, 118 parishes.
+ * Área Metropolitana de Lisboa (AML), 18 municipalities, 118 parishes.
  *
- * Each municipality has a placeholder delivery fee — these are first-pass
+ * Each municipality has a placeholder delivery fee, these are first-pass
  * guesses based on distance from central Lisbon. Adjust in the admin
  * "Delivery zones" panel later. Once you have a real rate sheet, replace
  * the `baseFee` values below (or wire to a Supabase table).
@@ -280,7 +280,7 @@ export const OUTSIDE_AML = {
   key: "outside-aml",
   label: "Rest of Portugal (30+ km via Rodomail)",
   baseFee: 25,
-  note: "From €25 — final fee shared after weight check.",
+  note: "From €25, final fee shared after weight check.",
 };
 
 export function getMunicipality(key: string): AMLMunicipality | undefined {

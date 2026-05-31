@@ -7,7 +7,7 @@ import {
 } from "@/lib/menu/get-menu";
 import { MENU_CATEGORIES } from "@/components/menu/menu-data";
 
-// Always read the latest from Supabase — this is a staff tool, not cached.
+// Always read the latest from Supabase, this is a staff tool, not cached.
 export const dynamic = "force-dynamic";
 
 export default async function MenuManagerPage() {

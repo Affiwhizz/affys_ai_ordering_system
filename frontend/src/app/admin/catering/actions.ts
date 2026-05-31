@@ -68,14 +68,20 @@ export async function setCateringQuote(
   }
 }
 
-/** Count of unhandled catering inquiries — used for the admin sidebar badge. */
-export async function getNewCateringCount(): Promise<number> {
+/**
+ * Count of unhandled catering inquiries. Used for the admin sidebar badge.
+ * Pass `since` (ISO timestamp) to only count inquiries submitted after a
+ * point in time, used by the Topbar bell's mark-as-seen behaviour.
+ */
+export async function getNewCateringCount(since?: string): Promise<number> {
   try {
     const supabase = await createServerSupabase();
-    const { count } = await supabase
+    let q = supabase
       .from("catering_inquiries")
       .select("id", { count: "exact", head: true })
       .eq("status", "new");
+    if (since) q = q.gte("submitted_at", since);
+    const { count } = await q;
     return count ?? 0;
   } catch {
     return 0;

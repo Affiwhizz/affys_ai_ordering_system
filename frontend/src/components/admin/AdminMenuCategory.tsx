@@ -31,7 +31,7 @@ export default function AdminMenuCategory({
   if (items.length === 0) {
     return (
       <p className="px-5 py-6 text-sm text-foreground-muted">
-        No dishes here yet — use <strong>Add dish</strong> above to add one.
+        No dishes here yet, use <strong>Add dish</strong> above to add one.
       </p>
     );
   }

@@ -50,8 +50,8 @@ const toForm = (p: PromoCode): PromoInput => ({
   maxUses: p.maxUses,
   perCustomerLimit: p.perCustomerLimit,
   firstOrderOnly: p.firstOrderOnly,
-  validFrom: p.validFrom ? p.validFrom.slice(0, 10) : null,
-  validUntil: p.validUntil ? p.validUntil.slice(0, 10) : null,
+  validFrom: p.validFrom ? p.validFrom.slice(0-10) : null,
+  validUntil: p.validUntil ? p.validUntil.slice(0-10) : null,
   isActive: p.isActive,
 });
 
@@ -69,7 +69,7 @@ export default function PromoManager({ initial }: { initial: PromoCode[] }) {
   const router = useRouter();
   const [promos, setPromos] = useState<PromoCode[]>(initial);
   // Re-sync local list when fresh server data arrives (after router.refresh()).
-  // React-recommended "adjust state during render" pattern — no effect needed.
+  // React-recommended "adjust state during render" pattern, no effect needed.
   const [prevInitial, setPrevInitial] = useState(initial);
   if (initial !== prevInitial) {
     setPrevInitial(initial);
@@ -225,7 +225,7 @@ export default function PromoManager({ initial }: { initial: PromoCode[] }) {
               />
             </div>
             <div>
-              <label className={labelCls}>Minimum order (€) — optional</label>
+              <label className={labelCls}>Minimum order (€), optional</label>
               <input
                 type="number"
                 min="0"
@@ -237,7 +237,7 @@ export default function PromoManager({ initial }: { initial: PromoCode[] }) {
               />
             </div>
             <div>
-              <label className={labelCls}>Total uses cap — optional</label>
+              <label className={labelCls}>Total uses cap, optional</label>
               <input
                 type="number"
                 min="0"
@@ -249,7 +249,7 @@ export default function PromoManager({ initial }: { initial: PromoCode[] }) {
               />
             </div>
             <div>
-              <label className={labelCls}>Uses per customer — optional</label>
+              <label className={labelCls}>Uses per customer, optional</label>
               <input
                 type="number"
                 min="1"
@@ -264,7 +264,7 @@ export default function PromoManager({ initial }: { initial: PromoCode[] }) {
               </p>
             </div>
             <div>
-              <label className={labelCls}>Valid from — optional</label>
+              <label className={labelCls}>Valid from, optional</label>
               <input
                 type="date"
                 value={form.validFrom ?? ""}
@@ -273,7 +273,7 @@ export default function PromoManager({ initial }: { initial: PromoCode[] }) {
               />
             </div>
             <div>
-              <label className={labelCls}>Valid until — optional</label>
+              <label className={labelCls}>Valid until, optional</label>
               <input
                 type="date"
                 value={form.validUntil ?? ""}
@@ -352,7 +352,7 @@ export default function PromoManager({ initial }: { initial: PromoCode[] }) {
                 );
               if (p.firstOrderOnly) conditions.push("first order only");
               if (p.validUntil)
-                conditions.push(`until ${p.validUntil.slice(0, 10)}`);
+                conditions.push(`until ${p.validUntil.slice(0-10)}`);
 
               return (
                 <li
@@ -380,7 +380,7 @@ export default function PromoManager({ initial }: { initial: PromoCode[] }) {
                     <p className="mt-0.5 truncate text-xs text-foreground-muted">
                       {[p.description, conditions.join(" · ")]
                         .filter(Boolean)
-                        .join(" — ")}
+                        .join(", ")}
                     </p>
                   </div>
                   <div className="flex items-center gap-1">

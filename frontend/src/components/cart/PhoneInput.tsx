@@ -8,7 +8,7 @@ import { ChevronDown } from "lucide-react";
  *
  * Defaults to Portugal (+351) since most customers are local. List below
  * covers the destinations Affy's sees most often (Portugal, EU, UK, US,
- * Nigeria, etc.) — extend if needed.
+ * Nigeria, etc.), extend if needed.
  */
 
 interface Country {

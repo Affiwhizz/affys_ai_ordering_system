@@ -22,7 +22,7 @@ function signature(items: AdminMenuItem[]): string {
 /**
  * Top-level admin menu manager. Provides "Add category" and "Add dish",
  * renders each category as a draggable section (drag the header grip to
- * reorder categories — saved to menu_categories), and delegates the dish list
+ * reorder categories, saved to menu_categories), and delegates the dish list
  * + dish drag to AdminMenuCategory.
  */
 export default function AdminMenuManager({

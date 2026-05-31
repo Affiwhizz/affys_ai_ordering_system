@@ -93,14 +93,21 @@ async function sendConfirmedEmail(
 
 type Result = { ok: boolean; error?: string };
 
-/** Count of orders still on "new" (awaiting a status) — for the admin nav badge. */
-export async function getNewOrdersCount(): Promise<number> {
+/**
+ * Count of orders still on "new" (awaiting a status). For the admin nav badge.
+ * Pass `since` (ISO timestamp) to only count orders created after a point
+ * in time, used by the Topbar bell's "mark as seen" behaviour so the badge
+ * clears when the operator opens the panel.
+ */
+export async function getNewOrdersCount(since?: string): Promise<number> {
   try {
     const supabase = await createServerSupabase();
-    const { count } = await supabase
+    let q = supabase
       .from("orders")
       .select("id", { count: "exact", head: true })
       .eq("status", "new");
+    if (since) q = q.gte("created_at", since);
+    const { count } = await q;
     return count ?? 0;
   } catch {
     return 0;

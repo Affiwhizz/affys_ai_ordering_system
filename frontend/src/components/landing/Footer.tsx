@@ -67,7 +67,7 @@ export default function Footer() {
           <div>
             <Logo />
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-ivory/70">
-              Modern Nigerian, made in Portugal. Slow-cooked, hand-pounded,
+              Nigerian meals, made in Portugal. Slow-cooked, hand-pounded,
               and brought to your table with the kind of care food deserves.
             </p>
 
@@ -76,7 +76,7 @@ export default function Footer() {
               <div>
                 <dt className="eyebrow text-gold">Kitchen hours</dt>
                 <dd className="mt-2 text-sm text-ivory/85">
-                  Wed — Sun
+                  Wed to Sun
                   <br />
                   By preorder · 24h notice
                 </dd>

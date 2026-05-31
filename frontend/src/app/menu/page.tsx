@@ -8,11 +8,11 @@ import { getPublicMenu, getCategories } from "@/lib/menu/get-menu";
 export const metadata: Metadata = {
   title: "Menu",
   description:
-    "Affy's full daily ordering menu — Nigerian rice dishes, stews, soups, peppersoups, traditional dishes, sides, protein, swallows, and pastries.",
+    "Affy's full daily ordering menu, Nigerian rice dishes, stews, soups, peppersoups, traditional dishes, sides, protein, swallows, and pastries.",
 };
 
 // Always render fresh from the database so admin edits (prices, names,
-// availability) show up immediately. One small query per visit — fine for a
+// availability) show up immediately. One small query per visit, fine for a
 // menu, and removes any caching ambiguity.
 export const dynamic = "force-dynamic";
 

@@ -11,7 +11,7 @@ export interface CurrentStaff {
  * Returns the currently signed-in staff member (their staff_users row joined
  * with the auth user), or null if not signed in / not an active staff member.
  *
- * Server-only — call from Server Components, Route Handlers, Server Actions.
+ * Server-only, call from Server Components, Route Handlers, Server Actions.
  */
 export async function getCurrentStaff(): Promise<CurrentStaff | null> {
   const supabase = await createServerSupabase();

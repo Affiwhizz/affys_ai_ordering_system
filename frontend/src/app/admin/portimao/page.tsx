@@ -19,7 +19,7 @@ export default async function AdminPortimaoPage() {
       <main className="px-6 py-8 md:px-8 md:py-10">
         <PortimaoControl initial={flags} />
 
-        {/* Festival menu (read-only summary — manage in the Menu manager) */}
+        {/* Festival menu (read-only summary, manage in the Menu manager) */}
         <section className="mt-6 overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
           <header className="flex items-center justify-between border-b border-border px-5 py-4">
             <div>

@@ -57,7 +57,7 @@ export default function OrderOptions() {
               </h3>
               <p className="mt-4 max-w-md text-base leading-relaxed text-ivory/80">
                 Tell Udia what you&rsquo;re craving, your budget, group size,
-                or event type — Udia builds the right order, asks the right
+                or event type, Udia builds the right order, asks the right
                 questions, and confirms every detail.
               </p>
 
@@ -110,7 +110,7 @@ export default function OrderOptions() {
               Quick order form
             </h3>
             <p className="mt-4 max-w-md text-base leading-relaxed text-foreground-muted">
-              Pick your dishes, choose a date and pickup time — we follow
+              Pick your dishes, choose a date and pickup time, we follow
               up with the final details and your payment link.
             </p>
 

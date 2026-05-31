@@ -32,7 +32,7 @@ const norm = (s: string | null | undefined) => (s ?? "").trim().toLowerCase();
 
 /**
  * Validate a promo code against the cart + customer identity. Does NOT record a
- * redemption — call redeemPromoCode at order confirmation for that.
+ * redemption, call redeemPromoCode at order confirmation for that.
  */
 export async function validatePromoCode(input: {
   code: string;
@@ -54,7 +54,7 @@ export async function validatePromoCode(input: {
       .ilike("code", code)
       .maybeSingle();
 
-    if (error) return { ok: false, message: "Couldn't check that code — try again." };
+    if (error) return { ok: false, message: "Couldn't check that code, try again." };
     const promo = data as PromoRow | null;
     if (!promo) return { ok: false, message: "That code isn't valid." };
 
@@ -116,7 +116,7 @@ export async function validatePromoCode(input: {
       promo: { code: promo.code, kind: promo.kind, value: Number(promo.value) },
     };
   } catch {
-    return { ok: false, message: "Couldn't check that code — try again." };
+    return { ok: false, message: "Couldn't check that code, try again." };
   }
 }
 

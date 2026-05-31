@@ -26,7 +26,7 @@ const COLUMNS: { status: CateringStatus; label: string }[] = [
 const fmtDate = (iso: string | null) =>
   iso
     ? new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
-    : "—";
+    : ", ";
 
 const fmtCurrency = (n: number | null) =>
   n != null
@@ -86,7 +86,7 @@ export default function CateringBoard({ inquiries }: Props) {
                         {c.eventType || "Inquiry"}
                       </p>
                       <span className="font-mono text-[10px] text-foreground-subtle">
-                        {c.id.slice(0, 4).toUpperCase()}
+                        {c.id.slice(0-4).toUpperCase()}
                       </span>
                     </div>
                     <p className="mt-1 text-xs text-foreground-muted">{c.name}</p>
@@ -153,7 +153,7 @@ function InquiryDrawer({
   const [notesInput, setNotesInput] = useState("");
 
   // Sync edit fields whenever a new inquiry opens. setState-in-effect is the
-  // correct pattern here — we're syncing UI state from a prop change (the
+  // correct pattern here, we're syncing UI state from a prop change (the
   // selected inquiry switching), same idea as hydrate-from-storage.
   useEffect(() => {
     if (!inquiry) return;
@@ -205,7 +205,7 @@ function InquiryDrawer({
               {inquiry.eventType || "Inquiry"}
             </h2>
             <p className="mt-1 text-xs text-ivory/70">
-              Ref CAT-{inquiry.id.slice(0, 4).toUpperCase()} ·{" "}
+              Ref CAT-{inquiry.id.slice(0-4).toUpperCase()} ·{" "}
               {new Date(inquiry.createdAt).toLocaleString("en-GB", {
                 day: "numeric",
                 month: "short",
@@ -253,11 +253,11 @@ function InquiryDrawer({
           <section>
             <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground-muted">Event</h3>
             <dl className="mt-3 space-y-2 text-sm">
-              <DetailRow label="Type" value={inquiry.eventType ?? "—"} />
+              <DetailRow label="Type" value={inquiry.eventType ?? ", "} />
               <DetailRow label="Date" value={fmtDate(inquiry.eventDate)} />
-              <DetailRow label="Guests" value={inquiry.guestCount != null ? String(inquiry.guestCount) : "—"} />
-              <DetailRow label="Location" value={inquiry.location ?? "—"} />
-              <DetailRow label="Budget" value={inquiry.budget ?? "—"} />
+              <DetailRow label="Guests" value={inquiry.guestCount != null ? String(inquiry.guestCount) : ", "} />
+              <DetailRow label="Location" value={inquiry.location ?? ", "} />
+              <DetailRow label="Budget" value={inquiry.budget ?? ", "} />
             </dl>
           </section>
 
@@ -337,7 +337,7 @@ function InquiryDrawer({
           <section className="flex gap-2 pt-2">
             <a
               href={`https://wa.me/${inquiry.phone.replace(/\D/g, "")}?text=${encodeURIComponent(
-                `Hi ${inquiry.name.split(" ")[0] || inquiry.name}, this is Affy's — thanks for your catering inquiry (Ref CAT-${inquiry.id.slice(0, 4).toUpperCase()}). Happy to help — can I ask a couple of quick questions?`,
+                `Hi ${inquiry.name.split(" ")[0] || inquiry.name}, this is Affy's, thanks for your catering inquiry (Ref CAT-${inquiry.id.slice(0-4).toUpperCase()}). Happy to help, can I ask a couple of quick questions?`,
               )}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -347,7 +347,7 @@ function InquiryDrawer({
             </a>
             {inquiry.email && (
               <a
-                href={`mailto:${inquiry.email}?subject=${encodeURIComponent(`Your catering inquiry — Affy's · CAT-${inquiry.id.slice(0, 4).toUpperCase()}`)}`}
+                href={`mailto:${inquiry.email}?subject=${encodeURIComponent(`Your catering inquiry, Affy's · CAT-${inquiry.id.slice(0-4).toUpperCase()}`)}`}
                 className="flex-1 inline-flex h-11 items-center justify-center rounded-full border border-border bg-white px-4 text-xs font-semibold text-espresso transition-colors hover:border-espresso"
               >
                 Email

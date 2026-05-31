@@ -1,5 +1,5 @@
 /**
- * Delivery fee calculator — now driven by AML municipality data.
+ * Delivery fee calculator, now driven by AML municipality data.
  *
  * Rules (mirrors Affy's brief):
  *   - subtotal > €500 → WhatsApp-only (contact card, no checkout button)
@@ -31,7 +31,7 @@ export function computeDelivery(
     return {
       kind: "whatsapp",
       reason:
-        "Orders over €500 — message us on WhatsApp to finalize the details and pricing.",
+        "Orders over €500, message us on WhatsApp to finalize the details and pricing.",
     };
   }
   if (subtotal > TIER_400) {
@@ -48,7 +48,7 @@ export function computeDelivery(
     };
   }
   if (!municipalityKey) {
-    // No municipality selected yet — return 0 with a hint
+    // No municipality selected yet, return 0 with a hint
     return { kind: "fee", amount: 0, note: "Pick a municipality to see the fee" };
   }
   const m = getMunicipality(municipalityKey);
@@ -60,7 +60,7 @@ export function computeDelivery(
 
 /**
  * Free-delivery welcome offer threshold (kicks in once we wire customer
- * recognition by phone/email — until then this is shown as a target).
+ * recognition by phone/email, until then this is shown as a target).
  */
 export const FREE_DELIVERY_THRESHOLD = 200;
 

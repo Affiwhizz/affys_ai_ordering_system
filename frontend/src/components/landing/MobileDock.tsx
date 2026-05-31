@@ -22,9 +22,9 @@ interface DockItem {
   href: string;
   label: string;
   icon: React.ComponentType<{ size?: number; strokeWidth?: number; className?: string }>;
-  /** Highlight = primary action — gets the gold pill treatment. */
+  /** Highlight = primary action, gets the gold pill treatment. */
   highlight?: boolean;
-  /** Hot = active campaign indicator — gets a pulsing red dot. */
+  /** Hot = active campaign indicator, gets a pulsing red dot. */
   hot?: boolean;
   /** Open external links in new tab. */
   external?: boolean;
@@ -53,7 +53,7 @@ export default function MobileDock() {
     fetchStoreFlags()
       .then((f) => active && setPortimaoStatus(f.portimaoStatus))
       .catch(() => {
-        /* keep default — Portimão hidden from the dock */
+        /* keep default, Portimão hidden from the dock */
       });
     return () => {
       active = false;

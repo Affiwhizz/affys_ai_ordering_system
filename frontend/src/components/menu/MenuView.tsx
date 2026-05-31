@@ -107,8 +107,8 @@ export default function MenuView({
             Every dish, every portion.
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-foreground-muted sm:text-lg">
-            Rice dishes, stews, soups, traditional plates, sides and small chops —
-            in 2, 3 and 4 litres (or by the piece, depending on the dish). Tap any
+            Rice dishes, stews, soups, traditional plates, sides and small chops , 
+            in 2-3 and 4 litres (or by the piece, depending on the dish). Tap any
             dish to see its photos, ingredients and spice options, and add it to
             your order.
           </p>
@@ -149,11 +149,11 @@ export default function MenuView({
             </span>
             <p className="flex-1 text-espresso">
               <strong className="font-semibold">
-                We&rsquo;re at Afro Nation — daily Lisbon orders are paused.
+                We&rsquo;re at Afro Nation, daily Lisbon orders are paused.
               </strong>{" "}
               {resumeLabel
-                ? `Browse the menu and come back — we resume on ${resumeLabel}.`
-                : "Browse the menu and come back soon — we resume shortly."}
+                ? `Browse the menu and come back, we resume on ${resumeLabel}.`
+                : "Browse the menu and come back soon, we resume shortly."}
             </p>
             <Link
               href="/portimao"
@@ -306,7 +306,7 @@ export default function MenuView({
 }
 
 // ===========================================================================
-// Dish tile — large visual card (video / photo / gradient) that opens the modal
+// Dish tile, large visual card (video / photo / gradient) that opens the modal
 // ===========================================================================
 
 function DishTile({ item, onOpen }: { item: MenuItem; onOpen: () => void }) {

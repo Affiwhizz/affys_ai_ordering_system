@@ -3,7 +3,7 @@ import { FadeIn, RevealHeading } from "@/components/motion";
 import { PORTIMAO } from "./config";
 
 /**
- * On-page form *preview* — the full multi-step form lives at /portimao/order
+ * On-page form *preview*, the full multi-step form lives at /portimao/order
  * (built in a future phase). This card communicates what fields the customer
  * will fill and gives them a clear next step.
  */
@@ -13,15 +13,15 @@ export default function PortimaoFormPreview() {
     { label: "Phone", value: "+351 9·· ··· ···" },
     { label: "Email", value: "you@example.com" },
     { label: "Pickup day", value: "Sat · 14:30", isSelect: true },
-    { label: "How many people?", value: "4 — 6 guests", isSelect: true },
+    { label: "How many people?", value: "4, 6 guests", isSelect: true },
     { label: "Allergies / dietary", value: "e.g. nut allergy, dairy-free" },
   ];
 
   const items = [
-    "Smoky party jollof — 2× large bowl",
-    "Suya skewers — 6 sticks",
-    "Plantain (dodo) — 4 portions",
-    "Small chops platter — 1×",
+    "Smoky party jollof, 2× large bowl",
+    "Suya skewers, 6 sticks",
+    "Plantain (dodo), 4 portions",
+    "Small chops platter, 1×",
   ];
 
   return (
@@ -55,7 +55,7 @@ export default function PortimaoFormPreview() {
             <FadeIn delay={0.4}>
               <p className="mt-5 text-lg text-foreground-muted">
                 Pick your bowls and a slot from the available pickup dates
-                and times — we follow up with the final details and your
+                and times, we follow up with the final details and your
                 secure payment link.
               </p>
             </FadeIn>
@@ -63,10 +63,10 @@ export default function PortimaoFormPreview() {
             <FadeIn delay={0.5}>
               <ul className="mt-8 space-y-3 text-sm text-foreground-muted">
                 {[
-                  "Pick a slot from the calendar — only open slots are bookable",
-                  "Festival pickup runs Thurs 2 — Mon 7 July",
+                  "Pick a slot from the calendar, only open slots are bookable",
+                  "Festival pickup runs Thurs 2, Mon 7 July",
                   "Slot is locked with your name once paid",
-                  `Or skip the form — Ask Udia and we'll build it`,
+                  `Or skip the form, Ask Udia and we'll build it`,
                 ].map((line) => (
                   <li key={line} className="flex items-start gap-3">
                     <span

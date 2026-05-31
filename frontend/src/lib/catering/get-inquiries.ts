@@ -67,7 +67,7 @@ export async function getCateringInquiries(): Promise<AdminCateringInquiry[]> {
       contactedAt: r.contacted_at,
       quotedAt: r.quote_sent_at,
       confirmedAt: r.confirmed_at,
-      // Existing schema doesn't have a separate declined_at — surface
+      // Existing schema doesn't have a separate declined_at, surface
       // declined_reason as the timestamp surrogate (null if absent).
       declinedAt: r.declined_reason ? r.submitted_at : null,
     }));

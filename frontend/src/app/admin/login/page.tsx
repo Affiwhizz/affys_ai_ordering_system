@@ -7,7 +7,7 @@ import { Mail, ArrowLeft, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 /**
- * Admin sign-in page — magic-link only.
+ * Admin sign-in page, magic-link only.
  *
  * Flow:
  *   1. Staff enters their email.
@@ -18,7 +18,7 @@ import { createClient } from "@/lib/supabase/client";
  * if not, it redirects back here with `?error=not-staff`.
  *
  * The form reads search params (?next, ?error), so it must be wrapped in a
- * Suspense boundary — Next.js requires this for the production build.
+ * Suspense boundary, Next.js requires this for the production build.
  */
 
 export default function AdminLogin() {
@@ -41,7 +41,7 @@ function AdminLoginForm() {
   const errorParam = params.get("error");
   // Some Supabase URL configs deliver the sign-in `code` straight to the Site
   // URL (here) rather than the callback route. When we see one, complete the
-  // sign-in right here — exactly once — then hard-redirect so the server picks
+  // sign-in right here, exactly once, then hard-redirect so the server picks
   // up the new session cookie. detectSessionInUrl is disabled on the client so
   // nothing else races us for this single-use code.
   const codeParam = params.get("code");
@@ -159,7 +159,7 @@ function AdminLoginForm() {
                     {errorParam === "not-configured"
                       ? "The admin isn’t connected to its database yet. Check that the Supabase keys are set in the hosting environment."
                       : errorParam === "callback-failed"
-                        ? "That sign-in link couldn’t be completed — it may have expired or already been used. Please request a fresh link below, and open it in this same browser."
+                        ? "That sign-in link couldn’t be completed, it may have expired or already been used. Please request a fresh link below, and open it in this same browser."
                         : "We couldn’t reach the sign-in service just now. Please try again in a moment."}
                   </p>
                 </div>
@@ -227,7 +227,7 @@ function AdminLoginForm() {
 
             <p className="mt-6 border-t border-border pt-4 text-[11px] text-foreground-subtle">
               Magic-link sign-in keeps things passwordless and safe. If you
-              don&rsquo;t receive the email within 2 minutes, check spam — or
+              don&rsquo;t receive the email within 2 minutes, check spam, or
               ask the owner to confirm you&rsquo;re on the staff list.
             </p>
           </div>

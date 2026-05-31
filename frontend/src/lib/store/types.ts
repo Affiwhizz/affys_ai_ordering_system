@@ -13,7 +13,7 @@ export type PortimaoMode = "auto" | "open" | "closed" | "sold_out";
 export interface StoreFlags {
   /** Regular Lisbon ordering paused (e.g. while away at Afro Nation). */
   dailyOrderingPaused: boolean;
-  /** ISO date ("YYYY-MM-DD") regular ordering resumes — shown to customers. */
+  /** ISO date ("YYYY-MM-DD") regular ordering resumes, shown to customers. */
   dailyResumeDate: string | null;
   /** Portimão window control. */
   portimaoMode: PortimaoMode;
@@ -55,7 +55,7 @@ export function computePortimaoStatus(
   if (mode === "open") return "live";
   if (mode === "closed") return "off-season";
   if (mode === "sold_out") return "sold-out";
-  // auto — follow the window.
+  // auto, follow the window.
   if (start && today < start) return "off-season";
   if (end && today > end) return "off-season";
   if (!start && !end) return "off-season";

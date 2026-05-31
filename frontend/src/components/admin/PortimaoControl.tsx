@@ -108,7 +108,7 @@ export default function PortimaoControl({ initial }: { initial: StoreFlags }) {
             </h2>
             <p className="text-xs text-foreground-subtle">
               Turn this on while you&rsquo;re away (e.g. at Afro Nation). Customers can
-              still browse the menu, but can&rsquo;t order — they see a note with your
+              still browse the menu, but can&rsquo;t order, they see a note with your
               resume date. Portimão preorders are unaffected.
             </p>
           </div>

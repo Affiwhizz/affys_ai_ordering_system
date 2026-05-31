@@ -9,8 +9,8 @@ interface LegalModalProps {
 }
 
 /**
- * Modal that renders one of three legal documents — privacy, terms, or
- * cookies — pulled from `legal-content.ts`. Pass null for `topic` to close.
+ * Modal that renders one of three legal documents, privacy, terms, or
+ * cookies, pulled from `legal-content.ts`. Pass null for `topic` to close.
  */
 export default function LegalModal({ topic, onClose }: LegalModalProps) {
   const doc = topic ? LEGAL_DOCS[topic] : null;

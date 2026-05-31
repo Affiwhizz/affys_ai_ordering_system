@@ -11,7 +11,7 @@ interface Avail {
 }
 const DEFAULT_AVAIL: Avail = {
   leadDays: 1,
-  openWeekdays: [1, 2, 3, 4, 5, 6],
+  openWeekdays: [1-2, 3-4, 5-6],
   blockedDates: [],
 };
 
@@ -23,7 +23,7 @@ function toISO(d: Date): string {
 }
 
 /**
- * Customer date picker — only allows valid order dates: at least the lead-time
+ * Customer date picker, only allows valid order dates: at least the lead-time
  * days away, on an open weekday, and not a blocked date. Reads availability
  * from Supabase (public read) and validates the choice with a clear message.
  */
@@ -83,19 +83,19 @@ export default function OrderDatePicker({
     if (iso < minISO) {
       setError(
         avail.leadDays === 1
-          ? "We need at least 1 day's notice — please pick a later date."
-          : `We need at least ${avail.leadDays} days' notice — please pick a later date.`,
+          ? "We need at least 1 day's notice, please pick a later date."
+          : `We need at least ${avail.leadDays} days' notice, please pick a later date.`,
       );
       onChange("");
       return;
     }
     if (!avail.openWeekdays.includes(d.getDay())) {
-      setError("We're closed that day — please pick another date.");
+      setError("We're closed that day, please pick another date.");
       onChange("");
       return;
     }
     if (avail.blockedDates.includes(iso)) {
-      setError("We're closed on that date — please pick another.");
+      setError("We're closed on that date, please pick another.");
       onChange("");
       return;
     }

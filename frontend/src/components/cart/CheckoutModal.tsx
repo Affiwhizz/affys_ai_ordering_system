@@ -41,7 +41,7 @@ import { createOrder } from "@/lib/orders/actions";
 import type { NewOrderInput } from "@/lib/orders/types";
 
 /**
- * Checkout modal — opens from the cart drawer.
+ * Checkout modal, opens from the cart drawer.
  *
  * - Customer info (name, phone with country picker, email)
  * - Fulfilment: delivery (default) or pickup
@@ -52,7 +52,7 @@ import type { NewOrderInput } from "@/lib/orders/types";
  * - Payment: Bank transfer/MBWay OR Stripe
  * - Post-submit confirmation step with receipt-upload affordance
  *
- * UI-only — wire to backend (Stripe + Supabase) in the next phase.
+ * UI-only, wire to backend (Stripe + Supabase) in the next phase.
  */
 
 const WHATSAPP_HREF = "https://wa.me/351914145519";
@@ -144,7 +144,7 @@ export default function CheckoutModal() {
     [settings],
   );
 
-  // Resolve the base delivery fee for an AML municipality — prefer the
+  // Resolve the base delivery fee for an AML municipality, prefer the
   // admin-edited zone fee, fall back to the static aml-data baseFee.
   const zoneFee = (key: string): number => {
     const z = zones.find((x) => x.key === key);
@@ -180,14 +180,14 @@ export default function CheckoutModal() {
     if (subtotal > globals.whatsappThreshold) {
       return {
         kind: "whatsapp",
-        reason: `Orders over ${formatEuro(globals.whatsappThreshold)} — message us on WhatsApp to finalize the details and pricing.`,
+        reason: `Orders over ${formatEuro(globals.whatsappThreshold)}, message us on WhatsApp to finalize the details and pricing.`,
       };
     }
 
     // Rest of Portugal: outside-AML base fee + weight surcharge on heavier orders.
     if (region === "rest") {
       let amount = globals.outsideAmlFee;
-      let note = `From ${formatEuro(globals.outsideAmlFee)} — final fee confirmed after a quick weight check.`;
+      let note = `From ${formatEuro(globals.outsideAmlFee)}, final fee confirmed after a quick weight check.`;
       if (subtotal > globals.weightThreshold) {
         amount += globals.weightSurcharge;
         note = `Includes a ${formatEuro(globals.weightSurcharge)} weight surcharge for heavier out-of-Lisbon orders.`;
@@ -259,7 +259,7 @@ export default function CheckoutModal() {
     !requiresWhatsapp &&
     (payment === "stripe" || paymentConfirmed);
 
-  // What's still stopping the customer from confirming — surfaced under the
+  // What's still stopping the customer from confirming, surfaced under the
   // button so they're never left wondering why it's greyed out.
   const missing: string[] = [];
   if (items.length === 0) missing.push("add an item to your order");
@@ -369,13 +369,13 @@ export default function CheckoutModal() {
     const res = await createOrder(payload);
     if (!res.ok) {
       setSubmitError(
-        "Sorry — we couldn't save your order. Please try again, or message us on WhatsApp.",
+        "Sorry, we couldn't save your order. Please try again, or message us on WhatsApp.",
       );
       setSubmitting(false);
       return;
     }
 
-    // Order saved — record the promo redemption (best-effort) so single-use
+    // Order saved, record the promo redemption (best-effort) so single-use
     // and usage caps are enforced for the next customer.
     if (appliedPromo) {
       void redeemPromoCode({
@@ -439,7 +439,7 @@ export default function CheckoutModal() {
           <p className="mt-2 text-sm text-foreground-muted">
             {isPortimao
               ? "Pickup-only at Praia da Rocha. We confirm via email + phone after submission."
-              : "Fill these details and pick a payment method — we'll take it from there."}
+              : "Fill these details and pick a payment method, we'll take it from there."}
           </p>
 
           {/* Empty state safety */}
@@ -456,14 +456,14 @@ export default function CheckoutModal() {
               <p className="font-semibold">Daily Lisbon ordering is paused right now.</p>
               <p className="mt-1 text-foreground-muted">
                 {resumeDate
-                  ? `We're away at Afro Nation — regular orders resume on ${new Date(
+                  ? `We're away at Afro Nation, regular orders resume on ${new Date(
                       `${resumeDate}T00:00:00`,
                     ).toLocaleDateString("en-GB", {
                       weekday: "long",
                       day: "numeric",
                       month: "long",
                     })}. You can still order for Portimão pickup.`
-                  : "We're away at Afro Nation — regular orders resume shortly. You can still order for Portimão pickup."}
+                  : "We're away at Afro Nation, regular orders resume shortly. You can still order for Portimão pickup."}
               </p>
             </div>
           )}
@@ -565,7 +565,7 @@ export default function CheckoutModal() {
                         }}
                         options={AML.municipalities.map((m) => ({
                           value: m.key,
-                          label: `${m.name} — ${formatEuro(zoneFee(m.key))}`,
+                          label: `${m.name}, ${formatEuro(zoneFee(m.key))}`,
                         }))}
                         hint="Sets the base delivery fee"
                         required
@@ -601,7 +601,7 @@ export default function CheckoutModal() {
                   {/* Rest-of-Portugal note */}
                   {region === "rest" && (
                     <p className="mt-3 rounded-lg border border-gold/40 bg-gold/10 px-3 py-2 text-[11px] text-foreground-muted">
-                      Outside Lisbon — delivery starts from{" "}
+                      Outside Lisbon, delivery starts from{" "}
                       <strong className="text-espresso">
                         {formatEuro(globals.outsideAmlFee)}
                       </strong>
@@ -619,7 +619,7 @@ export default function CheckoutModal() {
                     subtotal > globals.tier1Threshold &&
                     subtotal <= globals.whatsappThreshold && (
                       <p className="mt-3 rounded-lg border border-gold/40 bg-gold/10 px-3 py-2 text-[11px] text-foreground-muted">
-                        Larger order ({formatEuro(subtotal)}) — tiered delivery fee of{" "}
+                        Larger order ({formatEuro(subtotal)}), tiered delivery fee of{" "}
                         <strong className="text-espresso">
                           {formatEuro(
                             subtotal > globals.tier2Threshold
@@ -631,7 +631,7 @@ export default function CheckoutModal() {
                       </p>
                     )}
 
-                  {/* Address — split */}
+                  {/* Address, split */}
                   <div className="mt-5">
                     <p className="eyebrow inline-flex items-center">
                       <span className="gold-rule" />
@@ -796,7 +796,7 @@ export default function CheckoutModal() {
                             : ""}
                         </span>
                       }
-                      value={deliveryResult.kind === "whatsapp" ? "—" : formatEuro(deliveryFee)}
+                      value={deliveryResult.kind === "whatsapp" ? ", " : formatEuro(deliveryFee)}
                     />
                   )}
                   {fulfilment === "delivery" && takeoutBags > 0 && (
@@ -1019,7 +1019,7 @@ export default function CheckoutModal() {
 }
 
 // ===========================================================================
-// Post-submit confirmation step — receipt upload + WhatsApp + email options
+// Post-submit confirmation step, receipt upload + WhatsApp + email options
 // ===========================================================================
 
 interface PostSubmitConfirmationProps {
@@ -1045,7 +1045,7 @@ function PostSubmitConfirmation({
 }: PostSubmitConfirmationProps) {
   const isBank = payment === "bank";
   const whatsappMessage = encodeURIComponent(
-    `Hi Affy's — I just placed an order (phone: ${phone}${email ? `, email: ${email}` : ""}). Attaching my payment receipt.`,
+    `Hi Affy's, I just placed an order (phone: ${phone}${email ? `, email: ${email}` : ""}). Attaching my payment receipt.`,
   );
 
   return (
@@ -1054,12 +1054,12 @@ function PostSubmitConfirmation({
         <Check size={22} strokeWidth={2.4} />
       </span>
       <h2 className="mt-5 font-display text-3xl font-medium tracking-tight text-espresso sm:text-4xl">
-        {isBank ? "Order received — last step" : "Order received"}
+        {isBank ? "Order received, last step" : "Order received"}
       </h2>
       {shortCode && (
         <p className="mt-2 text-sm text-foreground-muted">
           Your order reference is{" "}
-          <span className="font-mono font-bold text-espresso">{shortCode}</span> — keep
+          <span className="font-mono font-bold text-espresso">{shortCode}</span>, keep
           it handy when you message us.
         </p>
       )}
@@ -1067,8 +1067,8 @@ function PostSubmitConfirmation({
         {isBank
           ? "Send the payment to the account shown, then share the receipt with us in one of the ways below. We'll confirm via WhatsApp + email as soon as we see it."
           : isPortimao
-          ? "We've got your Portimão preorder. Stripe checkout will open in a moment — once paid, your slot is locked. We'll confirm via WhatsApp + email."
-          : "Stripe checkout will open in a moment. Once paid, you're done — confirmation lands by WhatsApp + email."}
+          ? "We've got your Portimão preorder. Stripe checkout will open in a moment, once paid, your slot is locked. We'll confirm via WhatsApp + email."
+          : "Stripe checkout will open in a moment. Once paid, you're done, confirmation lands by WhatsApp + email."}
       </p>
 
       {/* Three options for sharing the receipt */}
@@ -1083,7 +1083,7 @@ function PostSubmitConfirmation({
               <div>
                 <p className="font-semibold text-espresso">Upload here</p>
                 <p className="text-[11px] text-foreground-muted">
-                  Fastest — we&rsquo;ll get it instantly
+                  Fastest, we&rsquo;ll get it instantly
                 </p>
               </div>
             </div>
@@ -1117,7 +1117,7 @@ function PostSubmitConfirmation({
             <div className="flex-1">
               <p className="font-semibold text-espresso">Send via WhatsApp</p>
               <p className="text-[11px] text-foreground-muted">
-                Opens our WhatsApp — attach the receipt there
+                Opens our WhatsApp, attach the receipt there
               </p>
             </div>
             <span aria-hidden>→</span>

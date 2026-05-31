@@ -1,5 +1,5 @@
 /**
- * Portimão campaign — single source of truth.
+ * Portimão campaign, single source of truth.
  *
  * Toggle these values to control the public Portimão experience.
  * Eventually this will be wired to admin-controlled state in the backend.
@@ -17,13 +17,13 @@ export const PORTIMAO = {
   // NOTE: these are display strings only. The real open/close window is set in
   // the admin Portimão control (store_settings → portimao_start / portimao_end).
   campaignName: "Afro Nation week 2026",
-  campaignWindow: "Jul 2 — Jul 6, 2026",
-  campaignWindowShort: "Thurs 2 — Mon 6 July",
+  campaignWindow: "Jul 2, Jul 6, 2026",
+  campaignWindowShort: "Thurs 2, Mon 6 July",
 
-  // Order deadlines / windows (Afro Nation is 3–5 July; we sell 2–6 July)
+  // Order deadlines / windows (Afro Nation is 3-5 July; we sell 2-6 July)
   preorderDeadline: "Thursday (2 July) · 10:00 WET",
   deliveryStart: "Preorder pickup starts Thursday (2 July) · 10:00 WET",
-  pickupWindow: "Thurs (2 July) — Mon (6 July) · Rua da Pedra",
+  pickupWindow: "Thurs (2 July), Mon (6 July) · Rua da Pedra",
   pickupLocation: "Rua da Pedra, Portimão",
   pickupNote: "Exact pickup point sent by email after we confirm.",
 
@@ -33,18 +33,18 @@ export const PORTIMAO = {
    * TODO (backend): wire `slotsLeftToday` to a real source instead of a
    * static value. Options when the backend lands:
    *
-   *   (a) Supabase + realtime — single source of truth in the orders
+   *   (a) Supabase + realtime, single source of truth in the orders
    *       table, listen to insert/delete events to recompute remaining
    *       slots, push to all connected clients instantly. Cleanest.
    *
-   *   (b) Polling — a /api/portimao/slots endpoint returns the current
-   *       remaining count, the page revalidates every 30–60s. Good
+   *   (b) Polling, a /api/portimao/slots endpoint returns the current
+   *       remaining count, the page revalidates every 30-60s. Good
    *       enough for non-realtime needs.
    *
-   *   (c) Manual admin toggle — Affy updates the count from the admin
+   *   (c) Manual admin toggle, Affy updates the count from the admin
    *       dashboard. Lowest infra, but stale.
    *
-   * Uber Eats orders won't surface in the count automatically — those
+   * Uber Eats orders won't surface in the count automatically, those
    * are separate. We only track Affy's-direct preorder slots here.
    */
   slotsPerDay: 80,
@@ -53,7 +53,7 @@ export const PORTIMAO = {
   // Channels
   affysSiteLabel: "Preorder direct",
   uberEatsHref: "https://ubereats.com/", // replace with real Affy's UE store URL
-  uberEatsHours: "Sat & Sun · 13:00 — 23:00",
+  uberEatsHours: "Sat & Sun · 13:00, 23:00",
   whatsappHref: "https://wa.me/351914145519",
 
   // Pricing range hint
@@ -83,7 +83,7 @@ export const FESTIVAL_MENU: FestivalItem[] = [
   {
     category: "Bowl",
     name: "Jollof Supreme",
-    description: "Jollof loaded — bigger portion, extra protein, fully dressed.",
+    description: "Jollof loaded, bigger portion, extra protein, fully dressed.",
     priceFrom: "From €22",
     tag: "Premium",
     initial: "J",
@@ -116,7 +116,7 @@ export const FESTIVAL_MENU: FestivalItem[] = [
   {
     category: "Snack box",
     name: "Chop Life · Small",
-    description: "Pick-and-mix small chops box for one — quick festival fuel.",
+    description: "Pick-and-mix small chops box for one, quick festival fuel.",
     priceFrom: "From €10",
     tag: "On the go",
     initial: "C",
@@ -124,7 +124,7 @@ export const FESTIVAL_MENU: FestivalItem[] = [
   {
     category: "Snack box",
     name: "Chop Life · Medium",
-    description: "Bigger small chops box for sharing — pastries, puff puff, more.",
+    description: "Bigger small chops box for sharing, pastries, puff puff, more.",
     priceFrom: "From €18",
     tag: "Sharing",
     initial: "C",
@@ -143,7 +143,7 @@ export const PORTIMAO_FAQS: FAQ[] = [
   },
   {
     q: "What's the difference between preordering here and Uber Eats?",
-    a: "Affy's direct is pickup-only with a confirmed slot — best for groups, large orders, or specific times. Uber Eats is live during festival hours for walk-up speed and delivery options.",
+    a: "Affy's direct is pickup-only with a confirmed slot, best for groups, large orders, or specific times. Uber Eats is live during festival hours for walk-up speed and delivery options.",
   },
   {
     q: "Can I get delivery in Portimão?",
@@ -151,22 +151,22 @@ export const PORTIMAO_FAQS: FAQ[] = [
   },
   {
     q: "What if my slot sells out?",
-    a: "We open a waitlist when daily slots fill. We'll message you the moment a slot opens — usually due to a cancellation.",
+    a: "We open a waitlist when daily slots fill. We'll message you the moment a slot opens, usually due to a cancellation.",
   },
   {
     q: "What if I don't eat meat?",
-    a: "We have a Vegetable Bowl — mixed seasonal vegetables with jollof. For specific dietary needs (e.g. no fish, no dairy), flag it in the order notes or message us on WhatsApp.",
+    a: "We have a Vegetable Bowl, mixed seasonal vegetables with jollof. For specific dietary needs (e.g. no fish, no dairy), flag it in the order notes or message us on WhatsApp.",
   },
   {
     q: "Where exactly is the pickup point?",
-    a: "Praia da Rocha, Portimão. The exact spot is sent by email after we confirm your order — it can change slightly day to day during the festival.",
+    a: "Praia da Rocha, Portimão. The exact spot is sent by email after we confirm your order, it can change slightly day to day during the festival.",
   },
   {
     q: "How spicy is the food?",
-    a: "Spice levels vary by dish. Most are medium-spiced. We can dial up or down — just say in the order notes or to Udia.",
+    a: "Spice levels vary by dish. Most are medium-spiced. We can dial up or down, just say in the order notes or to Udia.",
   },
   {
     q: "What's the refund policy?",
-    a: "We refund unused slots cancelled 24h before pickup. After that, we'll do our best to reschedule — full refunds aren't possible because the food is already prepped.",
+    a: "We refund unused slots cancelled 24h before pickup. After that, we'll do our best to reschedule, full refunds aren't possible because the food is already prepped.",
   },
 ];

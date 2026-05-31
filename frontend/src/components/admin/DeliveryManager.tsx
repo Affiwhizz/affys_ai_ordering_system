@@ -81,7 +81,7 @@ export default function DeliveryManager({ initial }: { initial: DeliverySettings
         <div className="grid gap-x-6 gap-y-1 p-4 sm:grid-cols-2">
           {zones.length === 0 ? (
             <p className="p-2 text-sm text-foreground-muted">
-              No delivery zones found — make sure the seed ran in Supabase.
+              No delivery zones found, make sure the seed ran in Supabase.
             </p>
           ) : (
             zones.map((z, i) => (

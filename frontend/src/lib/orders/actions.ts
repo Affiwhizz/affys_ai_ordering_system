@@ -86,7 +86,7 @@ export async function createOrder(input: NewOrderInput): Promise<CreateOrderResu
       return { ok: false, error: itemsError.message };
     }
 
-    // Confirmation emails — customer "order received" + owner alert. Never block
+    // Confirmation emails, customer "order received" + owner alert. Never block
     // or fail the order on email problems (sendEmail no-ops without a key).
     try {
       const addressLine =

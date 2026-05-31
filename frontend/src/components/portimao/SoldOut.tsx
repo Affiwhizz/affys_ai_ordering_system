@@ -5,7 +5,7 @@ import { PORTIMAO } from "./config";
 import NotifyMeForm from "@/components/NotifyMeForm";
 
 /**
- * SOLD OUT state — campaign is live, daily slots are full.
+ * SOLD OUT state, campaign is live, daily slots are full.
  * Pushes user toward (a) Uber Eats walk-up and (b) waitlist.
  */
 export default function PortimaoSoldOut() {
@@ -51,7 +51,7 @@ export default function PortimaoSoldOut() {
             <FadeIn delay={0.6}>
               <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-ivory/80">
                 We&rsquo;re cooking flat-out. There are still two ways to eat
-                Affy&rsquo;s today — drop into Uber Eats during festival
+                Affy&rsquo;s today, drop into Uber Eats during festival
                 hours, or join the waitlist and we&rsquo;ll message the
                 moment a slot opens (cancellations happen).
               </p>
@@ -94,7 +94,7 @@ export default function PortimaoSoldOut() {
                   <span className="gold-rule-after" />
                 </span>
                 <h3 className="mt-3 font-display text-3xl font-medium tracking-tight text-espresso sm:text-4xl">
-                  Drop your number — we&rsquo;ll message you first.
+                  Drop your number, we&rsquo;ll message you first.
                 </h3>
                 <p className="mt-4 max-w-md text-base leading-relaxed text-foreground-muted">
                   Cancellations open up slots most days. We send waitlist
@@ -126,7 +126,7 @@ export default function PortimaoSoldOut() {
                     <span className="gold-rule-after" />
                   </span>
                   <h3 className="mt-3 font-display text-3xl font-medium tracking-tight sm:text-4xl">
-                    Order direct on Uber Eats — live now.
+                    Order direct on Uber Eats, live now.
                   </h3>
                   <p className="mt-4 max-w-md text-base leading-relaxed text-ivory/80">
                     Our store is open during festival hours.

@@ -2,18 +2,18 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 /**
- * Next.js proxy — runs before a request reaches the page.
+ * Next.js proxy, runs before a request reaches the page.
  * (In Next.js 16 this replaces the old `middleware` file convention.)
  *
  * Design rule: the PUBLIC site must never depend on Supabase. Only the
  * /admin area is gated. So we bail out immediately for every public route
  * and only touch Supabase when the request is actually for /admin. That way
- * a missing env var or a Supabase outage can never take down the homepage —
+ * a missing env var or a Supabase outage can never take down the homepage , 
  * worst case, admin sign-in is briefly unavailable.
  *
  * Job (admin routes only):
  *  1. Refresh the Supabase auth session cookie.
- *  2. Gate /admin/* — only signed-in staff with an active staff_users row
+ *  2. Gate /admin/*, only signed-in staff with an active staff_users row
  *     get through. Everyone else is redirected to /admin/login.
  */
 
@@ -31,7 +31,7 @@ export async function proxy(request: NextRequest) {
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  // Supabase renamed "anon key" to "publishable key" — accept either name.
+  // Supabase renamed "anon key" to "publishable key", accept either name.
   const supabaseAnonKey =
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;

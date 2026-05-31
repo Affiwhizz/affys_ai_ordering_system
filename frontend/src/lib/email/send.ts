@@ -22,7 +22,7 @@ export interface SendEmailInput {
 export async function sendEmail(input: SendEmailInput): Promise<{ ok: boolean }> {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
-    console.warn(`[email] RESEND_API_KEY not set — skipping "${input.subject}"`);
+    console.warn(`[email] RESEND_API_KEY not set, skipping "${input.subject}"`);
     return { ok: false };
   }
   if (!input.to || !input.to.includes("@")) {

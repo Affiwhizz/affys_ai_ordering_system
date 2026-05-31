@@ -1,5 +1,5 @@
 /**
- * Full daily ordering menu — transcribed from Affy's official menu PDF.
+ * Full daily ordering menu, transcribed from Affy's official menu PDF.
  *
  * Variants are litre-based for stews / rice / soups, piece-based for
  * protein / pastries / small chops, and a mix for sides. Each variant
@@ -28,7 +28,7 @@ export interface MenuItem {
   variants: MenuVariant[];
   monogram: string;
   gradient: string;
-  /** Rich fields (optional — populated from the database when present). */
+  /** Rich fields (optional, populated from the database when present). */
   longDescription?: string;
   ingredients?: string[];
   spiceLevels?: string[];
@@ -42,11 +42,11 @@ export interface MenuItem {
   pairingIds?: string[];
 }
 
-/** The spice levels Affy offers (preference only — no price change). */
+/** The spice levels Affy offers (preference only, no price change). */
 export const SPICE_LEVELS = ["mild", "spicy", "hot", "extra"] as const;
 export type SpiceLevel = (typeof SPICE_LEVELS)[number];
 
-/** Heat dots (filled count) for each level — for the spice-picker visual. */
+/** Heat dots (filled count) for each level, for the spice-picker visual. */
 export const SPICE_HEAT: Record<SpiceLevel, number> = {
   mild: 1,
   spicy: 2,
@@ -83,9 +83,9 @@ export const MENU_CATEGORIES: MenuCategory[] = [
 
 /** Standard variant sets that repeat across the menu. */
 const TRAY_SERVINGS = [
-  { size: "2 Litres", serves: "Feeds 3–4" },
+  { size: "2 Litres", serves: "Feeds 3-4" },
   { size: "3 Litres", serves: "Feeds 5" },
-  { size: "4 Litres", serves: "Feeds 6–7" },
+  { size: "4 Litres", serves: "Feeds 6-7" },
 ];
 
 const PIECE_SERVINGS_5_10_15 = [
@@ -108,13 +108,13 @@ const PUFF_PUFF_SERVINGS = [
 
 const SIDES_SERVINGS = [
   { size: "1L", serves: "Feeds 2" },
-  { size: "2L", serves: "Feeds 4–5" },
+  { size: "2L", serves: "Feeds 4-5" },
   { size: "3L", serves: "Feeds 6" },
 ];
 
 const PASTA_SERVINGS = [
   { size: "1L", serves: "Feeds 2" },
-  { size: "2L", serves: "Feeds 4–5" },
+  { size: "2L", serves: "Feeds 4-5" },
   { size: "3L", serves: "Feeds 6" },
 ];
 
@@ -131,7 +131,7 @@ function pieceVariants(
 }
 
 // ===========================================================================
-// Gradients — small palette to keep visual variety without going random
+// Gradients, small palette to keep visual variety without going random
 // ===========================================================================
 
 const G = {
@@ -203,7 +203,7 @@ export const MENU_ITEMS: MenuItem[] = [
     id: "plain-white-rice",
     name: "Plain White Rice",
     namePt: "Arroz Branco Simples",
-    description: "Parboiled long grain / Basmati rice — steamed.",
+    description: "Parboiled long grain / Basmati rice, steamed.",
     category: "Rice dishes",
     variants: trayVariants([30, 45, 60]),
     monogram: "P",
@@ -339,7 +339,7 @@ export const MENU_ITEMS: MenuItem[] = [
     id: "afang-soup",
     name: "Afang Soup",
     namePt: "Sopa de Folhas de Eru",
-    description: "Soup with afang leaves and mixed protein — regional specialty.",
+    description: "Soup with afang leaves and mixed protein, regional specialty.",
     category: "Soups",
     variants: trayVariants([55, 82.5, 109]),
     monogram: "A",
@@ -379,7 +379,7 @@ export const MENU_ITEMS: MenuItem[] = [
     id: "seafood-okra-soup",
     name: "Seafood Okra Soup",
     namePt: "Sopa de Quiabos com Marisco",
-    description: "Okra soup loaded with fresh seafood — prawns and more.",
+    description: "Okra soup loaded with fresh seafood, prawns and more.",
     category: "Soups",
     variants: trayVariants([60, 79.5, 109]),
     monogram: "O",
@@ -529,7 +529,7 @@ export const MENU_ITEMS: MenuItem[] = [
     id: "moi-moi",
     name: "Moi-Moi",
     namePt: "Pudim Salgado de Feijão",
-    description: "Steamed bean cake — soft, spicy, comforting.",
+    description: "Steamed bean cake, soft, spicy, comforting.",
     category: "Protein",
     variants: pieceVariants(PIECE_SERVINGS_5_10_15, [25, 50, 75]),
     monogram: "M",
@@ -712,13 +712,13 @@ export const MENU_ITEMS: MenuItem[] = [
 ];
 
 /**
- * Lock toggle — set to true during the Portimão festival to disable the
+ * Lock toggle, set to true during the Portimão festival to disable the
  * normal-ordering menu so festival customers don't accidentally order
  * weekly preorder items. Wire to admin later.
  */
 export const NORMAL_ORDERING_LOCKED = false;
 export const LOCK_MESSAGE =
-  "We're cooking for the Portimão pop-up this week — daily ordering reopens after the festival. Festival bowls available on the Portimão page.";
+  "We're cooking for the Portimão pop-up this week, daily ordering reopens after the festival. Festival bowls available on the Portimão page.";
 
 export const MIN_ORDER_NOTE =
-  "Minimum daily/biweekly order is €20. Small orders need 24h notice; large catering orders need 10 days. We deliver across Portugal — fees calculated at checkout.";
+  "Minimum daily/biweekly order is €20. Small orders need 24h notice; large catering orders need 10 days. We deliver across Portugal, fees calculated at checkout.";

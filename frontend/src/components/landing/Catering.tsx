@@ -29,7 +29,7 @@ function CateringImage({ src }: { src: string }) {
 }
 
 /**
- * Each occasion has an `image` slot — drop a real photo at the path shown
+ * Each occasion has an `image` slot, drop a real photo at the path shown
  * (e.g. /catering/weddings.jpg in frontend/public/catering/) and it'll
  * appear behind the card content. Until then a brand-gradient placeholder
  * with a serif initial reads as intentional, not broken.
@@ -49,7 +49,7 @@ const OCCASIONS = [
   },
   {
     title: "Birthdays & naming ceremonies",
-    body: "Small chops, suya stations, soft drinks — sized to your guest list.",
+    body: "Small chops, suya stations, soft drinks, sized to your guest list.",
     image: "/catering/birthdays.jpg",
     initial: "B",
     gradient: "from-gold via-gold-deep to-espresso",
@@ -62,7 +62,7 @@ const OCCASIONS = [
   },
   {
     title: "Corporate",
-    body: "Office lunches, away-days, launches — clean delivery, clear invoicing.",
+    body: "Office lunches, away-days, launches, clean delivery, clear invoicing.",
     image: "/catering/corporate.jpg",
     initial: "C",
     gradient: "from-forest via-forest-soft to-espresso",
@@ -128,7 +128,7 @@ export default function Catering() {
                   ]}
                 />
                 <p className="mt-5 max-w-md text-base leading-relaxed text-ivory/80">
-                  From intimate dinners of 5 to celebrations of 500 — Affy&rsquo;s
+                  From intimate dinners of 5 to celebrations of 500, Affy&rsquo;s
                   caters with the same care, same hands, same kitchen.
                 </p>
 
@@ -170,7 +170,7 @@ export default function Catering() {
               as="h3"
               delay={0.2}
               className="mt-4 font-display text-3xl font-medium leading-tight tracking-tight text-espresso sm:text-4xl"
-              tokens="Every kind of gathering — done the way it should be."
+              tokens="Every kind of gathering, done the way it should be."
             />
 
             <div className="mt-10 grid gap-4 sm:grid-cols-2" role="list">
@@ -190,7 +190,7 @@ export default function Catering() {
                     aria-label={`Request a catering quote for ${o.title}`}
                     className="group relative h-full overflow-hidden rounded-2xl border border-border bg-surface transition-colors hover:border-gold/60 hover:shadow-luxe cursor-pointer focus:outline-none focus:ring-2 focus:ring-gold/60"
                   >
-                    {/* Image header — falls back to gradient + monogram if file missing */}
+                    {/* Image header, falls back to gradient + monogram if file missing */}
                     <div className={`relative h-32 overflow-hidden bg-gradient-to-br ${o.gradient}`}>
                       <CateringImage src={o.image} />
                       <span
@@ -230,7 +230,7 @@ export default function Catering() {
                 >
                   Request a catering quote
                 </button>{" "}
-                — we&rsquo;ll come back with a tailored menu and a real number.
+               , we&rsquo;ll come back with a tailored menu and a real number.
               </p>
             </FadeIn>
           </div>

@@ -1,5 +1,5 @@
 /**
- * Database types — a tiny stub for now.
+ * Database types, a tiny stub for now.
  *
  * Eventually we'll generate this with `supabase gen types typescript` after
  * the schema is live, and replace the stubs below with the auto-generated

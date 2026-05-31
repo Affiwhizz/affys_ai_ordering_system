@@ -64,7 +64,7 @@ export default function Sidebar() {
       const supabase = createClient();
       await supabase.auth.signOut();
     } catch {
-      // ignore — still redirect
+      // ignore, still redirect
     }
     router.push("/admin/login");
   };

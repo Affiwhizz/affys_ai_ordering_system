@@ -21,7 +21,7 @@ import { Modal } from "@/components/motion";
  *   }
  *
  * To rev the consent dialog (e.g. you add a new cookie category later),
- * bump CONSENT_VERSION — that re-prompts every user.
+ * bump CONSENT_VERSION, that re-prompts every user.
  */
 
 const STORAGE_KEY = "affys.cookieConsent";
@@ -67,14 +67,14 @@ export default function CookieBanner() {
   const [marketing, setMarketing] = useState(false);
 
   // Decide whether to show on mount.
-  // If existing consent is present, we don't show the banner — and we defer
+  // If existing consent is present, we don't show the banner, and we defer
   // hydrating the toggle states until the user opens the customize modal
   // (see `openSettings` below). This keeps the mount effect side-effect-free
   // when consent has already been recorded.
   useEffect(() => {
     const existing = readConsent();
     if (existing) return;
-    // No existing consent — show banner after a tiny delay so it doesn't
+    // No existing consent, show banner after a tiny delay so it doesn't
     // pop in on first paint.
     const t = setTimeout(() => setShow(true), 600);
     return () => clearTimeout(t);
@@ -198,13 +198,13 @@ export default function CookieBanner() {
           <ul className="mt-7 space-y-3">
             <Toggle
               label="Essential"
-              description="Cookies needed for the site to function — session, security, language. Always on."
+              description="Cookies needed for the site to function, session, security, language. Always on."
               checked
               disabled
             />
             <Toggle
               label="Analytics"
-              description="Anonymous data on which pages and dishes are most useful — helps us improve."
+              description="Anonymous data on which pages and dishes are most useful, helps us improve."
               checked={analytics}
               onChange={setAnalytics}
             />

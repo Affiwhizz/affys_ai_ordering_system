@@ -48,7 +48,7 @@ export default function PortimaoMenu() {
             />
             <FadeIn delay={0.4}>
               <p className="mt-5 text-lg text-foreground-muted">
-                One spice level — gentle enough for everyone. Want heat? Add our
+                One spice level, gentle enough for everyone. Want heat? Add our
                 pepper sauce on the side. Each dish lists exactly what&rsquo;s in
                 it, so you can pick what works for you.
               </p>

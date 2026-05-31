@@ -5,7 +5,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 
 interface MagneticProps {
   children: ReactNode;
-  /** 0–1: how strongly the cursor pulls the element. 0.3 = subtle, 0.6 = strong. */
+  /** 0-1: how strongly the cursor pulls the element. 0.3 = subtle, 0.6 = strong. */
   strength?: number;
   /** Activation radius in pixels around the element's center. */
   range?: number;
@@ -15,11 +15,11 @@ interface MagneticProps {
 }
 
 /**
- * Magnetic — premium tactile hover effect.
+ * Magnetic, premium tactile hover effect.
  * The wrapped element follows the cursor smoothly when within `range` px,
  * easing back to center when the cursor leaves. Uses spring physics.
  *
- * Use sparingly — best on a single hero element + primary CTAs, not everywhere.
+ * Use sparingly, best on a single hero element + primary CTAs, not everywhere.
  */
 export default function Magnetic({
   children,

@@ -29,14 +29,14 @@ const fraunces = Fraunces({
 export const metadata: Metadata = {
   metadataBase: new URL("https://atasteofaffys.com"),
   title: {
-    default: "Affy's — Modern Nigerian, made in Portugal",
+    default: "Affy's, Nigerian meals made in Portugal",
     template: "%s · Affy's",
   },
   description:
-    "Bold, comforting, home-style Nigerian food in Portugal. Order with Udia, our AI guide, or use the quick form. Preorder, delivery, catering, and pop-ups.",
+    "Bold, comforting, home-style Nigerian meals in Portugal. Order with Udia, our AI guide, or use the quick form. Preorder, delivery, catering, and pop-ups.",
   keywords: [
     "Affy's",
-    "Modern Nigerian food",
+    "Nigerian meals",
     "Nigerian food Portugal",
     "Lisbon catering",
     "jollof rice Portugal",
@@ -45,9 +45,9 @@ export const metadata: Metadata = {
     "Udia",
   ],
   openGraph: {
-    title: "Affy's — Modern Nigerian, made in Portugal",
+    title: "Affy's, Nigerian meals made in Portugal",
     description:
-      "Bold, comforting, home-style Nigerian food in Portugal. Order with Udia or fill the quick form.",
+      "Bold, comforting, home-style Nigerian meals in Portugal. Order with Udia or fill the quick form.",
     url: "https://atasteofaffys.com",
     siteName: "Affy's",
     locale: "en_US",

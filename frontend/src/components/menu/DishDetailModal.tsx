@@ -13,7 +13,7 @@ import {
 } from "./menu-data";
 
 /**
- * Rich dish detail modal — opens when a dish card is clicked. Shows photos
+ * Rich dish detail modal, opens when a dish card is clicked. Shows photos
  * (carousel) or a gradient placeholder, an optional video, the description,
  * ingredients, a spice-level picker (preference only), a portion + quantity
  * selector, and an add-to-cart button. Everything degrades gracefully when a
@@ -308,7 +308,7 @@ export default function DishDetailModal({
         <div className="border-t border-border bg-white px-5 py-4 sm:px-7">
           {NORMAL_ORDERING_LOCKED ? (
             <p className="text-center text-sm text-foreground-muted">
-              Daily ordering is paused — see the Portimão menu.
+              Daily ordering is paused, see the Portimão menu.
             </p>
           ) : (
             <div className="flex items-center gap-3">

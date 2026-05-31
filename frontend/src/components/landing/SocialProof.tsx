@@ -2,7 +2,7 @@ import Link from "next/link";
 import { FadeIn, MotionCard, RevealHeading } from "@/components/motion";
 
 /**
- * Social Proof — Instagram-style grid + a featured guest quote.
+ * Social Proof, Instagram-style grid + a featured guest quote.
  *
  * Why no fake testimonials:
  *   Affy explicitly asked for honest stats only. So this section ships
@@ -17,13 +17,13 @@ import { FadeIn, MotionCard, RevealHeading } from "@/components/motion";
 const FEATURED_QUOTE = {
   // Set isPlaceholder to false and fill with a real review when one comes in
   isPlaceholder: true,
-  text: "We took the jollof to my brother’s naming ceremony — every guest asked for the recipe. The trays came on time, hot, and packed properly.",
+  text: "We took the jollof to my brother’s naming ceremony, every guest asked for the recipe. The trays came on time, hot, and packed properly.",
   author: "Replace with a real guest quote",
   context: "Naming ceremony · 80 guests",
 };
 
 interface IGTile {
-  // src/href left null for now — drop in real IG post URLs / images
+  // src/href left null for now, drop in real IG post URLs / images
   src: string | null;
   alt: string;
   href: string | null;
@@ -90,7 +90,7 @@ export default function SocialProof() {
                 TikTok
               </a>{" "}
               <span className="font-semibold text-espresso">@_affys</span>,
-              when you order from us — we love seeing where Affy&rsquo;s
+              when you order from us, we love seeing where Affy&rsquo;s
               ends up!
             </p>
           </FadeIn>

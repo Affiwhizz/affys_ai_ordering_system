@@ -46,7 +46,7 @@ export function CateringModalProvider({ children }: { children: ReactNode }) {
 export function useCateringModal(): CateringModalContextValue {
   const ctx = useContext(CateringModalContext);
   if (!ctx) {
-    // Be permissive — components are allowed to render outside the provider
+    // Be permissive, components are allowed to render outside the provider
     // (e.g. in storybook); the buttons just won't do anything in that case.
     return {
       open: () => {},

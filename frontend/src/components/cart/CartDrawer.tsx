@@ -114,7 +114,7 @@ export default function CartDrawer() {
                     Your cart is empty
                   </h3>
                   <p className="mt-2 max-w-xs text-sm text-foreground-muted">
-                    Add a dish from the menu — or jump to Portimão for festival bowls.
+                    Add a dish from the menu, or jump to Portimão for festival bowls.
                   </p>
                   <button
                     type="button"

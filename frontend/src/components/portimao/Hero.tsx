@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { PORTIMAO } from "./config";
 
 /**
- * Portimão page hero — cinematic, full-bleed, simple.
+ * Portimão page hero, cinematic, full-bleed, simple.
  *
  * Drop a hero video URL here when ready; gradient fallback below works fine
  * until then.
@@ -16,7 +16,7 @@ const PORTIMAO_HERO_POSTER_SRC: string | null = null;
 export default function PortimaoHero() {
   return (
     <section className="relative min-h-screen w-full overflow-hidden">
-      {/* Background — video or warm fallback */}
+      {/* Background, video or warm fallback */}
       {PORTIMAO_HERO_VIDEO_SRC ? (
         <video
           className="absolute inset-0 h-full w-full object-cover"
@@ -96,7 +96,7 @@ export default function PortimaoHero() {
         >
           Pop-up preorder for {PORTIMAO.campaignWindow} ·{" "}
           {PORTIMAO.pickupLocation}. Bowls from {PORTIMAO.bowlPriceFrom}. Pick a
-          slot from the calendar — we follow up with the final details.
+          slot from the calendar, we follow up with the final details.
         </motion.p>
 
         <motion.div

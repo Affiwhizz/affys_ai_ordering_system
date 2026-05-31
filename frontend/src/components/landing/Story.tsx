@@ -8,7 +8,7 @@ const PILLARS = [
   },
   {
     title: "Slow-built flavour",
-    body: "Stews, stocks, spices, and sauces cooked properly — not rushed.",
+    body: "Stews, stocks, spices, and sauces cooked properly, not rushed.",
   },
   {
     title: "Hosted with care",
@@ -83,7 +83,7 @@ export default function Story() {
             <FadeIn delay={0.5}>
               <div className="mt-6 space-y-5 text-lg leading-relaxed text-foreground-muted">
                 <p>
-                  Affy&rsquo;s is the work of Affiong — born in{" "}
+                  Affy&rsquo;s is the work of Affiong, born in{" "}
                   <span className="text-espresso font-medium">Port Harcourt</span>,
                   with roots in{" "}
                   <span className="text-espresso font-medium">Akwa Ibom, Nigeria</span>,
@@ -93,7 +93,7 @@ export default function Story() {
                 </p>
                 <p>
                   Today the same hands and the same recipes find their way to
-                  you — slow-built stews, smoky party jollof, suya off the
+                  you, slow-built stews, smoky party jollof, suya off the
                   skewer, small chops that disappear too fast. We cook to
                   order. We cater your weddings, naming ceremonies, pop-ups,
                   and quiet weeknight dinners. Every plate carries a piece of

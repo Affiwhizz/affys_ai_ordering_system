@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     default: "Admin",
     template: "%s · Admin · Affy's",
   },
-  description: "Affy's admin dashboard — orders, catering, Portimão, menu, customers.",
+  description: "Affy's admin dashboard, orders, catering, Portimão, menu, customers.",
   robots: { index: false, follow: false },
 };
 

@@ -13,7 +13,7 @@ const PATHS = [
       "Submit the form (or Ask Udia to build it for you)",
       "We confirm by email and phone within 24 hours",
       "Pay your secure Stripe link to lock your slot",
-      "Pick up at the festival window — your name on the list",
+      "Pick up at the festival window, your name on the list",
     ],
     cta: { label: "Preorder a slot", href: "#preorder" },
     secondary: { label: "Or ask Udia", href: "/#udia" },
@@ -24,7 +24,7 @@ const PATHS = [
     eyebrow: `Path 2 · Live ${PORTIMAO.uberEatsHours}`,
     title: "Order on Uber Eats during festival hours",
     description:
-      "Walk-up ordering with delivery options around Praia da Rocha. Native Uber Eats flow — fastest if you're already on the strip.",
+      "Walk-up ordering with delivery options around Praia da Rocha. Native Uber Eats flow, fastest if you're already on the strip.",
     steps: [
       "Open the Affy’s store on Uber Eats",
       "Order direct in-app",

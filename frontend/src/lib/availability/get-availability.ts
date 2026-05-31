@@ -12,12 +12,12 @@ export interface Availability {
 
 export const DEFAULT_AVAILABILITY: Availability = {
   leadDays: 1,
-  openWeekdays: [1, 2, 3, 4, 5, 6], // Mon–Sat
+  openWeekdays: [1-2, 3-4, 5-6], // Mon-Sat
   blockedDates: [],
 };
 
 /**
- * Reads daily availability — lead time, open weekdays, and blocked dates.
+ * Reads daily availability, lead time, open weekdays, and blocked dates.
  * Falls back to sensible defaults if the tables aren't set up or unreachable,
  * so the date picker always works.
  */

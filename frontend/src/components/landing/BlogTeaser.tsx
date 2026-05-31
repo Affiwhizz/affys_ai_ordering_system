@@ -24,7 +24,7 @@ const POSTS: Post[] = [
     readMinutes: 5,
     title: "How much food to order for a party",
     excerpt:
-      "A simple rule of thumb for jollof, proteins, sides, and small chops — sized to your guest count and time of day.",
+      "A simple rule of thumb for jollof, proteins, sides, and small chops, sized to your guest count and time of day.",
     initial: "P",
     bg: "from-red via-red-soft to-espresso",
   },
@@ -35,7 +35,7 @@ const POSTS: Post[] = [
     readMinutes: 6,
     title: "What to serve at a Nigerian naming ceremony",
     excerpt:
-      "From small chops to the main spread, here’s how we plan the menu for naming ceremonies — what to feed kids, elders, and the in-laws.",
+      "From small chops to the main spread, here’s how we plan the menu for naming ceremonies, what to feed kids, elders, and the in-laws.",
     initial: "N",
     bg: "from-forest via-forest-soft to-espresso",
   },

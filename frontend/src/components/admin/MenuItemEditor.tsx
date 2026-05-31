@@ -111,7 +111,7 @@ export default function MenuItemEditor({
         })),
       });
       if (!res.ok) {
-        setErr(res.error ?? "Couldn't save — please try again.");
+        setErr(res.error ?? "Couldn't save, please try again.");
         return;
       }
       setOpen(false);

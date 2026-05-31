@@ -6,7 +6,7 @@ const STEPS = [
   {
     n: "01",
     title: "Tell Udia what you want",
-    body: "A craving, a budget, a guest count, an event — anything. Type or talk.",
+    body: "A craving, a budget, a guest count, an event, anything. Type or talk.",
   },
   {
     n: "02",
@@ -75,7 +75,7 @@ export default function MeetUdia() {
             <FadeIn delay={0.55}>
               <p className="mt-6 max-w-xl text-lg leading-relaxed text-ivory/80">
                 Tell Udia what you&rsquo;re craving, your budget, group
-                size, or event type — and Udia helps you build the right
+                size, or event type, and Udia helps you build the right
                 order.
               </p>
             </FadeIn>
@@ -194,10 +194,10 @@ function UdiaChatPreview() {
                 U
               </span>
               <div className="max-w-[85%] rounded-2xl rounded-tl-sm border border-ivory/10 bg-ivory/5 px-4 py-3 text-sm text-ivory">
-                <p>Lovely. Here&rsquo;s a starter for 8 — adjust anything:</p>
+                <p>Lovely. Here&rsquo;s a starter for 8, adjust anything:</p>
                 <ul className="mt-3 space-y-2">
                   {[
-                    { name: "Smoky party jollof — large tray", qty: "×1", price: "€48" },
+                    { name: "Smoky party jollof, large tray", qty: "×1", price: "€48" },
                     { name: "Suya skewers", qty: "×16", price: "€56" },
                     { name: "Plantain (dodo)", qty: "×8", price: "€16" },
                     { name: "Small chops platter", qty: "×1", price: "€28" },

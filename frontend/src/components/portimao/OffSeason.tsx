@@ -4,7 +4,7 @@ import { AzulejoTile } from "../landing/Azulejo";
 import NotifyMeForm from "@/components/NotifyMeForm";
 
 /**
- * OFF-SEASON state — campaign not active.
+ * OFF-SEASON state, campaign not active.
  * Quiet "see you next year" page that still keeps brand presence + offers
  * a notify-me capture.
  */
@@ -49,7 +49,7 @@ export default function PortimaoOffSeason() {
               <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-foreground-muted">
                 The pop-up is closed for now. Drop your details and
                 we&rsquo;ll let you know the moment the next Portimão window
-                opens — usually around festival season.
+                opens, usually around festival season.
               </p>
             </FadeIn>
 

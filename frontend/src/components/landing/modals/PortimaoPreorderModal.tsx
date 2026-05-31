@@ -33,7 +33,7 @@ export default function PortimaoPreorderModal({ open, onClose }: PortimaoPreorde
               Festival mode · Live
             </span>
             <span className="text-[10px] uppercase tracking-[0.22em] text-ivory/80">
-              Bowls {PORTIMAO.bowlPriceFrom}–{PORTIMAO.bowlPriceTo}
+              Bowls {PORTIMAO.bowlPriceFrom}-{PORTIMAO.bowlPriceTo}
             </span>
           </div>
         </div>
@@ -46,7 +46,7 @@ export default function PortimaoPreorderModal({ open, onClose }: PortimaoPreorde
           </h2>
           <p className="mt-4 text-base leading-relaxed text-foreground-muted">
             We open a calendar of available pickup dates and times for the
-            festival window. Pick your slot, choose your bowls — we follow up
+            festival window. Pick your slot, choose your bowls, we follow up
             with the final details and your secure payment link.
           </p>
 

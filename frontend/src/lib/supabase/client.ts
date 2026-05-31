@@ -8,7 +8,7 @@ import type { Database } from "./types";
  *
  * Reads NEXT_PUBLIC_SUPABASE_URL plus the browser-safe key. Supabase renamed
  * the "anon key" to the "publishable key", so we accept either env var name.
- * These keys are safe to ship to the browser — Row Level Security in the
+ * These keys are safe to ship to the browser, Row Level Security in the
  * database is what actually gates access.
  */
 export const SUPABASE_PUBLIC_KEY =
@@ -22,7 +22,7 @@ export function createClient() {
     {
       auth: {
         // Don't auto-exchange a `?code=` in the URL. The login page does this
-        // explicitly and exactly once — leaving it on caused multiple Supabase
+        // explicitly and exactly once, leaving it on caused multiple Supabase
         // clients (e.g. the admin chrome) to race over the single-use code and
         // loop the sign-in.
         detectSessionInUrl: false,

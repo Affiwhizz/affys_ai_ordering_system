@@ -51,7 +51,7 @@ export default function ContentManagerPage() {
                     </div>
                   ) : (
                     <div className="mt-2 rounded-lg border border-border bg-cream px-3 py-2 text-sm text-foreground-muted">
-                      {b.value === "" ? <span className="italic text-foreground-subtle">— empty —</span> : String(b.value)}
+                      {b.value === "" ? <span className="italic text-foreground-subtle">,  empty , </span> : String(b.value)}
                     </div>
                   )}
                 </div>
@@ -107,7 +107,7 @@ export default function ContentManagerPage() {
                       tone={p.status === "published" ? "green" : p.status === "scheduled" ? "amber" : "neutral"}
                     />
                   </td>
-                  <td className="px-5 py-3.5 text-foreground-muted">{p.publishedAt ?? "—"}</td>
+                  <td className="px-5 py-3.5 text-foreground-muted">{p.publishedAt ?? ", "}</td>
                   <td className="px-5 py-3.5 text-right text-foreground-muted">{p.readMinutes} min</td>
                 </tr>
               ))}

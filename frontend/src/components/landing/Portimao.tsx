@@ -23,7 +23,7 @@ function priceFromLabel(s: string): number {
  *   off-season→ hidden from the homepage entirely
  */
 const CAMPAIGN_DELIVERY_START = "Thursday (2 July) · 10:00 WET";
-const CAMPAIGN_PICKUP = "Thurs (2 July) — Mon (6 July) · Rua da Pedra";
+const CAMPAIGN_PICKUP = "Thurs (2 July), Mon (6 July) · Rua da Pedra";
 const CAMPAIGN_SLOTS_LEFT = 28;
 
 const FESTIVAL_BOWLS: { name: string; from: string; tag: string }[] = [
@@ -40,15 +40,15 @@ export default function Portimao({
 }) {
   const [modalOpen, setModalOpen] = useState(false);
 
-  // Campaign over — remove the block from the homepage entirely.
+  // Campaign over, remove the block from the homepage entirely.
   if (status === "off-season") return null;
 
-  // Sold out — compact strip pointing to the waitlist on the campaign page.
+  // Sold out, compact strip pointing to the waitlist on the campaign page.
   if (status === "sold-out") {
     return (
       <section
         id="portimao"
-        aria-label="Portimão campaign — sold out"
+        aria-label="Portimão campaign, sold out"
         className="relative border-y border-border bg-surface py-16 md:py-20"
       >
         <div className="container-x">
@@ -78,7 +78,7 @@ export default function Portimao({
   return (
     <section
       id="portimao"
-      aria-label="Portimão preorder campaign — live now"
+      aria-label="Portimão preorder campaign, live now"
       className="relative overflow-hidden bg-espresso text-ivory"
     >
       {/* Decorative background */}
@@ -128,7 +128,7 @@ export default function Portimao({
 
             <FadeIn delay={0.55}>
               <p className="mt-6 max-w-xl text-lg leading-relaxed text-ivory/80">
-                Pop-up preorder for Jul 2 — Jul 7, 2026 · Rua da Pedra,
+                Pop-up preorder for Jul 2, Jul 7, 2026 · Rua da Pedra,
                 Portimão. Bowls from €19. Pick a slot from the calendar and
                 we will follow up with the final details.
               </p>
@@ -216,7 +216,7 @@ export default function Portimao({
                 <div className="flex items-center justify-between border-b border-ivory/10 pb-3">
                   <p className="eyebrow text-gold">Festival menu</p>
                   <span className="text-[10px] uppercase tracking-[0.22em] text-ivory/55">
-                    Bowls · €9–€13
+                    Bowls · €9-€13
                   </span>
                 </div>
 

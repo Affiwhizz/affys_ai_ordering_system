@@ -17,9 +17,9 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Portimão preorder",
-  description: `Affy's pop-up in Portimão — ${PORTIMAO.campaignName}. Preorder Nigerian bowls, suya, sides, and small chops for pickup at Praia da Rocha, or order via Uber Eats during festival hours.`,
+  description: `Affy's pop-up in Portimão, ${PORTIMAO.campaignName}. Preorder Nigerian bowls, suya, sides, and small chops for pickup at Praia da Rocha, or order via Uber Eats during festival hours.`,
   openGraph: {
-    title: "Affy's in Portimão — preorder for the festival weekend",
+    title: "Affy's in Portimão, preorder for the festival weekend",
     description: `${PORTIMAO.campaignWindow} · Praia da Rocha. Bowls from ${PORTIMAO.bowlPriceFrom}. Pickup or Uber Eats.`,
     url: "https://atasteofaffys.com/portimao",
     type: "website",
@@ -50,7 +50,7 @@ export default async function PortimaoPage() {
     );
   }
 
-  // LIVE — full campaign page
+  // LIVE, full campaign page
   return (
     <div className="flex min-h-screen flex-1 flex-col bg-background">
       <Header />

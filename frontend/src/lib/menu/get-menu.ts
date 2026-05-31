@@ -171,7 +171,7 @@ async function fetchPairingsMap(
       map.set(r.menu_item_id, arr);
     }
   } catch {
-    // ignore — return whatever we have
+    // ignore, return whatever we have
   }
   return map;
 }
@@ -206,7 +206,7 @@ export async function getPublicMenu(): Promise<MenuItem[]> {
 }
 
 /**
- * Full menu for the admin manager — ALL items (incl. unavailable), with the
+ * Full menu for the admin manager, ALL items (incl. unavailable), with the
  * db id and management fields. Uses the staff session so RLS allows it.
  * Returns an empty array on failure (the admin page shows an empty state
  * rather than the public storefront's bundled fallback).

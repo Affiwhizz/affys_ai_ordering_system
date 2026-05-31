@@ -22,7 +22,7 @@ export default function CTA() {
                 <span className="gold-rule-after" />
               </span>
               <h2 className="mt-5 font-display text-4xl font-medium leading-[1.05] tracking-tight sm:text-5xl">
-                Real food, made fresh —{" "}
+                Real food, made fresh , {" "}
                 <span className="italic gold-shimmer">at your door.</span>
               </h2>
               <p className="mt-5 max-w-md text-base leading-relaxed text-ivory/80">
@@ -67,9 +67,9 @@ export default function CTA() {
                 <p className="eyebrow text-ivory/60">Try saying to Udia</p>
                 <ul className="mt-4 space-y-3">
                   {[
-                    "Sunday dinner for 4 — something with jollof.",
+                    "Sunday dinner for 4, something with jollof.",
                     "Office lunch for 25, halal, around €15 a head.",
-                    "Naming ceremony Saturday — the works.",
+                    "Naming ceremony Saturday, the works.",
                   ].map((s) => (
                     <li
                       key={s}

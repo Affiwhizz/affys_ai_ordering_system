@@ -36,7 +36,7 @@ function waLink(o: AdminOrder): string {
         month: "long",
       })}`
     : "";
-  const msg = `Hi ${o.customerName.split(" ")[0]}, your Affy's order ${o.shortCode} is confirmed${when}. Total ${formatCurrency(o.total)}. Thank you! — Affy's`;
+  const msg = `Hi ${o.customerName.split(" ")[0]}, your Affy's order ${o.shortCode} is confirmed${when}. Total ${formatCurrency(o.total)}. Thank you!, Affy's`;
   return `https://wa.me/${digits}?text=${encodeURIComponent(msg)}`;
 }
 
@@ -130,7 +130,7 @@ export default function OrdersTable({ initial }: { initial: AdminOrder[] }) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `affys-orders-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `affys-orders-${new Date().toISOString().slice(0-10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };

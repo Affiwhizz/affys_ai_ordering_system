@@ -1,5 +1,5 @@
 /**
- * Mock data for the admin scaffolding. UI-only — wire to Supabase/API later.
+ * Mock data for the admin scaffolding. UI-only, wire to Supabase/API later.
  *
  * Shapes here roughly match what the eventual backend will return. When you
  * connect a real data source, replace each export below with a fetch/query
@@ -55,7 +55,7 @@ export const ORDERS: Order[] = [
     total: 184,
     fulfilment: "pickup",
     scheduledFor: "2026-05-09T19:30:00",
-    notes: "Birthday dinner for 8 — medium spice please.",
+    notes: "Birthday dinner for 8, medium spice please.",
     paymentStatus: "pending",
     submittedAt: "2026-05-07T14:12:00",
   },
@@ -232,7 +232,7 @@ export const CUSTOMERS: Customer[] = [
     totalSpend: 920,
     lastOrderAt: "2026-05-07",
     isRepeat: true,
-    notes: "VIP — frequent caterer for office lunches.",
+    notes: "VIP, frequent caterer for office lunches.",
   },
   {
     id: "CUS-0005",
@@ -313,7 +313,7 @@ export const CATERING: CateringInquiry[] = [
     guestCount: 80,
     date: "2026-06-14",
     location: "Cascais",
-    budget: "€1,800–€2,500",
+    budget: "€1,800-€2,500",
     notes: "Wants small chops station and full main spread.",
     status: "new",
     submittedAt: "2026-05-07T11:02:00",
@@ -348,7 +348,7 @@ export const CATERING: CateringInquiry[] = [
     guestCount: 30,
     date: "2026-05-29",
     location: "Lisboa, Belém",
-    budget: "€600–€900",
+    budget: "€600-€900",
     status: "confirmed",
     quote: 820,
     submittedAt: "2026-04-28T12:00:00",
@@ -404,9 +404,9 @@ export const MENU_ITEMS: MenuItem[] = [
     category: "Mains",
     description: "Open-fire rice, scotch bonnet, slow-built tomato base.",
     variants: [
-      { size: "2L tray (serves 3–4)", price: 28 },
-      { size: "3L tray (serves 5–6)", price: 42 },
-      { size: "4L tray (serves 8–10)", price: 56 },
+      { size: "2L tray (serves 3-4)", price: 28 },
+      { size: "3L tray (serves 5-6)", price: 42 },
+      { size: "4L tray (serves 8-10)", price: 56 },
     ],
     allergens: [],
     isAvailable: true,
@@ -439,8 +439,8 @@ export const MENU_ITEMS: MenuItem[] = [
     id: "MN-004",
     name: "Asun (peppered goat)",
     category: "Mains",
-    description: "Smoked goat, peppers, onions — bar-snack royalty.",
-    variants: [{ size: "Pack (serves 1–2)", price: 16 }],
+    description: "Smoked goat, peppers, onions, bar-snack royalty.",
+    variants: [{ size: "Pack (serves 1-2)", price: 16 }],
     allergens: [],
     isAvailable: true,
     imageUrl: null,
@@ -461,8 +461,8 @@ export const MENU_ITEMS: MenuItem[] = [
     category: "Small chops",
     description: "Puff puff, gizdodo, spring rolls, samosas.",
     variants: [
-      { size: "Platter (serves 4–6)", price: 28 },
-      { size: "Large (serves 8–10)", price: 48 },
+      { size: "Platter (serves 4-6)", price: 28 },
+      { size: "Large (serves 8-10)", price: 48 },
     ],
     allergens: ["gluten", "egg"],
     isAvailable: true,
@@ -472,7 +472,7 @@ export const MENU_ITEMS: MenuItem[] = [
     id: "MN-007",
     name: "Plantain (dodo)",
     category: "Sides",
-    description: "Soft, sweet, golden — the way it should be.",
+    description: "Soft, sweet, golden, the way it should be.",
     variants: [{ size: "Portion", price: 4 }],
     allergens: [],
     isAvailable: true,
@@ -492,7 +492,7 @@ export const MENU_ITEMS: MenuItem[] = [
     id: "MN-009",
     name: "Zobo",
     category: "Drinks",
-    description: "Hibiscus, ginger, citrus — chilled.",
+    description: "Hibiscus, ginger, citrus, chilled.",
     variants: [{ size: "Bottle", price: 3.5 }],
     allergens: [],
     isAvailable: true,
@@ -525,7 +525,7 @@ export interface ContentBlock {
 export const CONTENT_BLOCKS: ContentBlock[] = [
   { key: "hero.eyebrow", label: "Hero eyebrow", type: "text", value: "Bold West-African flavours · Made in Portugal" },
   { key: "hero.headline", label: "Hero headline", type: "text", value: "A taste of home, served with care." },
-  { key: "hero.body", label: "Hero body", type: "text", value: "Bold, comforting, home-style Nigerian meals — preordered, delivered, catered, and brought to life at pop-ups across Portugal. Slow-cooked the way it should be." },
+  { key: "hero.body", label: "Hero body", type: "text", value: "Bold, comforting, home-style Nigerian meals, preordered, delivered, catered, and brought to life at pop-ups across Portugal. Slow-cooked the way it should be." },
   { key: "hero.video", label: "Hero video URL", type: "video", value: "" },
   { key: "thisweek.dishes", label: "Featured dishes (this week)", type: "text", value: "Smoky party jollof, suya skewers, pepper sauce, and soft plantain." },
   { key: "thisweek.deadline", label: "Order deadline", type: "text", value: "Preorders close every Friday · 18:00 WET" },

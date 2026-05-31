@@ -38,7 +38,7 @@ export default function NotifyMeForm({
     const res = await submitNotifySignup({ email, phone, source });
     setPending(false);
     if (res.ok) setDone(true);
-    else setError(res.error ?? "Couldn't sign you up — try again.");
+    else setError(res.error ?? "Couldn't sign you up, try again.");
   };
 
   if (done) {
@@ -46,7 +46,7 @@ export default function NotifyMeForm({
       <p
         className={`flex items-center gap-2 text-sm font-semibold text-forest ${className}`}
       >
-        <Check size={16} /> You&rsquo;re on the list — we&rsquo;ll be in touch.
+        <Check size={16} /> You&rsquo;re on the list, we&rsquo;ll be in touch.
       </p>
     );
   }

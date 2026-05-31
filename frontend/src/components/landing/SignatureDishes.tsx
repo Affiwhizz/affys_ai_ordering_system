@@ -3,7 +3,7 @@ import { FadeIn, RevealHeading } from "@/components/motion";
 import type { MenuItem } from "@/components/menu/menu-data";
 
 /**
- * "Plates that tell stories" — a showcase of real menu dishes (the ones flagged
+ * "Plates that tell stories", a showcase of real menu dishes (the ones flagged
  * "featured" in admin, or the first few otherwise). Each card links straight to
  * the full menu. Fully editable from the menu manager.
  */
@@ -39,7 +39,7 @@ export default function SignatureDishes({ dishes }: { dishes: MenuItem[] }) {
             />
             <FadeIn delay={0.35}>
               <p className="mt-5 text-lg text-foreground-muted">
-                A taste of the menu — tap any plate to see the full list, photos,
+                A taste of the menu, tap any plate to see the full list, photos,
                 portions and spice options.
               </p>
             </FadeIn>

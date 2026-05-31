@@ -6,7 +6,7 @@ const RULES = [
   {
     title: "Calendar shows real availability",
     body:
-      "The calendar only displays slots that are actually open — pick one and it's yours to lock. The festival weekend is 3 days, but preorder dates extend before and after.",
+      "The calendar only displays slots that are actually open, pick one and it's yours to lock. The festival weekend is 3 days, but preorder dates extend before and after.",
   },
   {
     title: "Pickup only for direct preorders",
@@ -15,7 +15,7 @@ const RULES = [
   },
   {
     title: "Booking deadlines",
-    body: `Same-weekend cut-off: ${PORTIMAO.preorderDeadline}. Earlier dates have more flexibility — the calendar shows what's bookable.`,
+    body: `Same-weekend cut-off: ${PORTIMAO.preorderDeadline}. Earlier dates have more flexibility, the calendar shows what's bookable.`,
   },
   {
     title: "Cancellations",
@@ -129,7 +129,7 @@ export default function PortimaoRules() {
                 </span>
                 <p className="mt-3 text-base leading-relaxed text-foreground-muted">
                   Once we confirm your order, we send a secure Stripe link by
-                  email. Pay there to lock your slot — your name goes on the
+                  email. Pay there to lock your slot, your name goes on the
                   pickup list immediately. We accept all major cards plus
                   Apple Pay and Google Pay.
                 </p>

@@ -12,7 +12,7 @@ import {
 import { fetchStoreFlags } from "@/lib/store/actions";
 
 /**
- * Cart context — single source of truth for items, totals, drawer state.
+ * Cart context, single source of truth for items, totals, drawer state.
  * Persists to localStorage so a refresh doesn't lose the user's progress.
  */
 
@@ -44,7 +44,7 @@ interface CartState {
   closeCheckout: () => void;
   /** Triggers the cart-icon pulse animation. */
   pulseSeed: number;
-  /** Regular (Lisbon) ordering paused by the operator — e.g. while at a pop-up. */
+  /** Regular (Lisbon) ordering paused by the operator, e.g. while at a pop-up. */
   orderingPaused: boolean;
   /** ISO date regular ordering resumes (shown to customers). */
   resumeDate: string | null;
@@ -87,7 +87,7 @@ function persist(items: CartItem[]) {
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   } catch {
-    // localStorage full / disabled — ignore
+    // localStorage full / disabled, ignore
   }
 }
 
@@ -109,7 +109,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setResumeDate(f.dailyResumeDate);
       })
       .catch(() => {
-        /* keep defaults — ordering stays live */
+        /* keep defaults, ordering stays live */
       });
     return () => {
       active = false;
@@ -118,7 +118,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   // Hydrate from localStorage once on mount.
   // We deliberately keep initial state empty (so SSR + first client render
-  // match — no hydration mismatch) and read storage in an effect. The lint
+  // match, no hydration mismatch) and read storage in an effect. The lint
   // rule warns about setState in effect, but this is the legit
   // hydrate-after-mount pattern for external storage.
   useEffect(() => {
@@ -136,7 +136,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const add = useCallback(
     (input: AddInput) => {
     const channel = input.channel ?? "normal";
-    // Regular Lisbon ordering is paused — block normal items (Portimão preorders
+    // Regular Lisbon ordering is paused, block normal items (Portimão preorders
     // are unaffected). The UI also disables the buttons; this is a safety net.
     if (orderingPaused && channel === "normal") return;
     const id = buildId(input.itemId, input.variant, input.spice);
