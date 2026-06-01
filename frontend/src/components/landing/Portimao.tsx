@@ -49,7 +49,7 @@ export default function Portimao({
       <section
         id="portimao"
         aria-label="Portimão campaign, sold out"
-        className="relative border-y border-border bg-surface py-16 md:py-20"
+        className="relative border-y border-border bg-surface py-6 md:py-20"
       >
         <div className="container-x">
           <FadeIn>
@@ -98,7 +98,7 @@ export default function Portimao({
       {/* Gold hairline top */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-70" aria-hidden />
 
-      <div className="container-x relative py-20 md:py-28">
+      <div className="container-x relative py-8 md:py-28">
         <div className="grid items-start gap-14 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
           {/* Copy / urgency column */}
           <div>

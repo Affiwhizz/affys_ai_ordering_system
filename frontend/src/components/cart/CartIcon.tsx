@@ -16,6 +16,9 @@ export default function CartIcon() {
     <button
       type="button"
       onClick={openDrawer}
+      // id used by the flying-item animation in DishDetailModal as the
+      // destination target of the "add to cart" zoom effect.
+      id="cart-fly-target"
       aria-label={count > 0 ? `Open cart (${count} item${count === 1 ? "" : "s"})` : "Open cart"}
       className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-border-strong bg-white text-espresso transition-all hover:border-espresso hover:bg-espresso hover:text-ivory"
     >

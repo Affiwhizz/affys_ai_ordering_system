@@ -31,7 +31,7 @@ export default function MeetUdia() {
   return (
     <section
       id="udia"
-      className="relative overflow-hidden bg-forest text-ivory py-24 md:py-32"
+      className="relative overflow-hidden bg-forest text-ivory py-10 md:py-32"
     >
       {/* Decorative azulejo top-left */}
       <div className="pointer-events-none absolute -top-8 -left-8 hidden lg:block opacity-30">

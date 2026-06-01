@@ -3,12 +3,21 @@ import { AzulejoBlock, AzulejoStrip } from "./Azulejo";
 import { FadeIn } from "@/components/motion";
 
 /**
- * Swap this with the real video URL when ready.
- * Supports any direct video source (.mp4, .webm) or a Vimeo /
- * Cloudflare Stream URL. Leave as null to show the elegant placeholder.
+ * Hero video.
+ *
+ * Set NEXT_PUBLIC_HERO_VIDEO_URL in Vercel env vars (Production) to a direct
+ * MP4 / WEBM URL (Cloudflare Stream, Mux, Vimeo direct file, or even a file
+ * uploaded to Supabase Storage) and the hero will autoplay it muted + looped
+ * with the Affy's logo and nav overlaid on top — Breakfast Alley style.
+ *
+ * Leave the env var unset and the hero falls back to the brand-gradient
+ * placeholder so the site never looks broken.
+ *
+ * Optional: NEXT_PUBLIC_HERO_POSTER_URL → a still-frame shown until the
+ * video buffers (recommended; uses ~1 fewer second of perceived load time).
  */
-const HERO_VIDEO_SRC: string | null = null;
-const HERO_POSTER_SRC: string | null = null;
+const HERO_VIDEO_SRC = process.env.NEXT_PUBLIC_HERO_VIDEO_URL || null;
+const HERO_POSTER_SRC = process.env.NEXT_PUBLIC_HERO_POSTER_URL || null;
 
 export default function Hero() {
   return (
@@ -52,7 +61,7 @@ export default function Hero() {
           />
 
           {/* Content */}
-          <div className="relative max-w-3xl px-8 py-20 md:px-12 md:py-28 lg:px-16 lg:py-36">
+          <div className="relative max-w-3xl px-8 py-8 md:px-12 md:py-28 lg:px-16 lg:py-36">
             <FadeIn delay={0.1} y={12}>
               <span className="inline-flex items-center text-[11px] font-mono uppercase tracking-[0.22em] text-ivory/70">
                 <span className="mr-3 inline-block h-px w-7 bg-gold align-middle" />

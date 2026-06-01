@@ -13,7 +13,7 @@ export default function SignatureDishes({ dishes }: { dishes: MenuItem[] }) {
   const fmt = (n: number) => `€${n.toFixed(n % 1 === 0 ? 0 : 2)}`;
 
   return (
-    <section id="menu" className="relative py-24 md:py-32">
+    <section id="menu" className="relative py-10 md:py-32">
       <div className="container-x">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div className="max-w-xl">

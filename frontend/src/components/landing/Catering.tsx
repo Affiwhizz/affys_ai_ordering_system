@@ -93,7 +93,7 @@ export default function Catering() {
   return (
     <section
       id="catering"
-      className="relative py-24 md:py-32 bg-surface-warm border-y border-border"
+      className="relative py-10 md:py-32 bg-surface-warm border-y border-border"
     >
       <div className="container-x">
         <div className="grid items-start gap-14 lg:grid-cols-[1fr_1.1fr] lg:gap-20">

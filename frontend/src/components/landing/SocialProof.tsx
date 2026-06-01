@@ -46,7 +46,7 @@ export default function SocialProof() {
     <section
       id="social"
       aria-label="From the table"
-      className="relative py-24 md:py-32"
+      className="relative py-10 md:py-32"
     >
       <div className="container-x">
         <div className="mx-auto max-w-2xl text-center">

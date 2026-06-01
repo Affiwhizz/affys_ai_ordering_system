@@ -66,7 +66,7 @@ export default function Footer() {
     <footer className="relative bg-espresso text-ivory">
       <AzulejoStrip className="w-full" height={36} tone="forest" />
 
-      <div className="container-x py-16">
+      <div className="container-x py-6">
         <div className="grid gap-12 md:grid-cols-[1.3fr_2fr]">
           <div>
             <Logo />

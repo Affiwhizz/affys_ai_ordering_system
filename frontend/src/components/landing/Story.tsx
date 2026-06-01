@@ -22,7 +22,7 @@ export default function Story() {
   return (
     <section
       id="story"
-      className="relative py-24 md:py-32 bg-surface-warm border-y border-border"
+      className="relative py-10 md:py-32 bg-surface-warm border-y border-border"
     >
       <div className="container-x">
         <div className="grid items-center gap-14 lg:grid-cols-[1fr_1.1fr] lg:gap-20">

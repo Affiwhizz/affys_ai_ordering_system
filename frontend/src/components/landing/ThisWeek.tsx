@@ -44,7 +44,7 @@ export default function ThisWeek({ specials }: { specials: MenuItem[] }) {
   };
 
   return (
-    <section id="this-week" className="relative py-16 md:py-20">
+    <section id="this-week" className="relative py-6 md:py-20">
       <div className="container-x">
         <FadeIn>
           <article className="relative overflow-hidden rounded-[1.6rem] border border-border bg-surface shadow-luxe">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { X, ChevronLeft, Plus, Minus, Flame, ShoppingBag, Check } from "lucide-react";
 import { useCart } from "@/components/cart/CartContext";
 import {
@@ -64,10 +65,43 @@ export default function DishDetailModal({
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
 
+  // Flying-item animation state: when the user clicks Add, a small "ghost"
+  // tile animates from the Add button to the cart icon (Wolt / Deliveroo
+  // style). We render an absolutely-positioned motion.div with the start
+  // + end positions captured from the DOM at click time.
+  const [flight, setFlight] = useState<null | {
+    fromX: number;
+    fromY: number;
+    toX: number;
+    toY: number;
+    key: number;
+  }>(null);
+  const addBtnRef = useRef<HTMLButtonElement | null>(null);
+
   const ingredients = item.ingredients ?? [];
 
   const handleAdd = () => {
     if (NORMAL_ORDERING_LOCKED || !variant) return;
+
+    // Capture positions BEFORE adding so the flying ghost has somewhere to
+    // travel to (the cart icon is always mounted in the Header).
+    const target = typeof document !== "undefined"
+      ? document.getElementById("cart-fly-target")
+      : null;
+    const btn = addBtnRef.current;
+    if (target && btn) {
+      const a = btn.getBoundingClientRect();
+      const b = target.getBoundingClientRect();
+      setFlight({
+        fromX: a.left + a.width / 2 - 18,
+        fromY: a.top + a.height / 2 - 18,
+        toX: b.left + b.width / 2 - 18,
+        toY: b.top + b.height / 2 - 18,
+        key: Date.now(),
+      });
+      window.setTimeout(() => setFlight(null), 700);
+    }
+
     add({
       itemId: item.id,
       name: item.name,
@@ -85,6 +119,30 @@ export default function DishDetailModal({
   const fmt = (n: number) => `€${n.toFixed(n % 1 === 0 ? 0 : 2)}`;
 
   return (
+    <>
+      {/* Flying-item ghost that animates from the Add button to the cart
+          icon. Mounted OUTSIDE the modal panel so its z-index and fixed
+          positioning aren't constrained by the modal's overflow-hidden. */}
+      <AnimatePresence>
+        {flight && (
+          <motion.div
+            key={flight.key}
+            initial={{ x: flight.fromX, y: flight.fromY, scale: 1, opacity: 1 }}
+            animate={{
+              x: flight.toX,
+              y: flight.toY,
+              scale: 0.4,
+              opacity: 0.85,
+            }}
+            exit={{ opacity: 0, scale: 0.2 }}
+            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+            className="pointer-events-none fixed left-0 top-0 z-[60] flex h-9 w-9 items-center justify-center rounded-full bg-gold text-espresso shadow-luxe"
+            aria-hidden
+          >
+            <ShoppingBag size={18} strokeWidth={2.4} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
       {/* Backdrop */}
       <button
@@ -132,14 +190,16 @@ export default function DishDetailModal({
           className="flex-1 min-h-0 overflow-y-auto"
           style={{ WebkitOverflowScrolling: "touch" }}
         >
-          {/* Visual: carousel or gradient placeholder.
-              h-56 fallback on mobile guarantees the image area renders even
-              if Safari fails to compute aspect-ratio inside the flex column.
-              flex-shrink-0 stops the flex parent from squashing it to zero.
-              Swipe-left / swipe-right gestures advance the carousel on touch
-              devices (touch handlers below). */}
+          {/* Visual area.
+              When we have images, the container takes its height from the
+              image's natural aspect — so the photo is full-bleed at its real
+              shape, no cropping AND no colored letterbox bars.
+              When no image, fall back to a fixed-height brand-gradient frame
+              so the placeholder still looks intentional. */}
           <div
-            className="relative h-56 w-full shrink-0 overflow-hidden bg-cream-deep sm:h-auto sm:aspect-[16/10]"
+            className={`relative w-full shrink-0 overflow-hidden ${
+              images.length === 0 ? "h-56 bg-cream-deep sm:h-auto sm:aspect-[16/10]" : ""
+            }`}
             onTouchStart={(e) => {
               if (images.length <= 1) return;
               const t = e.touches[0];
@@ -153,7 +213,6 @@ export default function DishDetailModal({
               const dy = t.clientY - (touchStartYRef.current ?? 0);
               touchStartXRef.current = null;
               touchStartYRef.current = null;
-              // Horizontal-dominant swipe of at least ~40px advances.
               if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
               setImgIndex((i) =>
                 dx < 0 ? (i + 1) % images.length : (i - 1 + images.length) % images.length,
@@ -162,13 +221,6 @@ export default function DishDetailModal({
           >
             {images.length > 0 ? (
               <>
-                {/* Soft brand-tinted backdrop so object-contain doesn't leave
-                    harsh white bars when the photo's aspect ratio differs
-                    from the frame. */}
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-30`}
-                  aria-hidden
-                />
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={images[imgIndex]?.url}
@@ -180,10 +232,10 @@ export default function DishDetailModal({
                     console.warn("[menu] image failed to load:", e.currentTarget.src);
                     e.currentTarget.style.display = "none";
                   }}
-                  // object-contain shows the FULL uploaded photo so the dish
-                  // isn't half-cropped. The gradient backdrop fills any
-                  // letterbox space.
-                  className="absolute inset-0 h-full w-full object-contain"
+                  // Full-bleed at the image's natural aspect ratio: width
+                  // fills the modal, height = whatever the photo dictates.
+                  // No crop, no letterbox bars.
+                  className="block w-full h-auto"
                 />
                 {images.length > 1 && (
                   <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
@@ -193,7 +245,7 @@ export default function DishDetailModal({
                         type="button"
                         aria-label={`Photo ${i + 1}`}
                         onClick={() => setImgIndex(i)}
-                        className={`h-2.5 w-2.5 rounded-full transition-colors ${
+                        className={`h-2.5 w-2.5 rounded-full border border-white/40 shadow-sm transition-colors ${
                           i === imgIndex ? "bg-white" : "bg-white/50"
                         }`}
                       />
@@ -445,6 +497,7 @@ export default function DishDetailModal({
 
               {/* Add */}
               <button
+                ref={addBtnRef}
                 type="button"
                 onClick={handleAdd}
                 disabled={!variant}
@@ -468,5 +521,6 @@ export default function DishDetailModal({
         </div>
       </div>
     </div>
+    </>
   );
 }

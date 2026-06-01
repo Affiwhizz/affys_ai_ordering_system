@@ -56,7 +56,7 @@ export default function BlogTeaser() {
     <section
       id="blog"
       aria-label="From Affy's kitchen"
-      className="relative py-24 md:py-32 bg-surface-warm border-y border-border"
+      className="relative py-10 md:py-32 bg-surface-warm border-y border-border"
     >
       <div className="container-x">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">

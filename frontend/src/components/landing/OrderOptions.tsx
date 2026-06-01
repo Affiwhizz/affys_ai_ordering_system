@@ -3,7 +3,7 @@ import { FadeIn, RevealHeading } from "@/components/motion";
 
 export default function OrderOptions() {
   return (
-    <section id="order" className="relative py-24 md:py-32">
+    <section id="order" className="relative py-10 md:py-32">
       <div className="container-x">
         <div className="text-center max-w-2xl mx-auto">
           <FadeIn delay={0.05} y={12}>

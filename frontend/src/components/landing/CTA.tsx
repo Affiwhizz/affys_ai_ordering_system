@@ -7,7 +7,7 @@ import { useCateringModal } from "./modals/CateringModalProvider";
 export default function CTA() {
   const { open: openCateringModal } = useCateringModal();
   return (
-    <section className="relative py-20 md:py-28">
+    <section className="relative py-8 md:py-28">
       <div className="container-x">
         <div className="relative overflow-hidden rounded-[2rem] border border-border bg-forest text-ivory shadow-luxe">
           {/* Azulejo bands */}
@@ -18,7 +18,7 @@ export default function CTA() {
           <div className="absolute -top-24 -right-16 h-72 w-72 rounded-full bg-gold/20 blur-3xl" aria-hidden />
           <div className="absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-oxblood/30 blur-3xl" aria-hidden />
 
-          <div className="relative grid items-center gap-10 px-8 py-16 md:grid-cols-[1.1fr_1fr] md:px-14 md:py-20 lg:px-20">
+          <div className="relative grid items-center gap-10 px-8 py-6 md:grid-cols-[1.1fr_1fr] md:px-14 md:py-20 lg:px-20">
             <div>
               <span className="eyebrow inline-flex items-center text-gold">
                 <span className="gold-rule" />
