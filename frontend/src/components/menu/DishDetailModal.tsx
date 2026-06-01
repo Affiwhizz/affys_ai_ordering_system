@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { X, ChevronLeft, Plus, Minus, Flame, ShoppingBag, Check } from "lucide-react";
 import { useCart } from "@/components/cart/CartContext";
 import {
@@ -52,6 +52,11 @@ export default function DishDetailModal({
   const orderedSpice = SPICE_LEVELS.filter((s) => spiceOptions.includes(s));
 
   const [imgIndex, setImgIndex] = useState(0);
+  // Track the start position of a touch gesture so we can detect a swipe
+  // on the photo carousel. Used by the onTouchStart/onTouchEnd handlers
+  // below — refs (not state) so we don't trigger re-renders during the drag.
+  const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
   const [variant, setVariant] = useState<MenuVariant | null>(
     item.variants[0] ?? null,
   );
@@ -130,10 +135,40 @@ export default function DishDetailModal({
           {/* Visual: carousel or gradient placeholder.
               h-56 fallback on mobile guarantees the image area renders even
               if Safari fails to compute aspect-ratio inside the flex column.
-              flex-shrink-0 stops the flex parent from squashing it to zero. */}
-          <div className="relative h-56 w-full shrink-0 bg-cream-deep sm:h-auto sm:aspect-[16/10]">
+              flex-shrink-0 stops the flex parent from squashing it to zero.
+              Swipe-left / swipe-right gestures advance the carousel on touch
+              devices (touch handlers below). */}
+          <div
+            className="relative h-56 w-full shrink-0 overflow-hidden bg-cream-deep sm:h-auto sm:aspect-[16/10]"
+            onTouchStart={(e) => {
+              if (images.length <= 1) return;
+              const t = e.touches[0];
+              touchStartXRef.current = t.clientX;
+              touchStartYRef.current = t.clientY;
+            }}
+            onTouchEnd={(e) => {
+              if (images.length <= 1 || touchStartXRef.current == null) return;
+              const t = e.changedTouches[0];
+              const dx = t.clientX - (touchStartXRef.current ?? 0);
+              const dy = t.clientY - (touchStartYRef.current ?? 0);
+              touchStartXRef.current = null;
+              touchStartYRef.current = null;
+              // Horizontal-dominant swipe of at least ~40px advances.
+              if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+              setImgIndex((i) =>
+                dx < 0 ? (i + 1) % images.length : (i - 1 + images.length) % images.length,
+              );
+            }}
+          >
             {images.length > 0 ? (
               <>
+                {/* Soft brand-tinted backdrop so object-contain doesn't leave
+                    harsh white bars when the photo's aspect ratio differs
+                    from the frame. */}
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-30`}
+                  aria-hidden
+                />
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={images[imgIndex]?.url}
@@ -142,13 +177,13 @@ export default function DishDetailModal({
                   decoding="async"
                   fetchPriority="high"
                   onError={(e) => {
-                    // If the image fails to load (CORS, 404, malformed URL),
-                    // log it so the next debug can see the actual src that
-                    // failed. Hide the broken img icon by zeroing height.
                     console.warn("[menu] image failed to load:", e.currentTarget.src);
                     e.currentTarget.style.display = "none";
                   }}
-                  className="absolute inset-0 h-full w-full object-cover"
+                  // object-contain shows the FULL uploaded photo so the dish
+                  // isn't half-cropped. The gradient backdrop fills any
+                  // letterbox space.
+                  className="absolute inset-0 h-full w-full object-contain"
                 />
                 {images.length > 1 && (
                   <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
@@ -158,7 +193,7 @@ export default function DishDetailModal({
                         type="button"
                         aria-label={`Photo ${i + 1}`}
                         onClick={() => setImgIndex(i)}
-                        className={`h-2 w-2 rounded-full transition-colors ${
+                        className={`h-2.5 w-2.5 rounded-full transition-colors ${
                           i === imgIndex ? "bg-white" : "bg-white/50"
                         }`}
                       />
@@ -224,7 +259,7 @@ export default function DishDetailModal({
                 <h3 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground-subtle">
                   Spice level
                 </h3>
-                <div className="mt-2 flex flex-wrap gap-2">
+                <div className="mt-2 grid grid-cols-4 gap-2">
                   {orderedSpice.map((lvl) => {
                     const active = spice === lvl;
                     return (
@@ -232,7 +267,7 @@ export default function DishDetailModal({
                         key={lvl}
                         type="button"
                         onClick={() => setSpice(lvl)}
-                        className={`flex flex-col items-center gap-1.5 rounded-xl border px-4 py-2.5 transition-colors ${
+                        className={`flex flex-col items-center justify-center gap-1 rounded-xl border px-2 py-2 transition-colors sm:px-4 sm:py-2.5 sm:gap-1.5 ${
                           active
                             ? "border-red bg-red text-ivory"
                             : "border-border bg-white text-espresso hover:border-red"
@@ -270,7 +305,7 @@ export default function DishDetailModal({
                 <h3 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground-subtle">
                   Portion
                 </h3>
-                <div className="mt-2 grid gap-2 sm:grid-cols-3">
+                <div className="mt-2 grid grid-cols-3 gap-2">
                   {item.variants.map((v) => {
                     const active = variant?.size === v.size;
                     return (
@@ -312,7 +347,23 @@ export default function DishDetailModal({
                 <h3 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground-subtle">
                   Pairs well with
                 </h3>
-                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                {/*
+                  3-per-row grid that centers when there are fewer than 3
+                  items. 1 pair → 1 centered card; 2 pairs → 2 centered;
+                  3+ → 3-up grid with overflow rows wrapping below.
+                  We use auto-fit + minmax so 1 and 2 items aren't stretched.
+                */}
+                <div
+                  className="mt-2 grid justify-center gap-2"
+                  style={{
+                    gridTemplateColumns:
+                      pairings.length === 1
+                        ? "minmax(180px, 280px)"
+                        : pairings.length === 2
+                          ? "repeat(2, minmax(140px, 220px))"
+                          : "repeat(3, minmax(0, 1fr))",
+                  }}
+                >
                   {pairings.map((p) => {
                     const lo =
                       p.variants.length > 0
@@ -324,31 +375,31 @@ export default function DishDetailModal({
                         key={p.id}
                         type="button"
                         onClick={() => onOpenPaired?.(p)}
-                        className="group flex items-center gap-3 rounded-xl border border-border p-2 text-left transition-colors hover:border-gold"
+                        className="group flex flex-col items-center gap-1.5 rounded-xl border border-border p-2 text-center transition-colors hover:border-gold"
                       >
                         {pimg ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={pimg.url}
                             alt={pimg.alt ?? p.name}
-                            className="h-12 w-12 shrink-0 rounded-lg object-cover"
+                            className="h-14 w-full shrink-0 rounded-lg object-cover sm:h-16"
                           />
                         ) : (
                           <span
-                            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${p.gradient}`}
+                            className={`flex h-14 w-full shrink-0 items-center justify-center rounded-lg bg-gradient-to-br sm:h-16 ${p.gradient}`}
                           >
                             <span className="font-display text-lg text-gold/85">
                               {p.monogram}
                             </span>
                           </span>
                         )}
-                        <span className="min-w-0">
-                          <span className="block truncate text-sm font-semibold text-espresso">
+                        <span className="min-w-0 w-full">
+                          <span className="block truncate text-xs font-semibold text-espresso sm:text-sm">
                             {p.name}
                           </span>
                           {lo !== null && (
-                            <span className="text-xs font-medium text-red">
-                              Add from {fmt(lo)}
+                            <span className="text-[10px] font-medium text-red sm:text-xs">
+                              From {fmt(lo)}
                             </span>
                           )}
                         </span>
