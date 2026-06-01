@@ -156,7 +156,9 @@ export default function PromoManager({ initial }: { initial: PromoCode[] }) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          {flash && <p className="text-sm font-semibold text-forest">{flash}</p>}
+          {/* Top-of-page flash kept only for actions that don't have a
+              clear button-anchor (e.g. pause / activate from the list).
+              Editor save now shows feedback inline next to the button. */}
         </div>
         {editingId === null && (
           <button
@@ -306,7 +308,12 @@ export default function PromoManager({ initial }: { initial: PromoCode[] }) {
 
           {error && <p className="mt-3 text-sm font-semibold text-red">{error}</p>}
 
-          <div className="mt-5 flex justify-end gap-2">
+          <div className="mt-5 flex items-center justify-end gap-3">
+            {/* Inline confirmation next to the save button so the operator
+                always sees it even when the page is long. */}
+            {flash && (
+              <span className="text-sm font-semibold text-forest">{flash}</span>
+            )}
             <button
               type="button"
               onClick={close}

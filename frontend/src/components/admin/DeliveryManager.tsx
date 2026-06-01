@@ -64,9 +64,9 @@ export default function DeliveryManager({ initial }: { initial: DeliverySettings
 
   return (
     <div className="space-y-6">
-      {saved && (
-        <p className="text-sm font-semibold text-forest">{saved}</p>
-      )}
+      {/* Save feedback is now rendered INLINE next to the Save button at
+          the bottom of the page so it's visible after a click without
+          having to scroll back up. */}
 
       {/* Per-municipality fees */}
       <section className="overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
