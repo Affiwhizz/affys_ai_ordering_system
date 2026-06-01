@@ -111,9 +111,23 @@ export default function DishDetailModal({
           </button>
         </div>
 
-        <div className="overflow-y-auto">
-          {/* Visual: carousel or gradient placeholder */}
-          <div className="relative aspect-[16/10] w-full bg-cream-deep">
+        {/*
+          Scroll area.
+          - flex-1 + min-h-0 is the iOS-safe pattern for nested scroll inside
+            a flex column. Without min-h-0 the child refuses to shrink and
+            content below the fold (spice picker, portions) becomes
+            unreachable on Safari.
+          - WebkitOverflowScrolling enables momentum scrolling on older iOS.
+        */}
+        <div
+          className="flex-1 min-h-0 overflow-y-auto"
+          style={{ WebkitOverflowScrolling: "touch" }}
+        >
+          {/* Visual: carousel or gradient placeholder.
+              h-56 fallback on mobile guarantees the image area renders even
+              if Safari fails to compute aspect-ratio inside the flex column.
+              flex-shrink-0 stops the flex parent from squashing it to zero. */}
+          <div className="relative h-56 w-full shrink-0 bg-cream-deep sm:h-auto sm:aspect-[16/10]">
             {images.length > 0 ? (
               <>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -123,7 +137,14 @@ export default function DishDetailModal({
                   loading="eager"
                   decoding="async"
                   fetchPriority="high"
-                  className="h-full w-full object-cover"
+                  onError={(e) => {
+                    // If the image fails to load (CORS, 404, malformed URL),
+                    // log it so the next debug can see the actual src that
+                    // failed. Hide the broken img icon by zeroing height.
+                    console.warn("[menu] image failed to load:", e.currentTarget.src);
+                    e.currentTarget.style.display = "none";
+                  }}
+                  className="absolute inset-0 h-full w-full object-cover"
                 />
                 {images.length > 1 && (
                   <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">

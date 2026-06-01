@@ -13,8 +13,17 @@ function slugify(s: string): string {
   );
 }
 
+/**
+ * Invalidate public pages that surface menu data so customers see fresh
+ * names, prices, photos, etc. immediately.
+ *
+ * Deliberately NOT calling revalidatePath("/admin/menu"): that triggers a
+ * router refresh on the page the admin is CURRENTLY editing, which collapses
+ * the open editor modal (local React state) back to the list view. The
+ * admin's local UI updates its own state after each action and uses
+ * router.refresh() on its own terms when the editor closes.
+ */
 function revalidateMenu() {
-  revalidatePath("/admin/menu");
   revalidatePath("/menu");
   revalidatePath("/"); // homepage "this week" + featured dishes
 }
