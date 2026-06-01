@@ -79,7 +79,7 @@ export default function PromoManager({ initial }: { initial: PromoCode[] }) {
   // editingId: null = form closed, "new" = creating, otherwise the promo id
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<PromoInput>(EMPTY);
-  const [, start] = useTransition();
+  const [isPending, start] = useTransition();
   const [flash, setFlash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -317,9 +317,14 @@ export default function PromoManager({ initial }: { initial: PromoCode[] }) {
             <button
               type="button"
               onClick={save}
-              className="inline-flex h-10 items-center rounded-full bg-espresso px-6 text-sm font-semibold text-ivory transition-colors hover:bg-gold hover:text-espresso"
+              disabled={isPending}
+              className="inline-flex h-10 items-center rounded-full bg-espresso px-6 text-sm font-semibold text-ivory transition-colors hover:bg-gold hover:text-espresso disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {editingId === "new" ? "Create code" : "Save changes"}
+              {isPending
+                ? "Saving…"
+                : editingId === "new"
+                  ? "Create code"
+                  : "Save changes"}
             </button>
           </div>
         </section>

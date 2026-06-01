@@ -35,7 +35,7 @@ export default function DeliveryManager({ initial }: { initial: DeliverySettings
     return obj;
   });
   const [p, setP] = useState<PaymentInfo>(initial.payment);
-  const [, start] = useTransition();
+  const [isPending, start] = useTransition();
   const [saved, setSaved] = useState<string | null>(null);
 
   const flash = (msg: string) => {
@@ -189,13 +189,19 @@ export default function DeliveryManager({ initial }: { initial: DeliverySettings
         </div>
       </section>
 
-      <div className="flex justify-end">
+      <div className="flex items-center justify-end gap-3">
+        {/* Inline feedback next to the button so the operator always sees
+            what happened, no matter how far down the page they scrolled. */}
+        {saved && (
+          <span className="text-sm font-semibold text-forest">{saved}</span>
+        )}
         <button
           type="button"
           onClick={saveSettings}
-          className="inline-flex h-10 items-center rounded-full bg-espresso px-6 text-sm font-semibold text-ivory transition-colors hover:bg-gold hover:text-espresso"
+          disabled={isPending}
+          className="inline-flex h-10 items-center rounded-full bg-espresso px-6 text-sm font-semibold text-ivory transition-colors hover:bg-gold hover:text-espresso disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Save settings &amp; payment details
+          {isPending ? "Saving…" : "Save settings & payment details"}
         </button>
       </div>
     </div>

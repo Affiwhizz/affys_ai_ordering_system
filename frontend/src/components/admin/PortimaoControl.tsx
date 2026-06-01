@@ -46,7 +46,7 @@ export default function PortimaoControl({ initial }: { initial: StoreFlags }) {
   const [paused, setPaused] = useState(initial.dailyOrderingPaused);
   const [resumeDate, setResumeDate] = useState(initial.dailyResumeDate ?? "");
 
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
   const [flash, setFlash] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -226,13 +226,18 @@ export default function PortimaoControl({ initial }: { initial: StoreFlags }) {
             />
           </div>
         </div>
-        <footer className="flex justify-end border-t border-border bg-cream/40 px-5 py-3">
+        <footer className="flex items-center justify-end gap-3 border-t border-border bg-cream/40 px-5 py-3">
+          {/* Inline feedback so the operator always sees confirmation,
+              no matter how far down the page they are. */}
+          {flash && <span className="text-sm font-semibold text-forest">{flash}</span>}
+          {error && <span className="text-sm font-semibold text-red">{error}</span>}
           <button
             type="button"
             onClick={saveWindow}
-            className="inline-flex h-10 items-center rounded-full bg-espresso px-6 text-sm font-semibold text-ivory transition-colors hover:bg-gold hover:text-espresso"
+            disabled={isPending}
+            className="inline-flex h-10 items-center rounded-full bg-espresso px-6 text-sm font-semibold text-ivory transition-colors hover:bg-gold hover:text-espresso disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Save Portimão settings
+            {isPending ? "Saving…" : "Save Portimão settings"}
           </button>
         </footer>
       </section>
