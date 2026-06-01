@@ -192,7 +192,18 @@ export async function getPublicMenu(): Promise<MenuItem[]> {
       // Stable tiebreaker so editing a row never reshuffles the list.
       .order("created_at", { ascending: true });
 
-    if (error || !data || data.length === 0) return BUNDLED_MENU;
+    if (error) {
+      // Log so we can see in Vercel function logs WHY the DB call failed
+      // for some users (this explains "no photo, no spice" on mobile —
+      // before this fix we silently fell back to bundled static data,
+      // which has none of those fields).
+      console.error("[menu] DB query failed, falling back to bundled menu:", error.message);
+      return BUNDLED_MENU;
+    }
+    if (!data || data.length === 0) {
+      console.warn("[menu] DB returned no rows — using bundled fallback");
+      return BUNDLED_MENU;
+    }
 
     const items = (data as unknown as ItemRow[]).map((r) =>
       mapRow(r, { availableVariantsOnly: true }),
@@ -200,7 +211,8 @@ export async function getPublicMenu(): Promise<MenuItem[]> {
     const pairings = await fetchPairingsMap(supabase);
     for (const it of items) it.pairingIds = pairings.get(it.dbId) ?? [];
     return items;
-  } catch {
+  } catch (e) {
+    console.error("[menu] exception in getPublicMenu, using bundled fallback:", e);
     return BUNDLED_MENU;
   }
 }
