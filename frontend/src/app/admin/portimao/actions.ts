@@ -7,7 +7,6 @@ import type { PortimaoMode } from "@/lib/store/types";
 type Result = { ok: boolean; error?: string };
 
 function revalidate() {
-  revalidatePath("/admin/portimao");
   revalidatePath("/portimao");
   revalidatePath("/"); // homepage block + cart pause banner
   revalidatePath("/menu");

@@ -46,7 +46,16 @@ export default function MenuView({
   const [activeCategory, setActiveCategory] = useState<string>(
     orderedCategories[0] ?? "",
   );
-  const [openItem, setOpenItem] = useState<MenuItem | null>(null);
+  // Stack of opened dishes. Top of the stack is the currently shown dish.
+  // Clicking a "pairs well" card pushes the paired dish onto the stack;
+  // closing X pops back to the previous dish (so the user can keep adding
+  // pairs from the original). Clicking a fresh tile from the menu RESETS
+  // the stack so a new browse session starts clean.
+  const [openStack, setOpenStack] = useState<MenuItem[]>([]);
+  const openItem = openStack[openStack.length - 1] ?? null;
+  const openFromMenu = (it: MenuItem) => setOpenStack([it]);
+  const openPaired = (it: MenuItem) => setOpenStack((s) => [...s, it]);
+  const popOrClose = () => setOpenStack((s) => s.slice(0, -1));
   const [query, setQuery] = useState("");
   const q = query.trim().toLowerCase();
 
@@ -207,7 +216,7 @@ export default function MenuView({
           ) : (
             <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {searchResults.map((it) => (
-                <DishTile key={it.id} item={it} onOpen={() => setOpenItem(it)} />
+                <DishTile key={it.id} item={it} onOpen={() => openFromMenu(it)} />
               ))}
             </div>
           )}
@@ -265,7 +274,7 @@ export default function MenuView({
                   </div>
                   <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {catItems.map((it) => (
-                      <DishTile key={it.id} item={it} onOpen={() => setOpenItem(it)} />
+                      <DishTile key={it.id} item={it} onOpen={() => openFromMenu(it)} />
                     ))}
                   </div>
                 </section>
@@ -296,9 +305,10 @@ export default function MenuView({
       {openItem && (
         <DishDetailModal
           item={openItem}
-          onClose={() => setOpenItem(null)}
+          onClose={popOrClose}
           pairings={openItemPairings}
-          onOpenPaired={(it) => setOpenItem(it)}
+          onOpenPaired={openPaired}
+          stackDepth={openStack.length}
         />
       )}
     </>

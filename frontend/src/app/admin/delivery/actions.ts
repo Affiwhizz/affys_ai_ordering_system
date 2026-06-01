@@ -5,7 +5,6 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import type { DeliveryGlobals, PaymentInfo } from "@/lib/delivery/get-delivery-settings";
 
 function revalidate() {
-  revalidatePath("/admin/delivery");
   revalidatePath("/"); // checkout reads these
 }
 

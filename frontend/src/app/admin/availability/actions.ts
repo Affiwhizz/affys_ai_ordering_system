@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 import { createServerSupabase } from "@/lib/supabase/server";
 
 function revalidate() {
-  revalidatePath("/admin/availability");
   revalidatePath("/"); // anything reading availability
 }
 

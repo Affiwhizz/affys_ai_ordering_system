@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { ORDER_STATUSES, type OrderStatus } from "@/lib/orders/types";
 import { sendEmail } from "@/lib/email/send";
@@ -147,8 +146,6 @@ export async function setOrderStatus(
       await sendConfirmedEmail(supabase, id);
     }
 
-    revalidatePath("/admin/orders");
-    revalidatePath("/admin");
     return { ok: true };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "Unknown error" };

@@ -21,7 +21,6 @@ export interface PromoInput {
 type Result = { ok: boolean; error?: string };
 
 function revalidate() {
-  revalidatePath("/admin/promos");
   revalidatePath("/"); // checkout validates against these
 }
 

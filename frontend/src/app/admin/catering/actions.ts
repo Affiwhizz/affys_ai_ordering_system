@@ -1,7 +1,6 @@
 "use server";
 
 import { createServerSupabase } from "@/lib/supabase/server";
-import { revalidatePath } from "next/cache";
 import type { CateringStatus } from "@/lib/catering/types";
 
 interface UpdateResult {
@@ -35,7 +34,6 @@ export async function setCateringStatus(
       .eq("id", id);
 
     if (error) return { ok: false, error: error.message };
-    revalidatePath("/admin/catering");
     return { ok: true };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "Unknown error" };
@@ -61,7 +59,6 @@ export async function setCateringQuote(
       } as never)
       .eq("id", id);
     if (error) return { ok: false, error: error.message };
-    revalidatePath("/admin/catering");
     return { ok: true };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "Unknown error" };

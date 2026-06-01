@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { X, Plus, Minus, Flame, ShoppingBag, Check } from "lucide-react";
+import { X, ChevronLeft, Plus, Minus, Flame, ShoppingBag, Check } from "lucide-react";
 import { useCart } from "@/components/cart/CartContext";
 import {
   SPICE_LEVELS,
@@ -24,11 +24,15 @@ export default function DishDetailModal({
   onClose,
   pairings,
   onOpenPaired,
+  stackDepth = 1,
 }: {
   item: MenuItem;
   onClose: () => void;
   pairings?: MenuItem[];
   onOpenPaired?: (item: MenuItem) => void;
+  /** How deep we are in the "pairs well" stack. > 1 means the close X
+   *  should look like a back-arrow ("back to <previous dish>"). */
+  stackDepth?: number;
 }) {
   const { add } = useCart();
 
@@ -103,11 +107,11 @@ export default function DishDetailModal({
           />
           <button
             type="button"
-            aria-label="Close"
+            aria-label={stackDepth > 1 ? "Back to previous dish" : "Close"}
             onClick={onClose}
             className="absolute right-3 top-2 z-30 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-espresso shadow-sm backdrop-blur hover:bg-white sm:top-3"
           >
-            <X size={18} />
+            {stackDepth > 1 ? <ChevronLeft size={18} /> : <X size={18} />}
           </button>
         </div>
 
@@ -164,11 +168,18 @@ export default function DishDetailModal({
               </>
             ) : (
               <div
-                className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${item.gradient}`}
+                className={`flex h-full w-full flex-col items-center justify-center bg-gradient-to-br ${item.gradient}`}
                 aria-hidden
               >
                 <span className="font-display text-7xl text-gold/85">
                   {item.monogram}
+                </span>
+                {/* TEMP DEBUG — remove once the mobile image bug is solved.
+                    Shows what data the modal actually received on this device
+                    so we can tell whether the gallery is empty (data problem)
+                    vs. the image is failing to render (display problem). */}
+                <span className="mt-3 rounded-full bg-black/30 px-3 py-1 text-[10px] font-mono uppercase tracking-wider text-ivory">
+                  imgs:{item.images?.length ?? 0} url:{item.imageUrl ? "y" : "n"} spice:{item.spiceLevels?.length ?? 0}
                 </span>
               </div>
             )}

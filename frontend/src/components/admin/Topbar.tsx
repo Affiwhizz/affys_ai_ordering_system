@@ -141,26 +141,26 @@ export default function Topbar({ title, subtitle }: TopbarProps) {
                 <ul className="divide-y divide-border">
                   <NotifRow
                     icon={ShoppingBag}
-                    label="Orders awaiting status"
+                    label="New orders since you last checked"
                     count={bell.newOrders}
                     href="/admin/orders"
-                    emptyText="No new orders"
+                    emptyText="Nothing new — open Orders"
                     onClick={() => setPanel(false)}
                   />
                   <NotifRow
                     icon={Utensils}
-                    label="New catering inquiries"
+                    label="New catering inquiries since"
                     count={bell.newCatering}
                     href="/admin/catering"
-                    emptyText="No new inquiries"
+                    emptyText="Nothing new — open Catering"
                     onClick={() => setPanel(false)}
                   />
                   <NotifRow
                     icon={BellRing}
-                    label="Waitlist signups (7 days)"
+                    label="New waitlist signups since"
                     count={bell.recentSignups}
                     href="/admin/notify"
-                    emptyText="No recent signups"
+                    emptyText="Nothing new — open Waitlist"
                     onClick={() => setPanel(false)}
                   />
                 </ul>
