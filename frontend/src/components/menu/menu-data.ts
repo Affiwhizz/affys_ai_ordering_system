@@ -34,6 +34,10 @@ export interface MenuItem {
   spiceLevels?: string[];
   videoUrl?: string;
   images?: DishImage[];
+  /** Single-thumbnail column from menu_items.image_url. Used as a fallback
+   *  when the menu_images gallery is empty. Different upload paths populate
+   *  different columns; the UI tries images[] first, then this. */
+  imageUrl?: string | null;
   isWeeklySpecial?: boolean;
   isFeatured?: boolean;
   /** DB uuid of this dish (used to match pairings). */

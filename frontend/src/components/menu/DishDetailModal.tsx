@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { X, Plus, Minus, Flame, ShoppingBag, Check } from "lucide-react";
 import { useCart } from "@/components/cart/CartContext";
 import {
@@ -32,7 +32,15 @@ export default function DishDetailModal({
 }) {
   const { add } = useCart();
 
-  const images = item.images ?? [];
+  // Combine the gallery with the legacy single-thumbnail column. If only
+  // image_url is set (older uploads), use it as the sole image so the modal
+  // still shows a hero photo instead of the placeholder.
+  const images = useMemo(() => {
+    const gallery = item.images ?? [];
+    if (gallery.length > 0) return gallery;
+    if (item.imageUrl) return [{ url: item.imageUrl, alt: item.name }];
+    return [];
+  }, [item.images, item.imageUrl, item.name]);
   const spiceOptions = (item.spiceLevels ?? []).filter((s): s is SpiceLevel =>
     (SPICE_LEVELS as readonly string[]).includes(s),
   );
@@ -77,17 +85,31 @@ export default function DishDetailModal({
         className="absolute inset-0 bg-espresso/50 backdrop-blur-sm"
       />
 
-      {/* Panel */}
-      <div className="relative z-10 flex max-h-[92vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl bg-white shadow-luxe sm:rounded-3xl">
-        {/* Close */}
-        <button
-          type="button"
-          aria-label="Close"
-          onClick={onClose}
-          className="absolute right-3 top-3 z-20 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-espresso shadow-sm backdrop-blur hover:bg-white"
-        >
-          <X size={18} />
-        </button>
+      {/*
+        Panel.
+        Mobile: max-h uses dynamic viewport (100dvh) so iOS Safari's address
+        bar doesn't eat the bottom; the panel anchors to items-end so it
+        slides up from the bottom; we also leave 4vh at the top so the
+        sticky close header is always visible BELOW the Safari chrome.
+      */}
+      <div className="relative z-10 flex max-h-[calc(100dvh-4vh)] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl bg-white shadow-luxe sm:max-h-[92vh] sm:rounded-3xl">
+        {/* Sticky close header — guarantees the X stays reachable on
+            mobile no matter how tall the photo is. */}
+        <div className="sticky top-0 z-30 flex items-center justify-between border-b border-border/60 bg-white/95 px-3 py-2 backdrop-blur sm:bg-transparent sm:border-transparent sm:py-0">
+          {/* Drag handle hint on mobile */}
+          <span
+            aria-hidden
+            className="mx-auto block h-1 w-10 rounded-full bg-foreground-subtle/30 sm:hidden"
+          />
+          <button
+            type="button"
+            aria-label="Close"
+            onClick={onClose}
+            className="absolute right-3 top-2 z-30 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-espresso shadow-sm backdrop-blur hover:bg-white sm:top-3"
+          >
+            <X size={18} />
+          </button>
+        </div>
 
         <div className="overflow-y-auto">
           {/* Visual: carousel or gradient placeholder */}

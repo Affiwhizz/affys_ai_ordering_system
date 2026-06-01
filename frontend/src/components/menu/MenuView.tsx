@@ -315,7 +315,13 @@ function DishTile({ item, onOpen }: { item: MenuItem; onOpen: () => void }) {
       ? Math.min(...item.variants.map((v) => v.price))
       : null;
   const video = item.videoUrl;
-  const img = item.images?.[0];
+  // Tile thumbnail: prefer the first gallery image, fall back to the legacy
+  // single-thumbnail column (menu_items.image_url). Different upload paths
+  // populate different columns; this keeps the UI robust to either.
+  const galleryFirst = item.images?.[0];
+  const img =
+    galleryFirst ??
+    (item.imageUrl ? { url: item.imageUrl, alt: undefined } : null);
 
   const fmt = (n: number) => `€${n.toFixed(n % 1 === 0 ? 0 : 2)}`;
 
