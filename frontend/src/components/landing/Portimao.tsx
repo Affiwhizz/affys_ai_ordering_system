@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { AzulejoTile } from "./Azulejo";
 import { FadeIn, RevealHeading, MotionCard } from "@/components/motion";
 import AddToCartButton from "@/components/cart/AddToCartButton";
 import PortimaoPreorderModal from "./modals/PortimaoPreorderModal";
@@ -112,16 +111,16 @@ export default function Portimao({
               </span>
             </FadeIn>
 
+            {/* Forced single-line on mobile per request: smaller text-3xl
+                size and whitespace-nowrap so "Affy's in Portimão." never
+                breaks into two rows. Desktop sizes unchanged. */}
             <RevealHeading
               as="h2"
               delay={0.25}
-              className="mt-5 font-display text-5xl font-medium leading-[1.02] tracking-tight sm:text-6xl lg:text-7xl"
+              className="mt-3 whitespace-nowrap font-display text-3xl font-medium leading-[1.05] tracking-tight sm:text-5xl lg:text-7xl"
               tokens={[
-                <span key="affys" className="text-ivory">
-                  Affy&rsquo;s in
-                </span>,
-                <span key="port" className="italic gold-shimmer">
-                  Portimão.
+                <span key="line" className="text-ivory">
+                  Affy&rsquo;s in <span className="italic gold-shimmer">Portimão.</span>
                 </span>,
               ]}
             />
@@ -162,32 +161,27 @@ export default function Portimao({
             </FadeIn>
 
             <FadeIn delay={0.95}>
-              <div className="mt-9 flex flex-wrap items-start gap-3">
+              {/* Two CTAs sit side-by-side on every screen size now. Both
+                  shrink with shorter labels on mobile so they fit in one
+                  row without the "Ask Udia" pill wrapping below. */}
+              <div className="mt-6 grid grid-cols-2 items-stretch gap-2 sm:flex sm:flex-wrap sm:gap-3">
                 <button
                   type="button"
                   onClick={() => setModalOpen(true)}
-                  className="inline-flex h-12 items-center rounded-full bg-gold px-7 text-sm font-semibold text-espresso shadow-luxe transition-all hover:bg-gold-soft hover:-translate-y-0.5 active:scale-[0.98]"
+                  className="inline-flex h-11 items-center justify-center rounded-full bg-gold px-3 text-xs font-semibold text-espresso shadow-luxe transition-all hover:bg-gold-soft active:scale-[0.98] sm:h-12 sm:px-7 sm:text-sm"
                 >
-                  Preorder for Portimão
-                  <svg className="ml-2" width="14" height="14" viewBox="0 0 24 24" fill="none">
-                    <path d="M5 12h14m0 0-5-5m5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+                  Preorder for Portim&atilde;o
                 </button>
-                <div className="flex flex-col items-start gap-1.5">
-                  <Link
-                    href="#udia"
-                    className="inline-flex h-12 items-center rounded-full border border-ivory/30 px-6 text-sm font-semibold text-ivory transition-colors hover:bg-ivory/10"
-                  >
-                    <span className="relative mr-2 flex h-2 w-2">
-                      <span className="absolute inline-flex h-full w-full rounded-full bg-gold opacity-75 animate-ping" />
-                      <span className="relative inline-flex h-2 w-2 rounded-full bg-gold" />
-                    </span>
-                    Ask Udia for festival picks
-                  </Link>
-                  <span className="ml-3 text-[10px] uppercase tracking-[0.22em] text-emerald-400">
-                    (coming soon)
+                <Link
+                  href="#udia"
+                  className="inline-flex h-11 items-center justify-center rounded-full border border-ivory/30 px-3 text-xs font-semibold text-ivory transition-colors hover:bg-ivory/10 sm:h-12 sm:px-6 sm:text-sm"
+                >
+                  <span className="relative mr-1.5 flex h-2 w-2 sm:mr-2">
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-gold opacity-75 animate-ping" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-gold" />
                   </span>
-                </div>
+                  Ask Udia
+                </Link>
               </div>
             </FadeIn>
 
@@ -206,9 +200,7 @@ export default function Portimao({
               {/* Decorative azulejo wash behind bowls */}
               <div className="pointer-events-none absolute inset-0 -z-0 opacity-25" aria-hidden>
                 <div className="grid h-full w-full grid-cols-3 grid-rows-4">
-                  {Array.from({ length: 12 }).map((_, i) => (
-                    <AzulejoTile key={i} tone="forest" size={110} />
-                  ))}
+                  
                 </div>
               </div>
 

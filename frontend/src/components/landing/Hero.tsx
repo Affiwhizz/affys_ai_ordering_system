@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { AzulejoBlock, AzulejoStrip } from "./Azulejo";
 import { FadeIn } from "@/components/motion";
 
 /**
@@ -43,13 +42,7 @@ export default function Hero() {
               aria-hidden
             >
               {/* Subtle azulejo wash so the placeholder looks intentional */}
-              <AzulejoBlock
-                size={500}
-                cols={5}
-                rows={5}
-                tone="forest"
-                className="absolute inset-0 h-full w-full opacity-20"
-              />
+              
               <div className="absolute inset-0 mix-blend-overlay opacity-30 bg-[radial-gradient(ellipse_at_top_right,rgba(212,175,55,0.4),transparent_55%),radial-gradient(ellipse_at_bottom_left,rgba(148,37,26,0.5),transparent_60%)]" />
             </div>
           )}
@@ -132,7 +125,7 @@ export default function Hero() {
       </div>
 
       {/* Bottom azulejo divider */}
-      <AzulejoStrip className="mt-12 w-full md:mt-16" height={48} tone="ivory" />
+      
     </section>
   );
 }

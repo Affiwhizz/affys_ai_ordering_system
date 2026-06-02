@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { AzulejoTile } from "./Azulejo";
 import { FadeIn, MotionCard, RevealHeading } from "@/components/motion";
 import { useCateringModal } from "./modals/CateringModalProvider";
 
@@ -102,9 +101,7 @@ export default function Catering() {
             <div className="relative overflow-hidden rounded-[1.6rem] border border-border bg-red text-ivory shadow-luxe">
               <div className="absolute inset-0 opacity-25" aria-hidden>
                 <div className="grid h-full w-full grid-cols-4 grid-rows-5">
-                  {Array.from({ length: 20 }).map((_, i) => (
-                    <AzulejoTile key={i} tone="forest" size={120} />
-                  ))}
+                  
                 </div>
               </div>
               <div className="relative p-10 md:p-12">

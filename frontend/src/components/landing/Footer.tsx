@@ -1,37 +1,30 @@
 import Link from "next/link";
 import Logo from "./Logo";
-import { AzulejoStrip } from "./Azulejo";
 import FooterLegal from "@/components/legal/FooterLegal";
 import LegalLink from "@/components/legal/LegalLink";
 import type { LegalTopic } from "@/components/legal/legal-content";
 
-// Footer link can be either a plain href or a legal-modal trigger.
+// A footer link can be either a regular href or a trigger that opens the
+// LegalModal via the global provider (no scroll-to-top jolt).
 type FooterLink =
   | { label: string; href: string }
   | { label: string; legal: LegalTopic };
 
+// Two short columns on mobile fit cleanly inside one viewport. The desktop
+// view still gets the full quick-nav grid via lg: classes.
 const COLUMNS: { title: string; links: FooterLink[] }[] = [
   {
     title: "Order",
     links: [
       { label: "Menu", href: "/menu" },
-      { label: "Ask Udia", href: "/#udia" },
-      { label: "Portimão preorder", href: "/portimao" },
-      { label: "Catering quote", href: "/#catering" },
-    ],
-  },
-  {
-    title: "Affy's",
-    links: [
-      { label: "Our story", href: "/#story" },
-      { label: "Pop-ups", href: "/#catering" },
+      { label: "Catering", href: "/#catering" },
+      { label: "Portimão", href: "/portimao" },
     ],
   },
   {
     title: "Help",
     links: [
-      { label: "Contact us", href: "mailto:hello@atasteofaffys.com" },
-      // These open the LegalModal directly via the provider — no scroll-to-top.
+      { label: "Contact", href: "mailto:hello@atasteofaffys.com" },
       { label: "Allergy notice", legal: "allergy" },
       { label: "Refund policy", legal: "refunds" },
     ],
@@ -61,77 +54,40 @@ const SOCIALS = [
   },
 ];
 
+/**
+ * Footer.
+ *
+ * Mobile target: fits inside ONE viewport (no double scroll). The bento-style
+ * layout puts logo + tagline at the top, the two quick-link columns side by
+ * side below the brand, contact + social side by side underneath, and a tight
+ * legal row at the very bottom.
+ *
+ * Desktop layout is broader: brand block on the left, quick-link columns on
+ * the right, contact + socials below the brand, legal row at the bottom.
+ */
 export default function Footer() {
   return (
     <footer className="relative bg-espresso text-ivory">
-      <AzulejoStrip className="w-full" height={36} tone="forest" />
-
-      <div className="container-x py-6">
-        <div className="grid gap-12 md:grid-cols-[1.3fr_2fr]">
+      <div className="container-x py-6 md:py-12">
+        {/* Top bento row */}
+        <div className="grid gap-6 md:grid-cols-[1.2fr_2fr] md:gap-12">
+          {/* Brand + tagline */}
           <div>
             <Logo />
-            <p className="mt-5 max-w-xs text-sm leading-relaxed text-ivory/70">
+            <p className="mt-3 max-w-xs text-xs leading-relaxed text-ivory/70 md:mt-5 md:text-sm">
               Nigerian meals, made in Portugal. Slow-cooked, hand-pounded,
-              and brought to your table with the kind of care food deserves.
+              brought to your table.
             </p>
-
-            {/* Hours / location */}
-            <dl className="mt-7 grid grid-cols-2 gap-6 max-w-sm">
-              <div>
-                <dt className="eyebrow text-gold">Kitchen hours</dt>
-                <dd className="mt-2 text-sm text-ivory/85">
-                  Wed to Sun
-                  <br />
-                  By preorder · 24h notice
-                </dd>
-              </div>
-              <div>
-                <dt className="eyebrow text-gold">Based in</dt>
-                <dd className="mt-2 text-sm text-ivory/85">
-                  Lisbon, Portugal
-                </dd>
-                <dt className="eyebrow text-gold mt-4">Pickup &amp; delivery zones</dt>
-                <dd className="mt-2 text-sm leading-relaxed text-ivory/85">
-                  Lisbon Centre · Amadora · Odivelas · Loures · Sintra ·
-                  Cascais · Rest of Portugal (30+ km via Rodomail)
-                </dd>
-              </div>
-            </dl>
-
-            {/* Direct contact */}
-            <div className="mt-7">
-              <p className="eyebrow text-gold">Say hello</p>
-              <a
-                href="mailto:hello@atasteofaffys.com"
-                className="mt-2 inline-block text-sm text-ivory underline decoration-gold/40 underline-offset-4 transition-colors hover:decoration-gold"
-              >
-                hello@atasteofaffys.com
-              </a>
-            </div>
-
-            <div className="mt-7 flex flex-wrap gap-3">
-              {SOCIALS.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  aria-label={s.label}
-                  target={s.href.startsWith("http") ? "_blank" : undefined}
-                  rel={s.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                  className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-ivory/20 text-ivory/80 transition-all hover:border-gold hover:bg-gold hover:text-espresso hover:-translate-y-0.5"
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d={s.icon} />
-                  </svg>
-                </a>
-              ))}
-            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
+          {/* Quick links — 2 columns on mobile + desktop */}
+          <div className="grid grid-cols-2 gap-4 md:gap-8">
             {COLUMNS.map((col) => (
               <div key={col.title}>
-                <h3 className="eyebrow text-gold">{col.title}</h3>
-                <ul className="mt-4 space-y-2.5">
+                <h3 className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gold">
+                  {col.title}
+                </h3>
+                <ul className="mt-2 space-y-1.5 md:mt-4 md:space-y-2.5">
                   {col.links.map((l) => (
                     <li key={l.label}>
                       {"legal" in l ? (
@@ -139,7 +95,7 @@ export default function Footer() {
                       ) : (
                         <Link
                           href={l.href}
-                          className="text-sm text-ivory/75 transition-colors hover:text-ivory"
+                          className="text-xs text-ivory/75 transition-colors hover:text-ivory md:text-sm"
                         >
                           {l.label}
                         </Link>
@@ -152,9 +108,54 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col items-start gap-4 border-t border-ivory/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-ivory/55">
-            Copyright © {new Date().getFullYear()} Affy&rsquo;s. All rights reserved.
+        {/* Contact + socials row */}
+        <div className="mt-5 grid grid-cols-2 items-start gap-4 md:mt-8 md:gap-12">
+          {/* Hours + based-in (compact two-up) */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gold">Hours</p>
+              <p className="mt-1 text-xs leading-snug text-ivory/85 md:text-sm">
+                Wed to Sun<br />By preorder
+              </p>
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gold">Based in</p>
+              <p className="mt-1 text-xs text-ivory/85 md:text-sm">Lisbon, Portugal</p>
+            </div>
+          </div>
+
+          {/* Contact email + socials */}
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gold">Say hello</p>
+            <a
+              href="mailto:hello@atasteofaffys.com"
+              className="mt-1 inline-block text-xs text-ivory underline decoration-gold/40 underline-offset-4 transition-colors hover:decoration-gold md:text-sm"
+            >
+              hello@atasteofaffys.com
+            </a>
+            <div className="mt-2 flex flex-wrap gap-1.5 md:mt-3 md:gap-3">
+              {SOCIALS.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  aria-label={s.label}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-ivory/20 text-ivory/80 transition-all hover:border-gold hover:bg-gold hover:text-espresso md:h-10 md:w-10"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="md:h-[18px] md:w-[18px]">
+                    <path d={s.icon} />
+                  </svg>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Legal strip */}
+        <div className="mt-5 flex flex-col items-start gap-2 border-t border-ivory/10 pt-3 sm:flex-row sm:items-center sm:justify-between md:mt-8 md:pt-5">
+          <p className="text-[10px] text-ivory/55 md:text-xs">
+            &copy; {new Date().getFullYear()} Affy&rsquo;s. All rights reserved.
           </p>
           <FooterLegal />
         </div>

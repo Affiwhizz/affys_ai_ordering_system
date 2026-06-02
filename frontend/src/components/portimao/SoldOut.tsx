@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { FadeIn, RevealHeading } from "@/components/motion";
-import { AzulejoTile } from "../landing/Azulejo";
 import { PORTIMAO } from "./config";
 import NotifyMeForm from "@/components/NotifyMeForm";
 
@@ -114,9 +113,7 @@ export default function PortimaoSoldOut() {
                 <div className="absolute -top-20 -right-20 h-56 w-56 rounded-full bg-gold/15 blur-3xl" aria-hidden />
                 <div className="absolute inset-0 opacity-15" aria-hidden>
                   <div className="grid h-full w-full grid-cols-3 grid-rows-4">
-                    {Array.from({ length: 12 }).map((_, i) => (
-                      <AzulejoTile key={i} tone="forest" size={120} />
-                    ))}
+                    
                   </div>
                 </div>
                 <div className="relative">

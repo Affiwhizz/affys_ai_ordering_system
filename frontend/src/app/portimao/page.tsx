@@ -54,7 +54,7 @@ export default async function PortimaoPage() {
   return (
     <div className="flex min-h-screen flex-1 flex-col bg-background">
       <Header />
-      <main className="flex-1 pb-24 lg:pb-0">
+      <main className="flex-1 pt-[76px] pb-24 md:pt-[88px] lg:pb-0">
         <PortimaoHero />
         <PortimaoPaths />
         <PortimaoMenu />

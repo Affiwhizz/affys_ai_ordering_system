@@ -28,7 +28,9 @@ export default async function MenuPage() {
   return (
     <div className="flex min-h-screen flex-1 flex-col bg-background">
       <Header />
-      <main className="flex-1 pb-24 lg:pb-0">
+      {/* pt-[76px] / md:pt-[88px] reserves space for the now-fixed Header
+          (Breakfast Alley style) which would otherwise overlap the menu hero. */}
+      <main className="flex-1 pt-[76px] pb-24 md:pt-[88px] lg:pb-0">
         <MenuView items={items} categories={categories.map((c) => c.name)} />
       </main>
       <Footer />

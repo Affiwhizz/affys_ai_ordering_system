@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { AzulejoStrip } from "./Azulejo";
 import { useCateringModal } from "./modals/CateringModalProvider";
 
 export default function CTA() {
@@ -11,8 +10,8 @@ export default function CTA() {
       <div className="container-x">
         <div className="relative overflow-hidden rounded-[2rem] border border-border bg-forest text-ivory shadow-luxe">
           {/* Azulejo bands */}
-          <AzulejoStrip className="absolute inset-x-0 top-0" height={32} tone="forest" />
-          <AzulejoStrip className="absolute inset-x-0 bottom-0" height={32} tone="forest" />
+          
+          
 
           {/* Glow */}
           <div className="absolute -top-24 -right-16 h-72 w-72 rounded-full bg-gold/20 blur-3xl" aria-hidden />

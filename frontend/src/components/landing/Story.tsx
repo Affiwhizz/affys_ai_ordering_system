@@ -1,4 +1,3 @@
-import { AzulejoTile, AzulejoBlock } from "./Azulejo";
 import { FadeIn, RevealHeading } from "@/components/motion";
 
 const PILLARS = [
@@ -31,13 +30,7 @@ export default function Story() {
             <div className="relative">
               <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[1.6rem] border border-border bg-forest shadow-luxe">
                 {/* Decorative azulejo wash inside the frame */}
-                <AzulejoBlock
-                  size={500}
-                  cols={5}
-                  rows={6}
-                  tone="forest"
-                  className="absolute inset-0 opacity-35"
-                />
+                
                 {/* Centered emblem */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-ivory">
                   <span className="font-display text-7xl text-gold drop-shadow-md">A</span>
@@ -47,7 +40,7 @@ export default function Story() {
 
               {/* Floating azulejo tile */}
               <div className="absolute -bottom-6 -right-6 hidden md:block rounded-2xl border border-border bg-surface p-2 shadow-luxe">
-                <AzulejoTile size={120} tone="ivory" />
+                
               </div>
             </div>
           </FadeIn>

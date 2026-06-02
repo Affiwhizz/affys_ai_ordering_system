@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Modal } from "@/components/motion";
-import { AzulejoTile } from "../Azulejo";
 import { PORTIMAO } from "@/components/portimao/config";
 
 interface PortimaoPreorderModalProps {
@@ -18,9 +17,7 @@ export default function PortimaoPreorderModal({ open, onClose }: PortimaoPreorde
         <div className="relative h-40 overflow-hidden bg-gradient-to-br from-forest via-espresso to-red/80">
           <div className="absolute inset-0 opacity-20" aria-hidden>
             <div className="grid h-full w-full grid-cols-5 grid-rows-2">
-              {Array.from({ length: 10 }).map((_, i) => (
-                <AzulejoTile key={i} tone="forest" size={120} />
-              ))}
+              
             </div>
           </div>
           <div className="absolute inset-0 bg-gradient-to-t from-espresso/70 to-transparent" aria-hidden />

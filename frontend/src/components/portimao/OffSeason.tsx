@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { FadeIn, RevealHeading } from "@/components/motion";
-import { AzulejoTile } from "../landing/Azulejo";
 import NotifyMeForm from "@/components/NotifyMeForm";
 
 /**
@@ -82,9 +81,7 @@ export default function PortimaoOffSeason() {
         <div className="container-x relative mt-12">
           <div className="mx-auto max-w-md opacity-30">
             <div className="grid grid-cols-5 gap-0">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <AzulejoTile key={i} size={64} tone="ivory" />
-              ))}
+              
             </div>
           </div>
         </div>

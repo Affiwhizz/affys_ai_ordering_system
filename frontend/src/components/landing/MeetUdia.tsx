@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { AzulejoTile } from "./Azulejo";
 import { FadeIn, RevealHeading } from "@/components/motion";
 
 const STEPS = [
@@ -36,9 +35,7 @@ export default function MeetUdia() {
       {/* Decorative azulejo top-left */}
       <div className="pointer-events-none absolute -top-8 -left-8 hidden lg:block opacity-30">
         <div className="grid grid-cols-3 grid-rows-3">
-          {Array.from({ length: 9 }).map((_, i) => (
-            <AzulejoTile key={i} size={84} tone="forest" />
-          ))}
+          
         </div>
       </div>
       <div className="absolute -bottom-32 -right-32 h-[26rem] w-[26rem] rounded-full bg-gold/15 blur-3xl" aria-hidden />

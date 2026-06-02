@@ -84,6 +84,16 @@ export default function Header() {
   // Default to off-season, safer than showing a "live" pulse before flags load.
   const [portimaoStatus, setPortimaoStatus] = useState<PortimaoStatus>("off-season");
   const { open: openCateringModal } = useCateringModal();
+  // Scroll-aware header: transparent over hero at top, fades to solid
+  // white once the user scrolls past ~40px (Breakfast Alley reference).
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // Pull live Portimão status (admin-controlled) once on mount.
   useEffect(() => {
@@ -125,7 +135,20 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full bg-white border-b border-border">
+      {/*
+        Header floats OVER the hero (Breakfast Alley style). At the top of
+        the page it is transparent so the video/photo behind it shows
+        through; once the user scrolls past ~40px the white background fades
+        in for legibility over body content. position:fixed + safe-area
+        padding so iOS notch / Dynamic Island doesn't clip the logo.
+      */}
+      <header
+        className={`fixed top-0 z-40 w-full transition-colors duration-300 ${
+          scrolled
+            ? "bg-white border-b border-border"
+            : "bg-transparent border-b border-transparent"
+        }`}
+      >
         <div className="container-x flex h-[76px] items-center justify-between md:h-[88px]">
           <Logo />
 
